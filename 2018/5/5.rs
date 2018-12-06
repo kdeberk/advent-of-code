@@ -7,22 +7,17 @@ fn react(a: char, b: char) -> bool {
 }
 
 fn reduce(chars: Vec<char>) -> Vec<char> {
-    let mut i = 0;
-    let mut chars = chars;
+    let mut reduced = vec![];
 
-    while i < chars.len() {
-        while i < chars.len() - 1 && react(chars[i], chars[i + 1]) {
-            chars.remove(i + 1);
-            chars.remove(i);
-
-            if i > 0 {
-                i -= 1;
-            }
+    for ch in chars {
+        if 0 == reduced.len() || ! react(ch, reduced[reduced.len() - 1]) {
+            reduced.push(ch);
+        } else {
+            reduced.pop();
         }
-        i += 1
     }
 
-    chars
+    reduced
 }
 
 fn remove_all_of(chars: &Vec<char>, to_remove: char) -> Vec<char> {

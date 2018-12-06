@@ -1,57 +1,13 @@
 
-use std::cmp::Ordering;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::collections::HashMap;
 
-#[derive(Eq, PartialEq, PartialOrd)]
-struct Date {
-    minute: u32,
-    hour: u32,
-    day: u32,
-    month: u32,
-}
-
-impl Ord for Date {
-    fn cmp(&self, other: &Date) -> Ordering {
-        for (a, b) in [self.month, self.day, self.hour, self.minute].iter().zip(&[other.month, other.day, other.hour, other.minute]) {
-            if a > b {
-                return Ordering::Greater
-            } else if a < b {
-                return Ordering::Less
-            }
-        }
-        Ordering::Equal
-    }
-}
-
 #[derive(Eq, PartialEq)]
 enum Observation {
-    Start { date: Date, guard_id: u32 },
-    Sleep { date: Date },
-    Awake { date: Date },
-}
-
-impl Observation {
-    fn date(&self) -> &Date {
-        match self {
-            Observation::Start { date, guard_id: _guard_id } => date,
-            Observation::Sleep { date } => date,
-            Observation::Awake { date } => date,
-        }
-    }
-}
-
-impl Ord for Observation {
-    fn cmp(&self, other: &Observation) -> Ordering {
-        self.date().cmp(other.date())
-    }
-}
-
-impl PartialOrd for Observation {
-    fn partial_cmp(&self, other: &Observation) -> Option<Ordering> {
-        Some(self.cmp(other))
-    }
+    Start { minute: u32, guard_id: u32 },
+    Sleep { minute: u32 },
+    Awake { minute: u32 },
 }
 
 #[derive(Clone, Eq, PartialEq)]
@@ -111,36 +67,29 @@ impl Guard {
     }
 }
 
-fn parse(string: &str) -> u32 {
-    string.parse().unwrap()
-}
-
-fn read_entries(filename: &str) -> Vec<Observation> {
+fn read_observations(filename: &str) -> Vec<Observation> {
     let file = File::open(filename).unwrap();
     let reader = BufReader::new(&file);
 
-    let mut observations:Vec<Observation> = vec![];
+    let mut lines:Vec<String> = reader.lines().map (|l| l.unwrap()).collect();
+    lines.sort();
 
-    for line in reader.lines() {
-        let line = line.unwrap();
+    lines.into_iter().map (|line| {
         let parts:Vec<&str> = line.split([' ', '[', ']', '#', ':', '-'].as_ref()).filter(|part| 0 < part.trim().len()).collect();
+        let minute:u32 = parts[4].parse().unwrap();
 
-        let date = Date { month: parse(parts[1]), day: parse(parts[2]), hour: parse(parts[3]), minute: parse(parts[4]), };
+        if line.contains("begins shift") {
+            let guard_id:u32 = parts[6].parse().unwrap();
 
-        observations.push(
-            if line.contains("begins shift") {
-                Observation::Start { date: date, guard_id: parts[6].parse().unwrap() }
-            } else if line.contains("falls asleep") {
-                Observation::Sleep { date: date }
-            } else if line.contains("wakes up") {
-                Observation::Awake { date: date }
-            } else {
-                panic!("Action not known")
-            })
-    }
-
-    observations.sort();
-    observations
+            Observation::Start { minute, guard_id }
+        } else if line.contains("falls asleep") {
+            Observation::Sleep { minute }
+        } else if line.contains("wakes up") {
+            Observation::Awake { minute }
+        } else {
+            panic!("Action not known")
+        }
+    }).collect()
 }
 
 fn read_guard_shifts(observations: Vec<Observation>) -> Vec<Guard> {
@@ -150,7 +99,7 @@ fn read_guard_shifts(observations: Vec<Observation>) -> Vec<Guard> {
 
     for observation in observations.iter() {
         match observation {
-            Observation::Start { date: _date, guard_id } => {
+            Observation::Start { minute: _minute, guard_id } => {
                 if let Some(sleep_start) = current_sleep_start {
                     if let Some(mut guard) = guards.get_mut(&current_guard_id.unwrap()) {
                         guard.sleeps.push(Sleep { start: sleep_start, end: 60 });
@@ -163,13 +112,13 @@ fn read_guard_shifts(observations: Vec<Observation>) -> Vec<Guard> {
                 current_guard_id = Some(*guard_id);
                 current_sleep_start = None;
             },
-            Observation::Sleep { date } => {
-                current_sleep_start = Some(date.minute);
+            Observation::Sleep { minute } => {
+                current_sleep_start = Some(*minute);
             },
-            Observation::Awake { date } => {
+            Observation::Awake { minute } => {
                 if let Some(sleep_start) = current_sleep_start {
                     if let Some(mut guard) = guards.get_mut(&current_guard_id.unwrap()) {
-                        guard.sleeps.push(Sleep { start: sleep_start, end: date.minute });
+                        guard.sleeps.push(Sleep { start: sleep_start, end: *minute });
                         current_sleep_start = None;
                     } else {
                         panic!("Who was sleeping?")
@@ -211,7 +160,7 @@ fn part_2(guards: &Vec<Guard>) {
 }
 
 fn main() {
-    let guards = read_guard_shifts(read_entries("input"));
+    let guards = read_guard_shifts(read_observations("input"));
 
     part_1(&guards);
     part_2(&guards);
