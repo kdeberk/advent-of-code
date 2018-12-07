@@ -1,9 +1,6 @@
-
-#![feature(vec_remove_item)]
-
 use std::fs::File;
 use std::io::{BufRead, BufReader};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 fn read_requirements(filename: &str) -> HashMap<char, Vec<char>> {
     let file = File::open(filename).unwrap();
@@ -50,35 +47,44 @@ struct Task {
     ch: char,
 }
 
-fn part_2(requirements: &HashMap<char, Vec<char>>) {
-    let mut time = 0;
-    let mut tasks:Vec<Task> = vec![];
+fn remove_finished_tasks(time: u32, tasks:Vec<Task>, done:&mut HashSet<char>) -> Vec<Task> {
+    let mut new_tasks = vec![];
 
-    let mut started_on:Vec<char> = vec![];
-    let mut done:Vec<char> = vec![];
-
-    while done.len() < requirements.len() {
-        let mut new_tasks = vec![];
-
-        for task in tasks {
-            if time >= task.ready_at {
-                done.push(task.ch);
-            } else {
-                new_tasks.push(task);
-            }
+    for task in tasks {
+        if time >= task.ready_at {
+            done.insert(task.ch);
+        } else {
+            new_tasks.push(task);
         }
-        tasks = new_tasks;
+    }
 
-        let mut run = true;
-        while run && tasks.len() < N_WORKERS {
-            run = false;
+    new_tasks
+}
+
+fn task_duration(ch: char) -> u32 {
+    TASK_COST + (ch as u8 - 'A' as u8) as u32 + 1
+}
+
+fn part_2(requirements: &HashMap<char, Vec<char>>) {
+    let mut tasks:Vec<Task> = vec![];
+    let mut started_on:HashSet<char> = HashSet::new();
+    let mut done:HashSet<char> = HashSet::new();
+
+    let mut time = 0;
+    while done.len() < requirements.len() {
+        tasks = remove_finished_tasks(time, tasks, &mut done);
+
+        let mut run_again = true;
+        while run_again && N_WORKERS > tasks.len() {
+            run_again = false;
 
             for ch in "ABCDEFGHIJKLMNOPQRSTUVWXYZ".chars() {
                 if let Some(required) = requirements.get(&ch) {
                     if ! started_on.contains(&ch) && required.iter().all(|c| done.contains(c)) {
-                        tasks.push( Task { ready_at: time + TASK_COST + (ch as u8 - 'A' as u8) as u32 + 1, ch: ch });
-                        started_on.push(ch);
-                        run = true;
+                        tasks.push( Task { ready_at: time + task_duration(ch), ch: ch });
+                        started_on.insert(ch);
+
+                        run_again = true;
                         break;
                     }
                 }
@@ -87,7 +93,6 @@ fn part_2(requirements: &HashMap<char, Vec<char>>) {
 
         time += 1;
     }
-
 
     println!("{}", time - 1);
 }
