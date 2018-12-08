@@ -1,4 +1,6 @@
 *
 !*.rs
+!*.rb
+!*.txt
 !.gitignore
 !*/
