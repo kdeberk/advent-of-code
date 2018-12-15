@@ -3,5 +3,6 @@
 !*.rs
 !*.rb
 !*.txt
+!*.test
 !.gitignore
 !*/
