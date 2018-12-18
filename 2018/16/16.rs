@@ -47,48 +47,12 @@ impl Machine {
             "bori" => { self.registers[rc] = self.registers[ra] | b },
             "setr" => { self.registers[rc] = self.registers[ra] },
             "seti" => { self.registers[rc] = a },
-            "gtir" => {
-                if a > self.registers[rb] {
-                    self.registers[rc] = 1
-                } else {
-                    self.registers[rc] = 0
-                }
-            },
-            "gtri" => {
-                if self.registers[ra] > b {
-                    self.registers[rc] = 1
-                } else {
-                    self.registers[rc] = 0
-                }
-            },
-            "gtrr" => {
-                if self.registers[ra] > self.registers[rb] {
-                    self.registers[rc] = 1
-                } else {
-                    self.registers[rc] = 0
-                }
-            },
-            "eqir" => {
-                if a == self.registers[rb] {
-                    self.registers[rc] = 1
-                } else {
-                    self.registers[rc] = 0
-                }
-            },
-            "eqri" => {
-                if self.registers[ra] == b {
-                    self.registers[rc] = 1
-                } else {
-                    self.registers[rc] = 0
-                }
-            },
-            "eqrr" => {
-                if self.registers[ra] == self.registers[rb] {
-                    self.registers[rc] = 1
-                } else {
-                    self.registers[rc] = 0
-                }
-            },
+            "gtir" => { self.registers[rc] = if a > self.registers[rb] { 1 } else { 0 } },
+            "gtri" => { self.registers[rc] = if self.registers[ra] > b { 1 } else { 0 } },
+            "gtrr" => { self.registers[rc] = if self.registers[ra] > self.registers[rb] { 1 } else { 0 } },
+            "eqir" => { self.registers[rc] = if a == self.registers[rb] { 1 } else { 0 } },
+            "eqri" => { self.registers[rc] = if self.registers[ra] == b { 1 } else { 0 } },
+            "eqrr" => { self.registers[rc] = if self.registers[ra] == self.registers[rb] { 1 } else { 0 } },
             _ => panic!("Unknown instruction: {}", instruction.opcode),
         }
     }
