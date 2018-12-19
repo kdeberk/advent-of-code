@@ -1,0 +1,43 @@
+  0: addi 3 16 3   # jump to 17, executed once because unreachable after
+
+  1: seti 1 - 1  < # r1 = 1                         loop; a = 1;
+  2: seti 1 - 5  < # r5 = 1                           loop; e = 1;
+  3: mulr 1 5 2  < # r2 = r1 * r5                       loop; b = a * e
+  4: eqrr 2 4 2    # r2 = r2 == r4 ? 1 : 0                if b != d:
+  5: addr 2 3 3    # skip next line if r2 == r4
+  6: addi 3 1 3  <~# jump to 8                              pass
+  7: addr 1 0 0  <~# r0 += r1                             else: sum += a
+  8: addi 5 1 5  < # r5 += 1                              e += 1
+  9: gtrr 5 4 2    # r2 = r5 > r4 ? 1 : 0                 if e <= d:
+ 10: addr 3 2 3    # skip next line if r5 > r4
+ 11: seti 2 - 3  <~# jump to 3                              continue # to next iteration same loop
+ 12: addi 1 1 1  <~# r1 += 1                              a +=1
+ 13: gtrr 1 4 2    # r2 = r1 > r4 ? 1 : 0                 if a <= d   
+ 14: addr 2 3 3    # skip next line if r1 > r4
+ 15: seti 1 - 3  <~# jump to 2                              break # to start surrounding loop
+ 16: mulr 3 3 3  <~# jump to 257, exit                    exit
+
+ in previous block, r3 is never used and r4 is never set
+ r1 increments until it is greater than r4
+ r1 is added to r0 when there is an r5 for which r4 == r1 * r5
+ so it seems that counts stores the sum of all divisors of d
+
+ 17: addi 4 2 4  < # r4 += 2, start               d = 2
+ 18: mulr 4 4 4    # r4 *= r4                     d = 2 * 2
+ 19: mulr 3 4 4    # r4 *= 19                     d = 2 * 2 * 19
+ 20: muli 4 11 4   # r4 *= 11                     d = 2 * 2 * 19 * 11
+ 21: addi 2 5 2    # r2 += 5                      b = 5
+ 22: mulr 2 3 2    # r2 *= 22                     b = 5 * 22
+ 23: addi 2 1 2    # r2 += 1                      b = 5 * 22 + 1
+ 24: addr 4 2 4    # r4 += r2                     d = 2 * 2 * 19 * 11 + (5 * 22 + 1)
+ 25: addr 3 0 3    # jump to 26 + r0
+ 26: seti 0 - 3  <~# jump to 1, part1 only
+ 27: setr 3 - 2  <~# r2 = 27, part2 only          b = 27
+ 28: mulr 2 3 2    # r2 *= 28                     b = 27 * 28
+ 29: addr 3 2 2    # r2 += 29                     b = 27 * 28 + 29
+ 30: mulr 3 2 2    # r2 *= 30                     b = (27 * 28 + 29) * 30
+ 31: muli 2 14 2   # r2 *= 14                     b = (27 * 28 + 29) * 30 * 14
+ 32: mulr 2 3 2    # r2 *= 32                     b = (27 * 28 + 29) * 30 * 14 * 32
+ 33: addr 4 2 4    # r4 += r2                     d = 2 * 2 * 19 * 11 + (5 * 22 + 1) + (27 * 28 + 29) * 30 * 14 * 32
+ 34: seti 0 - 0    # r0 = 0
+ 35: seti 0 - 3    # jump to 1
