@@ -1,0 +1,97 @@
+use std::fs::File;
+use std::io::{BufRead, BufReader};
+
+const IP_REGISTER:usize = 1;
+const N_REGISTERS:usize = 6;
+
+#[derive(Debug)]
+struct Machine {
+    ip: u64,
+    registers: [u64; N_REGISTERS],
+}
+
+impl Machine {
+    fn new() -> Self {
+        Self { ip: 0, registers: [0u64; N_REGISTERS] }
+    }
+
+    fn execute(&mut self, instruction: &Instruction) {
+        let a = instruction.a;
+        let b = instruction.b;
+        let ra = instruction.a as usize;
+        let rb = instruction.b as usize;
+        let rc = instruction.c as usize;
+
+        self.registers[IP_REGISTER] = self.ip;
+        match instruction.opcode.as_str() {
+            "addr" => { self.registers[rc] = self.registers[ra] + self.registers[rb] },
+            "addi" => { self.registers[rc] = self.registers[ra] + b },
+            "mulr" => { self.registers[rc] = self.registers[ra] * self.registers[rb] },
+            "muli" => { self.registers[rc] = self.registers[ra] * b },
+            "banr" => { self.registers[rc] = self.registers[ra] & self.registers[rb] },
+            "bani" => { self.registers[rc] = self.registers[ra] & b },
+            "borr" => { self.registers[rc] = self.registers[ra] | self.registers[rb] },
+            "bori" => { self.registers[rc] = self.registers[ra] | b },
+            "setr" => { self.registers[rc] = self.registers[ra] },
+            "seti" => { self.registers[rc] = a },
+            "gtir" => { self.registers[rc] = if a > self.registers[rb] { 1 } else { 0 } },
+            "gtri" => { self.registers[rc] = if self.registers[ra] > b { 1 } else { 0 } },
+            "gtrr" => { self.registers[rc] = if self.registers[ra] > self.registers[rb] { 1 } else { 0 } },
+            "eqir" => { self.registers[rc] = if a == self.registers[rb] { 1 } else { 0 } },
+            "eqri" => { self.registers[rc] = if self.registers[ra] == b { 1 } else { 0 } },
+            "eqrr" => { self.registers[rc] = if self.registers[ra] == self.registers[rb] { 1 } else { 0 } },
+            _ => panic!("Unknown instruction: {}", instruction.opcode),
+        }
+        self.ip = self.registers[IP_REGISTER] + 1;
+    }
+}
+
+#[derive(Debug)]
+struct Instruction {
+    opcode: String,
+    a: u64,
+    b: u64,
+    c: u64
+}
+
+impl Instruction {
+    fn from_line(line: &str) -> Self {
+        let operands:Vec<&str> = line.split(" ").collect();
+
+        Self { opcode: String::from(operands[0]), a: operands[1].parse().unwrap(), b: operands[2].parse().unwrap(), c: operands[3].parse().unwrap() }
+    }
+}
+
+fn read_instructions(filename: &str) -> Vec<Instruction> {
+    let file = File::open(filename).unwrap();
+    let reader = BufReader::new(&file);
+    let mut instructions = vec![];
+
+    for line in reader.lines() {
+        instructions.push(Instruction::from_line(&line.unwrap()))
+    }
+
+    instructions
+}
+
+fn part_1(instructions: &Vec<Instruction>) -> u64 {
+    let mut machine = Machine::new();
+
+    loop {
+        let ip = machine.ip as usize;
+
+        if 28 == ip {
+            return machine.registers[3];
+        } else if let Some(instruction) = instructions.get(ip) {
+            machine.execute(instruction);
+        } else {
+            break
+        }
+    }
+    machine.registers[0]
+}
+
+fn main() {
+    let instructions = read_instructions("input");
+    println!("{}", part_1(&instructions));
+}

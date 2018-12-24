@@ -1,0 +1,41 @@
+  #ip 1
+
+  # Sanity check, continue iff 72 == 123 & 456, otherwise loop forever
+  0 seti 123 - 3        # r3 = 123
+  1 bani 3 456 3      < # r3 = r3 & 456
+  2 eqri 3 72 3         # r3 = r3 == 72 ? 1 : 0   
+  3 addr 3 1 1          # jump to 4 or 5
+  4 seti 0 - 1        <~# jump to 1                
+  5 seti 0 - 3        <~# r3 = 0                                   c = 0
+
+  # Set values of r2 and r3
+  6 bori 3 65536 2    < # r2 = r3 | 65536                          loop; b = c | 65536
+  7 seti 1505483 - 3    # r3 = 1505483                               c = 1505483
+
+  8 bani 2 255 4      < # r4 = r2 & 255                              loop; d = b & 255
+  9 addr 3 4 3          # r3 = r3 + r4                                 c = c + d
+ 10 bani 3 16777215 3   # r3 = r3 & 16777215                           c = (c + d) & 16777215
+ 11 muli 3 65899 3      # r3 = r3 * 65899                              c = ((c + d) & 16777215) * 65899
+ 12 bani 3 16777215 3   # r3 = r3 & 16777215                           c = (((c + d) & 16777215) * 65899) & 16777215
+ 13 gtir 256 2 4        # r4 = 256 > r2 ? 1 : 0                        if 256 <= b
+ 14 addr 4 1 1          # jump to 15 or 16
+ 15 addi 1 1 1        <~# jump to 17               256 <= r2
+ 16 seti 27 - 1       <~# jump to 28,              256 > r2
+
+ # b = b // 256
+ 17 seti 0 - 4        < # r4 = 0                   256 <= r2             d = 0
+ 18 addi 4 1 5        < # r5 = r4 + 1              256 <= r2             loop
+ 19 muli 5 256 5        # r5 = r5 * 256
+ 20 gtrr 5 2 5          # r5 = r5 > r2 ? 1 : 0                           if (d + 1) * 256 <= b
+ 21 addr 5 1 1          # jump to 22 or 23
+ 22 addi 1 1 1        <~# jump to 24               r5 <= r2
+ 23 seti 25 - 1       <~# jump to 26               r5 > r2
+ 24 addi 4 1 4        < # r4 += 1                  r5 <= r2               d += 1
+ 25 seti 17 - 1         # jump to 18               r5 <= r2
+ 26 setr 4 - 2        < # r2 = r4                  r5 > r2               else; b = d
+ 27 seti 7 - 1          # jump to 8                r5 > r2                 goto 8
+
+                                                                       else
+ 28 eqrr 3 0 4        < # r4 = r3 == r0 ? 1 : 0    256 > r2              if a == c:
+ 29 addr 4 1 1          # jump to 30 or 31 (exit)                          exit
+ 30 seti 5 - 1          # jump to 6                                      else goto 6
