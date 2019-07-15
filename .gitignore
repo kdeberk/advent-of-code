@@ -1,5 +1,7 @@
 .#*
 *
+!Makefile
+!*.asm
 !*.py
 !*.rs
 !*.rb
