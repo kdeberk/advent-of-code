@@ -14,12 +14,15 @@ SYS_WRITE equ 4
 %define SECOND_OF_THREE_ARGS (ebp+12)
 %define THIRD_OF_THREE_ARGS (ebp+8)
 
+%define FIRST_OF_FOUR_ARGS (ebp+20)
+%define SECOND_OF_FOUR_ARGS (ebp+16)
+%define THIRD_OF_FOUR_ARGS (ebp+12)
+%define FOURTH_OF_FOUR_ARGS (ebp+8)
+
 %define FIRST_VAR (ebp-4)
 %define SECOND_VAR (ebp-8)
-%define THIRD_VAR (ebp-8)
-
-ONE_REGISTER_PUSHED equ 4
-TWO_REGISTERS_PUSHED equ 8
+%define THIRD_VAR (ebp-12)
+%define FOURTH_VAR (ebp-16)
 
 ;; File open modifiers
 READ_ONLY equ 0
@@ -35,84 +38,162 @@ SOUTH     equ 1
 WEST      equ 2
 EAST      equ 3
 
+DIV_10_CONSTANT equ 0xCCCCCCCD
 
 section .bss
   input_buffer resb 1024
   input_bufsize equ $ - input_buffer
+  output_buffer resb 1024
+  output_bufsize equ $ - output_buffer
 
 section .data
   input_file db 'data/day1.txt',0x0
   sys_open_error db 'Input file could not be opened, does it exist?',0xa,0x0
   sys_open_error_len equ $ - sys_open_error ; TODO calculate later during runtime?
-  sys_read_error db 'Opened file could not read.',0xa0,0x0
+  sys_read_error db 'Opened file could not be read.',0xa0,0x0
   sys_read_error_len equ $ - sys_read_error
   unknown_direction_error db 'Unknown direction error.',0xa0,0x0
   unknown_direction_error_len equ $ - unknown_direction_error
 
   left_table db WEST, EAST, SOUTH, NORTH
   right_table db EAST, WEST, NORTH, SOUTH
+  direction_x_table dd 0, 0, 1, -1
+  direction_y_table dd 1, -1, 0, 0
 
 section .text
   global _start
 
 
-;; args: none
-;; vars: none
-;; returns: nothing
 kernel:
   int	0x80
   ret
 
+;; args: 2 items on the stack
+;; returns:
+;; - eax: result value of syscall
+sys_call_2:
+  push ebp
+  mov ebp, esp
 
-;; args: exitcode
-;; vars: none
-;; returns: nothing
-sys_exit:
-  mov eax, SYS_EXIT
-  mov ebx, [esp+4]
+  push ebx
+
+  mov eax, [FIRST_OF_TWO_ARGS]
+  mov ebx, [SECOND_OF_TWO_ARGS]
   call kernel
+
+  pop ebx
+
+  mov esp, ebp
+  pop ebp
+  ret
+
+
+;; args: 3 items on the stack
+;; returns:
+;; - eax: result value of syscall
+sys_call_3:
+  push ebp
+  mov ebp, esp
+
+  push ebx
+  push ecx
+
+  mov eax, [FIRST_OF_THREE_ARGS]
+  mov ebx, [SECOND_OF_THREE_ARGS]
+  mov ecx, [THIRD_OF_THREE_ARGS]
+  call kernel
+
+  pop ecx
+  pop ebx
+
+  mov esp, ebp
+  pop ebp
+  ret
+
+
+;; args: 4 items on the stack
+;; returns:
+;; - eax: result value of syscall
+sys_call_4:
+  push ebp
+  mov ebp, esp
+
+  push ebx
+  push ecx
+  push edx
+
+  mov eax, [FIRST_OF_FOUR_ARGS]
+  mov ebx, [SECOND_OF_FOUR_ARGS]
+  mov ecx, [THIRD_OF_FOUR_ARGS]
+  mov edx, [FOURTH_OF_FOUR_ARGS]
+  call kernel
+
+  pop edx
+  pop ecx
+  pop ebx
+
+  mov esp, ebp
+  pop ebp
+  ret
+
+
+;; args:
+;; - exitcode
+;; does not return
+sys_exit:
+  push ebp
+  mov ebp, esp
+
+  push SYS_EXIT
+  push DWORD [SINGLE_ARG]
+  call sys_call_2
   ; no ret
 
 
-;; args: string, length
-;; vars: none
+;; args:
+;; - string,
+;; - string length
 ;; returns: n bytes written
 write_stderr:
   push ebp
   mov ebp, esp
 
-  mov eax, SYS_WRITE
-  mov ebx, STDERR
-  mov ecx, [FIRST_OF_TWO_ARGS]
-  mov edx, [SECOND_OF_TWO_ARGS]
-  call kernel
+  push SYS_WRITE
+  push STDERR
+  push DWORD [FIRST_OF_TWO_ARGS]
+  push DWORD [SECOND_OF_TWO_ARGS]
+  call sys_call_4
+  add esp, 4*4
 
   mov esp, ebp
   pop ebp
   ret
 
 
-;; args: string, length
-;; vars: none
+;; args:
+;; - string
+;; - string length
 ;; returns: n bytes written
 write_stdout:
   push ebp
   mov ebp, esp
 
-  mov eax, SYS_WRITE
-  mov ebx, STDOUT
-  mov ecx, [FIRST_OF_TWO_ARGS]
-  mov edx, [SECOND_OF_TWO_ARGS]
-  call kernel
+  push SYS_WRITE
+  push STDOUT
+  push DWORD [FIRST_OF_TWO_ARGS]
+  push DWORD [SECOND_OF_TWO_ARGS]
+  call sys_call_4
+  add esp, 4*4
 
   mov esp, ebp
   pop ebp
   ret
 
 
-;; args: string, length
-;; vars: none
-;; returns: nothing
+;; args:
+;; - string
+;; - string length
+;; does not return
 print_error_and_exit:
   push ebp
   mov ebp, esp
@@ -127,17 +208,19 @@ print_error_and_exit:
   ; no ret
 
 
-;; args: filename
-;; vars: none
-;; returns: file descriptor (eax) if success
+;; args:
+;; - zero terminated filename
+;; returns on success:
+;; - eax: file descriptor
 sys_open_read_only:
   push ebp
   mov ebp, esp
 
-  mov eax, SYS_OPEN
-  mov ebx, [SINGLE_ARG]
-  mov ecx, READ_ONLY
-  call kernel
+  push SYS_OPEN
+  push DWORD [SINGLE_ARG]
+  push READ_ONLY
+  call sys_call_3
+  add esp, 3*4
 
   cmp eax, 0
   jge .success
@@ -152,18 +235,22 @@ sys_open_read_only:
   ret
 
 
-;; args: file descriptor, destination, n_bytes
-;; vars: none
-;; returns: n bytes read (eax) if success
+;; args:
+;; - file descriptor
+;; - destination buffer
+;; - buffer size
+;; returns on success:
+;; - eax: n bytes read
 sys_read:
   push ebp
   mov ebp, esp
 
-  mov eax, SYS_READ
-  mov ebx, [FIRST_OF_THREE_ARGS]
-  mov ecx, [SECOND_OF_THREE_ARGS]
-  mov edx, [THIRD_OF_THREE_ARGS]
-  call kernel
+  push SYS_READ
+  push DWORD [FIRST_OF_THREE_ARGS]
+  push DWORD [SECOND_OF_THREE_ARGS]
+  push DWORD [THIRD_OF_THREE_ARGS]
+  call sys_call_4
+  add esp, 4*4
 
   cmp eax, 0
   jge .success
@@ -178,67 +265,219 @@ sys_read:
   ret
 
 
-;; args: filename, buffer, bufsize
-;; vars: file descriptor, file size
-;; returns: filesize
+;; args:
+;; - zero terminated filename
+;; - destination buffer
+;; - buffer size
+;; vars:
+;; - filesize
+;; returns:
+;; - eax: n bytes written to buffer
 open_file_and_read:
   push ebp
   mov ebp, esp
-  sub esp, 2*4
+
+  sub esp, 1*4
 
   push DWORD [FIRST_OF_THREE_ARGS]
   call sys_open_read_only
   add esp, 1*4
-  mov [FIRST_VAR], eax
 
-  push DWORD [FIRST_VAR]
+  push eax
   push DWORD [SECOND_OF_THREE_ARGS]
   push DWORD [THIRD_OF_THREE_ARGS]
   call sys_read
   add esp, 3*4
-  mov [SECOND_VAR], eax
+  mov [FIRST_VAR], eax
 
-  mov esp, ebp
-  pop ebp
-  ret
+  add eax, [SECOND_OF_THREE_ARGS]
+  mov [eax], BYTE 0x0
 
+  mov eax, [FIRST_VAR]
 
-;; args: zero-terminated string, char
-;; vars: none
-;; registers:
-;; - edx: an iterator over the string
-;; - ebx: the char being counted
-;; - eax: the count
-;; returns count of item
-count_specific_char:
-  push ebp
-  mov ebp, esp
-
-  mov edx, [FIRST_OF_TWO_ARGS]
-  mov ebx, [SECOND_OF_TWO_ARGS]
-  xor eax, eax
-.loop:
-  cmp BYTE [edx], 0x0
-  je .end
-
-  cmp BYTE [edx], bl
-  jne .next
-  inc eax
-.next:
-  inc edx
-  jmp .loop
-.end:
   mov esp, ebp
   pop ebp
   ret
 
 
 ;; args:
-;; - buffer, a zero-terminated string, updated to reflect new value
+;; - integer
+;; returns:
+;; - eax: absolute value
+integer_abs:
+  push ebp
+  mov ebp, esp
+
+  push ecx
+
+  mov eax, [SINGLE_ARG]
+  mov ecx, eax
+  neg eax
+  cmovl eax, ecx
+
+  pop ecx
+
+  mov esp, ebp
+  pop ebp
+  ret
+
+
+;; args:
+;; - integer
+;; - output buffer
+;; - output buffer size
+;; returns:
+;; - eax: location in output buffer
+;; - ebx: byte length
+integer_to_string:
+  std
+
+  push ebp
+  mov ebp, esp
+
+  push ebx
+  push ecx
+  push edx
+
+  mov ebx, 0xCCCCCCCD
+  mov edi, [SECOND_OF_THREE_ARGS]
+  add edi, [THIRD_OF_THREE_ARGS]
+
+  push DWORD [FIRST_OF_THREE_ARGS]
+  call integer_abs
+  add esp, 1*4
+.loop:
+  mov ecx, eax
+
+  mul ebx
+  shr edx, 3
+
+  mov eax, edx
+
+  lea edx, [edx*4 + edx]
+  lea edx, [edx*2 - '0']
+  sub ecx, edx
+
+  push eax
+  mov eax, ecx
+  stosb
+  pop eax
+
+  test eax, eax
+  jnz .loop
+.end:
+  mov eax, [FIRST_OF_THREE_ARGS]
+  cmp eax, 0x0
+  jge .no_sign
+
+  mov al, '-'
+  stosb
+.no_sign:
+  mov eax, edi
+  inc eax
+
+  pop edx
+  pop ecx
+  pop ebx
+
+  mov esp, ebp
+  pop ebp
+  ret
+
+
+;; args:
+;; - integer
+;; vars:
+;; - start of integer
+;; - string char size, including 0xa
+;; returns:
+;; - eax: bytes written
+print_integer:
+  push ebp
+  mov ebp, esp
+
+  sub esp, 2*4
+
+  mov eax, output_buffer
+  add eax, output_bufsize
+  dec eax
+  mov BYTE [eax], 0xa
+
+  push DWORD [SINGLE_ARG]
+  push output_buffer
+  mov eax, output_bufsize
+  sub eax, 2
+  push eax
+  call integer_to_string
+  add esp, 3*4
+
+  mov [FIRST_VAR], eax
+  mov eax, output_buffer
+  add eax, output_bufsize
+  sub eax, [FIRST_VAR]
+
+  mov [SECOND_VAR], eax
+
+  push DWORD [FIRST_VAR]
+  push DWORD [SECOND_VAR]
+  call write_stdout
+  add esp, 2*4
+
+  mov esp, ebp
+  pop ebp
+  ret
+
+
+;; args:
+;; - zero-terminated string
+;; - char to count
+;; registers:
+;; - esi: an iterator over the string
+;; - ebx: the char being counted
+;; - eax: the count
+;; returns:
+;; - eax: count of char
+count_specific_char:
+  cld
+
+  push ebp
+  mov ebp, esp
+
+  push ebx
+  push ecx
+  push esi
+
+  mov esi, [FIRST_OF_TWO_ARGS]
+  mov ebx, [SECOND_OF_TWO_ARGS]
+  mov ecx, 0
+.loop:
+  lodsb
+  cmp al, 0x0
+  je .end
+
+  cmp al, bl
+  jne .next
+  inc ecx
+.next:
+  jmp .loop
+.end:
+  mov eax, ecx
+
+  pop esi
+  pop ecx
+  pop ebx
+
+  mov esp, ebp
+  pop ebp
+  ret
+
+
+;; args:
+;; - zero-terminated string
 ;; - current cardinal direction
 ;; returns:
-;; - eax: stores direction
-;; - ebx: stores new bufsize
+;; - eax: read direction
+;; - ebx: string after reading
 read_direction:
   push ebp
   mov ebp, esp
@@ -256,10 +495,10 @@ read_direction:
   call print_error_and_exit
   ; unreachable
 .left:
-  mov eax, [left_table+eax]
+  mov al, BYTE [left_table+eax]
   jmp .return
 .right:
-  mov eax, [right_table+eax]
+  mov al, BYTE [right_table+eax]
 .return:
   inc ebx
 
@@ -273,36 +512,54 @@ read_direction:
 ;; - eax: to return read value
 ;; - ebx: to return updated bufsize
 ;; - ecx: stores the read character
-;; returns distance
+;; vars:
+;; - read integer
+;; returns:
+;; - eax: distance
+;; - ebx: string after reading
 read_distance:
-  push ecx
+  cld
+
   push ebp
   mov ebp, esp
 
-  xor ecx, ecx
-  xor eax, eax
-  mov ebx, [SINGLE_ARG+ONE_REGISTER_PUSHED]
+  sub esp, 1*4
 
+  push ecx
+  push esi
+
+  mov DWORD [FIRST_VAR], 0
+  mov esi, [SINGLE_ARG]
+  mov ecx, 0
 .loop:
-  cmp BYTE [ebx], 0x0           ; check end conditions
-  je .end
-  cmp BYTE [ebx], ','
-  je .end
+  lodsb
+  sub al, '0'
+  cmp al, 0
+  jl .end
 
-  imul eax, 10                  ; eax = eax*10 + (ecx-'0')
-  mov BYTE cl, [ebx]
-  sub ecx, '0'
+  mov cl, al
+  mov eax, [FIRST_VAR]
+  imul eax, 10
   add eax, ecx
-.next:
-  inc ebx
+  mov DWORD [FIRST_VAR], eax
+
   jmp .loop
 .end:
+  mov ebx, esi
+  mov eax, [FIRST_VAR]
+
+  pop esi
+  pop ecx
+
   mov esp, ebp
   pop ebp
-  pop ecx
   ret
 
 
+;; args:
+;; - zero terminated string
+;; returns:
+;; - eax: string after reading
 read_whitespace:
   push ebp
   mov ebp, esp
@@ -311,6 +568,8 @@ read_whitespace:
 
 .loop:
   cmp BYTE [eax], ' '
+  je .next
+  cmp BYTE [eax], 0xa
   je .next
   cmp BYTE [eax], ','
   je .next
@@ -324,53 +583,80 @@ read_whitespace:
   ret
 
 
-;; args: zero-terminated string, n_items
+;; args:
+;; - zero-terminated string
+;; - n_items
 ;; vars:
 ;; - direction
 ;; - x value
 ;; - y value
-;; returns sum of x and y value
+;; - last read distance
+;; returns:
+;; - eax: sum of x and y value
 day1_part1:
   push ebp
   mov ebp, esp
 
-  sub esp, 3*4
+  sub esp, 4*4
+  push ebx
+  push edx
+
   mov DWORD [FIRST_VAR], NORTH
   mov DWORD [SECOND_VAR], 0
   mov DWORD [THIRD_VAR], 0
 
+  mov ecx, [SECOND_OF_TWO_ARGS]
   mov edx, [FIRST_OF_TWO_ARGS]
-
 .loop:
-  push edx                      ; read direction, store in [FIRST_VAR]
+  push edx                      ; read direction
   push DWORD [FIRST_VAR]
   call read_direction
+  add esp, 2*4
   mov edx, ebx
   mov [FIRST_VAR], eax
-  add esp, 2*4
 
-  push edx                      ; read distance, keep in eax
+  push edx                      ; read distance
   call read_distance
   mov edx, ebx
-;; TODO: read distance
   add esp, 1*4
+  mov [FOURTH_VAR], eax
 
-;; determine which axis will be modified, something that flips between 0 and 1?
-;; determine modification 
+  mov eax, [FIRST_VAR]
+  mov eax, [direction_x_table+(eax*4)]
+  mov ebx, [FOURTH_VAR]
+  imul eax, ebx
+  add eax, [SECOND_VAR]
+  mov [SECOND_VAR], eax
+
+  mov eax, [FIRST_VAR]
+  mov eax, [direction_y_table+(eax*4)]
+  mov ebx, [FOURTH_VAR]
+  imul eax, ebx
+  add eax, [THIRD_VAR]
+  mov [THIRD_VAR], eax
 
   push edx
   call read_whitespace
-  cmp eax, edx
-  je .end                       ; we're at EOS
-
   mov edx, eax
-  push eax
-  call sys_exit
+  add esp, 1*4
 .next:
+  dec ecx
+  cmp ecx, 0
+  je .end
   jmp .loop
 .end:
-  ; mov eax, ecx
-  ; add eax, edx
+  pop edx
+  pop ebx
+
+  push DWORD [SECOND_VAR]
+  call integer_abs
+  mov DWORD [SECOND_VAR], eax
+  push DWORD [THIRD_VAR]
+  call integer_abs
+  mov DWORD [THIRD_VAR], eax
+
+  mov eax, [SECOND_VAR]
+  add eax, [THIRD_VAR]
 
   mov esp, ebp
   pop ebp
@@ -393,10 +679,10 @@ _start:
   add esp, 3*4
   mov [FIRST_VAR], eax
 
-  push input_buffer             ; print contents
-  push DWORD [FIRST_VAR]
-  call write_stdout
-  add esp, 2*4
+  ; push input_buffer             ; print contents
+  ; push DWORD [FIRST_VAR]
+  ; call write_stdout
+  ; add esp, 2*4
 
   push input_buffer             ; count items
   push ','
@@ -408,8 +694,13 @@ _start:
   push input_buffer
   push DWORD [SECOND_VAR]
   call day1_part1
+  add esp, 2*4
 
-  xor eax, eax
+  push eax
+  call print_integer
+  add esp, 1*4
+
+  mov eax, 0
   push eax
   call sys_exit
   ; no ret
