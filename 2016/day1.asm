@@ -316,7 +316,7 @@ integer_abs:
   mov eax, [SINGLE_ARG]
   mov ecx, eax
   neg eax
-  cmovl eax, ecx
+  cmovl eax, ecx                ; if eax is negative, replace with positive
 
   pop ecx
 
@@ -333,7 +333,7 @@ integer_abs:
 ;; - eax: location in output buffer
 ;; - ebx: byte length
 integer_to_string:
-  std
+  std                           ; decreasing edi for every stosb
 
   push ebp
   mov ebp, esp
@@ -369,7 +369,7 @@ integer_to_string:
   test eax, eax
   jnz .loop
 .end:
-  mov eax, [FIRST_OF_THREE_ARGS]
+  mov eax, [FIRST_OF_THREE_ARGS] ; print '-' if input was negative
   cmp eax, 0x0
   jge .no_sign
 
@@ -455,12 +455,12 @@ count_specific_char:
   mov ecx, 0
 .loop:
   lodsb
-  cmp al, 0x0
+  cmp al, 0x0                   ; test end-of-string
   je .end
 
   cmp al, bl
   jne .next
-  inc ecx
+  inc ecx                       ; increase count
 .next:
   jmp .loop
 .end:
@@ -565,9 +565,9 @@ read_distance:
   lodsb
   sub al, '0'
   cmp al, 0
-  jl .end
+  jl .end                       ; expected non-digits are < '0'
 
-  mov cl, al
+  mov cl, al                    ; distance += 10*distance + cl
   mov eax, [FIRST_VAR]
   imul eax, 10
   add eax, ecx
@@ -599,7 +599,7 @@ read_whitespace:
   cmp al, 0x0
   jmp .end
 
-  cmp al, '0'
+  cmp al, '0'                   ; all whitespace chars are < '0'
   jge .toofar
 
   jmp .loop
@@ -646,27 +646,23 @@ day1_part1:
   call read_distance            ; read distance
   mov [FOURTH_VAR], eax
 
-  mov eax, [FIRST_VAR]
+  mov eax, [FIRST_VAR]          ; update x position
   mov eax, [direction_x_table+(eax*4)]
   mov ebx, [FOURTH_VAR]
   imul eax, ebx
   add eax, [SECOND_VAR]
   mov [SECOND_VAR], eax
 
-  mov eax, [FIRST_VAR]
+  mov eax, [FIRST_VAR]          ; update y position
   mov eax, [direction_y_table+(eax*4)]
   mov ebx, [FOURTH_VAR]
   imul eax, ebx
   add eax, [THIRD_VAR]
   mov [THIRD_VAR], eax
 
-  call read_whitespace
-.next:
-  dec ecx
-  cmp ecx, 0
-  je .end
+  call read_whitespace          ; read until next entry
 
-  jmp .loop
+  loop .loop
 .end:
   push DWORD [SECOND_VAR]
   push DWORD [THIRD_VAR]
@@ -712,7 +708,7 @@ calculate_grid_location:
 ;; - y position
 ;; - memory location
 ;; returns:
-;; - eax of first path already covered, if any.
+;; - eax: distance to origin, if any
 trace_path_in_grid:
   push ebp
   mov ebp, esp
@@ -727,32 +723,32 @@ trace_path_in_grid:
   mov [SECOND_VAR], eax
   mov ecx, [FOURTH_OF_FOUR_ARGS]
 .loop:
-  push DWORD [FIRST_VAR]
+  push DWORD [FIRST_VAR]        ; calculate byte in grid
   push DWORD [SECOND_VAR]
   call calculate_grid_location
   add esp, 2*4
   mov [THIRD_VAR], eax
 
-  cmp BYTE [eax], 0
+  cmp BYTE [eax], 0             ; test if byte was previously set
   jne .found
-  mov BYTE [eax], 0x1
+  mov BYTE [eax], 0x1           ; set it now
 
-  mov eax, [FIRST_OF_FOUR_ARGS]
+  mov eax, [FIRST_OF_FOUR_ARGS] ; update x position
   mov eax, [direction_x_table+(eax*4)]
   add eax, [FIRST_VAR]
   mov [FIRST_VAR], eax
 
-  mov eax, [FIRST_OF_FOUR_ARGS]
+  mov eax, [FIRST_OF_FOUR_ARGS] ; update y position
   mov eax, [direction_y_table+(eax*4)]
   add eax, [SECOND_VAR]
   mov [SECOND_VAR], eax
 
   loop .loop
 
-  mov eax, 0
+  mov eax, 0                    ; nothing found, return 0
   jmp .end
 .found:
-  push DWORD [FIRST_VAR]
+  push DWORD [FIRST_VAR]        ; result found, return distance to origin
   push DWORD [SECOND_VAR]
   call distance_to_origin
   add esp, 2*4
@@ -799,37 +795,33 @@ day1_part2:
   call read_distance            ; read distance
   mov [FOURTH_VAR], eax
 
-  push DWORD [FIRST_VAR]
+  push DWORD [FIRST_VAR]        ; trace path in grid
   push DWORD [SECOND_VAR]
   push DWORD [THIRD_VAR]
   push DWORD [FOURTH_VAR]
   call trace_path_in_grid
   add esp, 4*4
 
-  cmp eax, 0
+  cmp eax, 0                    ; test if value was returned
   jne .end
 
-  mov eax, [FIRST_VAR]
+  mov eax, [FIRST_VAR]          ; update x position
   mov eax, [direction_x_table+(eax*4)]
   mov ebx, [FOURTH_VAR]
   imul eax, ebx
   add eax, [SECOND_VAR]
   mov [SECOND_VAR], eax
 
-  mov eax, [FIRST_VAR]
+  mov eax, [FIRST_VAR]          ; update y position
   mov eax, [direction_y_table+(eax*4)]
   mov ebx, [FOURTH_VAR]
   imul eax, ebx
   add eax, [THIRD_VAR]
   mov [THIRD_VAR], eax
 
-  call read_whitespace
-.next:
-  dec ecx
-  cmp ecx, 0
-  je .end
+  call read_whitespace          ; read until next entry
 
-  jmp .loop
+  loop .loop
 .end:
   pop edx
   pop ecx
@@ -841,7 +833,9 @@ day1_part2:
 
 
 ;; args: none
-;; vars: size of input file, item count
+;; vars:
+;; - size of input file
+;; - item count
 ;; returns: nothing
 _start:
   push ebp
@@ -856,16 +850,11 @@ _start:
   add esp, 3*4
   mov [FIRST_VAR], eax
 
-  ; push input_buffer             ; print contents
-  ; push DWORD [FIRST_VAR]
-  ; call write_stdout
-  ; add esp, 2*4
-
-  push input_buffer             ; count items
+  push input_buffer             ; count ','
   push ','
   call count_specific_char
   add esp, 2*4
-  add eax, 1
+  add eax, 1                    ; item count is ','-count + 1
   mov [SECOND_VAR], eax
 
   push input_buffer             ; part 1
