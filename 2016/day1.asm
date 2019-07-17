@@ -39,20 +39,23 @@ WEST      equ 2
 EAST      equ 3
 
 DIV_10_CONSTANT equ 0xCCCCCCCD
+GRID_WIDTH equ 500
+
 
 section .bss
   input_buffer resb 1024
   input_bufsize equ $ - input_buffer
   output_buffer resb 1024
   output_bufsize equ $ - output_buffer
+  grid resb GRID_WIDTH * GRID_WIDTH
 
 section .data
   input_file db 'data/day1.txt',0x0
   sys_open_error db 'Input file could not be opened, does it exist?',0xa,0x0
   sys_open_error_len equ $ - sys_open_error ; TODO calculate later during runtime?
-  sys_read_error db 'Opened file could not be read.',0xa0,0x0
+  sys_read_error db 'Opened file could not be read.',0xa,0x0
   sys_read_error_len equ $ - sys_read_error
-  unknown_direction_error db 'Unknown direction error.',0xa0,0x0
+  unknown_direction_error db 'Unknown direction error.',0xa,0x0
   unknown_direction_error_len equ $ - unknown_direction_error
 
   left_table db WEST, EAST, SOUTH, NORTH
@@ -339,7 +342,7 @@ integer_to_string:
   push ecx
   push edx
 
-  mov ebx, 0xCCCCCCCD
+  mov ebx, DIV_10_CONSTANT
   mov edi, [SECOND_OF_THREE_ARGS]
   add edi, [THIRD_OF_THREE_ARGS]
 
@@ -471,23 +474,55 @@ count_specific_char:
   pop ebp
   ret
 
-
 ;; args:
-;; - zero-terminated string
-;; - current cardinal direction
+;; - x position
+;; - y position
+;; vars:
+;; - sum
 ;; returns:
-;; - eax: read direction
-;; - ebx: string after reading
-read_direction:
+;; - eax: abs(x)+abs(y)
+distance_to_origin:
   push ebp
   mov ebp, esp
 
-  mov ebx, [FIRST_OF_TWO_ARGS]
-  mov eax, [SECOND_OF_TWO_ARGS]
+  sub esp, 1*4
 
-  cmp BYTE [ebx], 'L'
+  push DWORD [FIRST_OF_TWO_ARGS]
+  call integer_abs
+  add esp, 1*4
+  mov [FIRST_VAR], eax
+
+  push DWORD [SECOND_OF_TWO_ARGS]
+  call integer_abs
+  add esp, 1*4
+  add eax, [FIRST_VAR]
+
+  mov esp, ebp
+  pop ebp
+  ret
+
+
+;; args:
+;; - esi: zero-terminated string
+;; - current direction
+;; returns:
+;; - eax: updated direction
+;; - esi: string after reading
+read_direction:
+  cld
+
+  push ebp
+  mov ebp, esp
+
+  push ebx
+
+  mov eax, 0
+  mov ebx, [SINGLE_ARG]
+
+  lodsb
+  cmp al, 'L'
   je .left
-  cmp BYTE [ebx], 'R'
+  cmp al, 'R'
   je .right
 
   push DWORD unknown_direction_error
@@ -495,28 +530,25 @@ read_direction:
   call print_error_and_exit
   ; unreachable
 .left:
-  mov al, BYTE [left_table+eax]
+  mov al, BYTE [left_table+ebx]
   jmp .return
 .right:
-  mov al, BYTE [right_table+eax]
+  mov al, BYTE [right_table+ebx]
 .return:
-  inc ebx
+  pop ebx
 
   mov esp, ebp
   pop ebp
   ret
 
 ;; args:
-;; - zero-terminated string
+;; - esi: zero-terminated string
 ;; registers:
 ;; - eax: to return read value
-;; - ebx: to return updated bufsize
-;; - ecx: stores the read character
 ;; vars:
 ;; - read integer
 ;; returns:
 ;; - eax: distance
-;; - ebx: string after reading
 read_distance:
   cld
 
@@ -526,10 +558,8 @@ read_distance:
   sub esp, 1*4
 
   push ecx
-  push esi
 
   mov DWORD [FIRST_VAR], 0
-  mov esi, [SINGLE_ARG]
   mov ecx, 0
 .loop:
   lodsb
@@ -545,10 +575,8 @@ read_distance:
 
   jmp .loop
 .end:
-  mov ebx, esi
   mov eax, [FIRST_VAR]
 
-  pop esi
   pop ecx
 
   mov esp, ebp
@@ -557,26 +585,26 @@ read_distance:
 
 
 ;; args:
-;; - zero terminated string
+;; - esi: zero terminated string
 ;; returns:
-;; - eax: string after reading
+;; - esi: string after reading
 read_whitespace:
+  cld
+
   push ebp
   mov ebp, esp
 
-  mov eax, [SINGLE_ARG]
-
 .loop:
-  cmp BYTE [eax], ' '
-  je .next
-  cmp BYTE [eax], 0xa
-  je .next
-  cmp BYTE [eax], ','
-  je .next
+  lodsb
+  cmp al, 0x0
   jmp .end
-.next:
-  inc eax
+
+  cmp al, '0'
+  jge .toofar
+
   jmp .loop
+.toofar:
+  dec esi
 .end:
   mov esp, ebp
   pop ebp
@@ -585,40 +613,37 @@ read_whitespace:
 
 ;; args:
 ;; - zero-terminated string
-;; - n_items
+;; - n items
 ;; vars:
 ;; - direction
 ;; - x value
 ;; - y value
 ;; - last read distance
 ;; returns:
-;; - eax: sum of x and y value
+;; - eax: distance of final place to origin
 day1_part1:
   push ebp
   mov ebp, esp
 
   sub esp, 4*4
   push ebx
+  push ecx
   push edx
 
   mov DWORD [FIRST_VAR], NORTH
   mov DWORD [SECOND_VAR], 0
   mov DWORD [THIRD_VAR], 0
 
+  mov esi, [FIRST_OF_TWO_ARGS]
   mov ecx, [SECOND_OF_TWO_ARGS]
-  mov edx, [FIRST_OF_TWO_ARGS]
+
 .loop:
-  push edx                      ; read direction
-  push DWORD [FIRST_VAR]
+  push DWORD [FIRST_VAR]        ; read direction
   call read_direction
-  add esp, 2*4
-  mov edx, ebx
+  add esp, 1*4
   mov [FIRST_VAR], eax
 
-  push edx                      ; read distance
-  call read_distance
-  mov edx, ebx
-  add esp, 1*4
+  call read_distance            ; read distance
   mov [FOURTH_VAR], eax
 
   mov eax, [FIRST_VAR]
@@ -635,28 +660,180 @@ day1_part1:
   add eax, [THIRD_VAR]
   mov [THIRD_VAR], eax
 
-  push edx
   call read_whitespace
-  mov edx, eax
-  add esp, 1*4
 .next:
   dec ecx
   cmp ecx, 0
   je .end
+
+  jmp .loop
+.end:
+  push DWORD [SECOND_VAR]
+  push DWORD [THIRD_VAR]
+  call distance_to_origin
+  add esp, 2*4
+
+  pop edx
+  pop ecx
+  pop ebx
+
+  mov esp, ebp
+  pop ebp
+  ret
+
+
+;; args:
+;; - x position
+;; - y position
+;; returns:
+;; - eax: memory location in grid
+calculate_grid_location:
+  push ebp
+  mov ebp, esp
+
+  mov eax, GRID_WIDTH / 2
+  add eax, [FIRST_OF_TWO_ARGS]
+  imul eax, GRID_WIDTH
+  add eax, [SECOND_OF_TWO_ARGS]
+  add eax, GRID_WIDTH / 2
+  add eax, grid
+
+  mov esp, ebp
+  pop ebp
+  ret
+
+;; args:
+;; - direction
+;; - x position
+;; - y position
+;; - distance
+;; vars:
+;; - x position
+;; - y position
+;; - memory location
+;; returns:
+;; - eax of first path already covered, if any.
+trace_path_in_grid:
+  push ebp
+  mov ebp, esp
+
+  sub esp, 3*4
+
+  push ecx
+
+  mov eax, [SECOND_OF_FOUR_ARGS]
+  mov [FIRST_VAR], eax
+  mov eax, [THIRD_OF_FOUR_ARGS]
+  mov [SECOND_VAR], eax
+  mov ecx, [FOURTH_OF_FOUR_ARGS]
+.loop:
+  push DWORD [FIRST_VAR]
+  push DWORD [SECOND_VAR]
+  call calculate_grid_location
+  add esp, 2*4
+  mov [THIRD_VAR], eax
+
+  cmp BYTE [eax], 0
+  jne .found
+  mov BYTE [eax], 0x1
+
+  mov eax, [FIRST_OF_FOUR_ARGS]
+  mov eax, [direction_x_table+(eax*4)]
+  add eax, [FIRST_VAR]
+  mov [FIRST_VAR], eax
+
+  mov eax, [FIRST_OF_FOUR_ARGS]
+  mov eax, [direction_y_table+(eax*4)]
+  add eax, [SECOND_VAR]
+  mov [SECOND_VAR], eax
+
+  loop .loop
+
+  mov eax, 0
+  jmp .end
+.found:
+  push DWORD [FIRST_VAR]
+  push DWORD [SECOND_VAR]
+  call distance_to_origin
+  add esp, 2*4
+.end:
+  pop ecx
+
+  mov esp, ebp
+  pop ebp
+  ret
+
+
+;; args:
+;; - zero terminated string
+;; - n items
+;; vars:
+;; - direction
+;; - x value
+;; - y value
+;; - last read distance
+;; returns:
+;; - eax: distance of first twice visited place
+day1_part2:
+  push ebp
+  mov ebp, esp
+
+  sub esp, 4*4
+  push ebx
+  push ecx
+  push edx
+
+  mov DWORD [FIRST_VAR], NORTH
+  mov DWORD [SECOND_VAR], 0
+  mov DWORD [THIRD_VAR], 0
+
+  mov esi, [FIRST_OF_TWO_ARGS]
+  mov ecx, [SECOND_OF_TWO_ARGS]
+
+.loop:
+  push DWORD [FIRST_VAR]        ; read direction
+  call read_direction
+  add esp, 1*4
+  mov [FIRST_VAR], eax
+
+  call read_distance            ; read distance
+  mov [FOURTH_VAR], eax
+
+  push DWORD [FIRST_VAR]
+  push DWORD [SECOND_VAR]
+  push DWORD [THIRD_VAR]
+  push DWORD [FOURTH_VAR]
+  call trace_path_in_grid
+  add esp, 4*4
+
+  cmp eax, 0
+  jne .end
+
+  mov eax, [FIRST_VAR]
+  mov eax, [direction_x_table+(eax*4)]
+  mov ebx, [FOURTH_VAR]
+  imul eax, ebx
+  add eax, [SECOND_VAR]
+  mov [SECOND_VAR], eax
+
+  mov eax, [FIRST_VAR]
+  mov eax, [direction_y_table+(eax*4)]
+  mov ebx, [FOURTH_VAR]
+  imul eax, ebx
+  add eax, [THIRD_VAR]
+  mov [THIRD_VAR], eax
+
+  call read_whitespace
+.next:
+  dec ecx
+  cmp ecx, 0
+  je .end
+
   jmp .loop
 .end:
   pop edx
+  pop ecx
   pop ebx
-
-  push DWORD [SECOND_VAR]
-  call integer_abs
-  mov DWORD [SECOND_VAR], eax
-  push DWORD [THIRD_VAR]
-  call integer_abs
-  mov DWORD [THIRD_VAR], eax
-
-  mov eax, [SECOND_VAR]
-  add eax, [THIRD_VAR]
 
   mov esp, ebp
   pop ebp
@@ -691,9 +868,18 @@ _start:
   add eax, 1
   mov [SECOND_VAR], eax
 
-  push input_buffer
+  push input_buffer             ; part 1
   push DWORD [SECOND_VAR]
   call day1_part1
+  add esp, 2*4
+
+  push eax
+  call print_integer
+  add esp, 1*4
+
+  push input_buffer             ; part 2
+  push DWORD [SECOND_VAR]
+  call day1_part2
   add esp, 2*4
 
   push eax
