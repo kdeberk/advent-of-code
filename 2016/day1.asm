@@ -403,10 +403,10 @@ _start:
 
   sub esp, 2*4
 
-  push input_file               ; open file
+  push input_file               ; read input file
   push input_buffer
   push input_bufsize
-  call open_file_and_read
+  call read_file
   add esp, 3*4
   mov [FIRST_VAR], eax
 

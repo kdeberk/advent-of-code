@@ -18,6 +18,12 @@ _start:
   push ebp
   mov ebp, esp
 
+  push input_file               ; read input file
+  push input_buffer
+  push input_bufsize
+  call read_file
+  add esp, 3*4
+  mov [FIRST_VAR], eax
 
   mov eax, 0
   push eax

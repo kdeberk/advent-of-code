@@ -3,8 +3,8 @@
 
 %include "constants.asm"
 
-
 ;; System calls
+SYS_CLOSE equ 6
 SYS_EXIT  equ 1
 SYS_OPEN  equ 5
 SYS_READ  equ 3
@@ -24,7 +24,8 @@ section .data
   sys_open_error_len equ $ - sys_open_error ; TODO calculate later during runtime?
   sys_read_error db 'Opened file could not be read.',0xa,0x0
   sys_read_error_len equ $ - sys_read_error
-
+  sys_close_error db 'Could not close file.',0xa,0x0
+  sys_close_error_len equ $ - sys_close_error
 
 section .text
 
@@ -95,6 +96,23 @@ sys_call_4:
   pop edx
   pop ecx
   pop ebx
+
+  mov esp, ebp
+  pop ebp
+  ret
+
+
+;; args:
+;; - file descriptor
+;; returns:
+;; - error code
+sys_close:
+  push ebp
+  mov ebp, esp
+
+  push SYS_CLOSE
+  push DWORD [SINGLE_ARG]
+  call sys_call_2
 
   mov esp, ebp
   pop ebp
@@ -234,30 +252,37 @@ sys_read:
 ;; - destination buffer
 ;; - buffer size
 ;; vars:
-;; - filesize
+;; - file descriptor
+;; - file size
 ;; returns:
 ;; - eax: n bytes written to buffer
-open_file_and_read:
+read_file:
   push ebp
   mov ebp, esp
 
-  sub esp, 1*4
+  sub esp, 2*4
 
   push DWORD [FIRST_OF_THREE_ARGS]
   call sys_open_read_only
   add esp, 1*4
+
+  mov [FIRST_VAR], eax
 
   push eax
   push DWORD [SECOND_OF_THREE_ARGS]
   push DWORD [THIRD_OF_THREE_ARGS]
   call sys_read
   add esp, 3*4
-  mov [FIRST_VAR], eax
+  mov [SECOND_VAR], eax
 
-  add eax, [SECOND_OF_THREE_ARGS]
+  add eax, [SECOND_OF_THREE_ARGS] ; add 0x0 byte
   mov [eax], BYTE 0x0
 
-  mov eax, [FIRST_VAR]
+  push DWORD [FIRST_VAR]
+  call sys_close
+  add esp, 1*4
+
+  mov eax, [SECOND_VAR]
 
   mov esp, ebp
   pop ebp
