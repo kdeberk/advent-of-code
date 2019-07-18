@@ -1,7 +1,9 @@
 use std::collections::HashSet;
 
 fn part_1(changes: &Vec<i32>) -> i32 {
-    changes.iter().fold(0, |sum, change| sum + change)
+    changes
+        .iter()
+        .fold(0, |sum, change| sum + change)
 }
 
 fn part_2(changes: &Vec<i32>) -> i32 {
@@ -22,7 +24,10 @@ fn part_2(changes: &Vec<i32>) -> i32 {
 }
 
 pub fn solve(lines: Vec<String>) {
-    let changes = lines.iter().map(|line| line.parse().unwrap()).collect();
+    let changes = lines
+        .iter()
+        .map(|line| line.parse().unwrap())
+        .collect();
 
     println!("Day 1");
     println!("Part 1: {}", part_1(&changes));

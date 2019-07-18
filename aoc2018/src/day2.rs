@@ -1,25 +1,18 @@
 fn distance(str_a: &str, str_b: &str) -> usize {
-    let mut distance = 0;
-
-    for (char_a, char_b) in str_a.chars().zip(str_b.chars()) {
-        if char_a != char_b {
-            distance += 1;
-        }
-    }
-
-    distance
+    str_a
+        .chars()
+        .zip(str_b.chars())
+        .filter(|(char_a, char_b)| char_a != char_b)
+        .count()
 }
 
 fn common_chars(str_a: &str, str_b: &str) -> String {
-    let mut string = String::new();
-
-    for (char_a, char_b) in str_a.chars().zip(str_b.chars()) {
-        if char_a == char_b {
-            string.push(char_a)
-        }
-    }
-    
-    string
+    str_a
+        .chars()
+        .zip(str_b.chars())
+        .filter(|(char_a, char_b)| char_a == char_b)
+        .map(|(char_a, _char_b)| char_a)
+        .collect()
 }
 
 fn part_1(lines: &Vec<String>) -> i32 {
