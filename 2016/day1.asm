@@ -100,75 +100,6 @@ read_direction:
   pop ebp
   ret
 
-;; args:
-;; - esi: zero-terminated string
-;; registers:
-;; - eax: to return read value
-;; vars:
-;; - read integer
-;; returns:
-;; - eax: distance
-read_distance:
-  cld
-
-  push ebp
-  mov ebp, esp
-
-  sub esp, 1*4
-
-  push ecx
-
-  mov DWORD [FIRST_VAR], 0
-  mov ecx, 0
-.loop:
-  lodsb
-  sub al, '0'
-  cmp al, 0
-  jl .end                       ; expected non-digits are < '0'
-
-  mov cl, al                    ; distance += 10*distance + cl
-  mov eax, [FIRST_VAR]
-  imul eax, 10
-  add eax, ecx
-  mov DWORD [FIRST_VAR], eax
-
-  jmp .loop
-.end:
-  mov eax, [FIRST_VAR]
-
-  pop ecx
-
-  mov esp, ebp
-  pop ebp
-  ret
-
-
-;; args:
-;; - esi: zero terminated string
-;; returns:
-;; - esi: string after reading
-read_whitespace:
-  cld
-
-  push ebp
-  mov ebp, esp
-
-.loop:
-  lodsb
-  cmp al, 0x0
-  jmp .end
-
-  cmp al, '0'                   ; all whitespace chars are < '0'
-  jge .toofar
-
-  jmp .loop
-.toofar:
-  dec esi
-.end:
-  mov esp, ebp
-  pop ebp
-  ret
-
 
 ;; args:
 ;; - zero-terminated string
@@ -202,7 +133,7 @@ day1_part1:
   add esp, 1*4
   mov [FIRST_VAR], eax
 
-  call read_distance            ; read distance
+  call read_integer             ; read distance
   mov [FOURTH_VAR], eax
 
   mov eax, [FIRST_VAR]          ; update x position
@@ -352,7 +283,7 @@ day1_part2:
   add esp, 1*4
   mov [FIRST_VAR], eax
 
-  call read_distance            ; read distance
+  call read_integer            ; read distance
   mov [FOURTH_VAR], eax
 
   push DWORD [FIRST_VAR]        ; trace path in grid
@@ -435,7 +366,6 @@ _start:
   call print_integer
   add esp, 1*4
 
-  mov eax, 0
-  push eax
+  push DWORD 0
   call sys_exit
   ; no ret

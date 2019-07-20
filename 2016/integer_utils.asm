@@ -8,6 +8,7 @@ DIV_10_CONSTANT equ 0xCCCCCCCD
 
 
 section .text
+
 ;; args:
 ;; - integer
 ;; returns:
@@ -46,6 +47,7 @@ integer_to_string:
   push ebx
   push ecx
   push edx
+  push edi
 
   mov ebx, DIV_10_CONSTANT
   mov edi, [SECOND_OF_THREE_ARGS]
@@ -84,9 +86,12 @@ integer_to_string:
   mov eax, edi
   inc eax
 
+  pop edi
   pop edx
   pop ecx
   pop ebx
+
+  cld                           ; TODO: pop original value of DF
 
   mov esp, ebp
   pop ebp
@@ -130,6 +135,56 @@ print_integer:
   push DWORD [SECOND_VAR]
   call write_stdout
   add esp, 2*4
+
+  mov esp, ebp
+  pop ebp
+  ret
+
+
+;; args:
+;; - esi: zero-terminated string
+;; vars:
+;; - read integer
+;; returns:
+;; - eax: read integer
+read_integer:
+  cld
+
+  push ebp
+  mov ebp, esp
+
+  sub esp, 1*4
+
+  push ecx
+
+  mov DWORD [FIRST_VAR], 0
+  mov ecx, 0
+.loop:
+  mov eax, 0
+
+  lodsb
+  cmp al, 0
+  je .end_of_stream
+
+  sub al, '0'
+  cmp al, 0
+  jl .return_integer              ; expected non-digits are < '0'
+
+  mov cl, al                    ; distance += 10*distance + cl
+  mov eax, [FIRST_VAR]
+  imul eax, 10
+  add eax, ecx
+  mov DWORD [FIRST_VAR], eax
+
+  jmp .loop
+.end_of_stream:
+  mov eax, 0
+  dec esi                       ; we read one byte too many
+  jmp .return
+.return_integer:
+  mov eax, [FIRST_VAR]
+.return:
+  pop ecx
 
   mov esp, ebp
   pop ebp

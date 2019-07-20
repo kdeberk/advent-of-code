@@ -208,7 +208,6 @@ _start:
   push eax
   call write_stdout
 
-  mov eax, 0
-  push eax
+  push DWORD 0
   call sys_exit
   ; no ret

@@ -49,4 +49,32 @@ count_specific_char:
   ret
 
 
+;; args:
+;; - esi: zero terminated string
+;; returns:
+;; - esi: string after reading
+read_whitespace:
+  cld
+
+  push ebp
+  mov ebp, esp
+
+.loop:
+  lodsb
+
+  cmp al, 0x0
+  je .end
+
+  cmp al, '0'                   ; all whitespace chars are < '0'
+  jge .toofar
+
+  jmp .loop
+.toofar:
+  dec esi
+.end:
+  mov esp, ebp
+  pop ebp
+  ret
+
+
 %endif
