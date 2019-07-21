@@ -29,7 +29,7 @@ section .text
 ;; returns:
 ;; - eax number of integers
 read_integers:
-  cld	
+  cld
 
   push ebp
   mov ebp, esp

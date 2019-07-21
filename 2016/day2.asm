@@ -46,7 +46,7 @@ current_button:
   mov ebp, esp
 
   push ebx
-  push ebx  
+  push ebx
 
   mov edx, 0
 

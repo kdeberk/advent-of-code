@@ -1,6 +1,8 @@
 %ifndef __CONSTANTS__
 %define __CONSTANTS__
 
+TRUE equ 1
+FALSE equ 0
 
 ;; Basic base pointer helpers
 %define SINGLE_ARG (ebp+8)

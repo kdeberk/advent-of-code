@@ -21,7 +21,7 @@ STDERR    equ 2
 
 section .data
   sys_open_error db 'Input file could not be opened, does it exist?',0xa,0x0
-  sys_open_error_len equ $ - sys_open_error ; TODO calculate later during runtime?
+  sys_open_error_len equ $ - sys_open_error
   sys_read_error db 'Opened file could not be read.',0xa,0x0
   sys_read_error_len equ $ - sys_read_error
   sys_close_error db 'Could not close file.',0xa,0x0
@@ -160,10 +160,18 @@ write_stdout:
   push ebp
   mov ebp, esp
 
+  mov eax, [FIRST_OF_TWO_ARGS]
+  push eax
+  mov eax, [SECOND_OF_TWO_ARGS]
+  push eax
+  call strlen_if_not_specified
+  add esp, 2*4
+
+.write:
   push SYS_WRITE
   push STDOUT
   push DWORD [FIRST_OF_TWO_ARGS]
-  push DWORD [SECOND_OF_TWO_ARGS]
+  push DWORD eax
   call sys_call_4
   add esp, 4*4
 
@@ -283,6 +291,60 @@ read_file:
   add esp, 1*4
 
   mov eax, [SECOND_VAR]
+
+  mov esp, ebp
+  pop ebp
+  ret
+
+
+;; args:
+;; - string, zero terminated if length equals -1
+;; - specified length
+;; returns:
+;; - specified length of actual length
+strlen_if_not_specified:
+  push ebp
+  mov ebp, esp
+
+  mov eax, [SECOND_OF_TWO_ARGS]
+  cmp eax, -1
+  jne .return
+
+  mov eax, [FIRST_OF_TWO_ARGS]
+  push eax
+  call strlen
+  add esp, 1*4
+
+.return:
+  mov esp, ebp
+  pop ebp
+  ret
+
+
+;; args:
+;; - zero terminated string
+;; returns:
+;; - eax: index of the first 0x0 byte found
+strlen:
+  cld
+
+  push ebp
+  mov ebp, esp
+
+  push esi
+
+  mov esi, [SINGLE_ARG]
+.loop:
+  lodsb
+  cmp al, 0x0
+  je .end
+  jmp .loop
+
+.end:
+  mov eax, esi
+  sub eax, [SINGLE_ARG]
+
+  pop esi
 
   mov esp, ebp
   pop ebp

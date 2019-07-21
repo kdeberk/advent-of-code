@@ -168,7 +168,9 @@ read_integer:
 
   sub al, '0'
   cmp al, 0
-  jl .return_integer              ; expected non-digits are < '0'
+  jl .return_integer            ; expected non-digits are < '0'
+  cmp al, 9
+  jg .return_integer            ; expected non-digits are > '9'
 
   mov cl, al                    ; distance += 10*distance + cl
   mov eax, [FIRST_VAR]
