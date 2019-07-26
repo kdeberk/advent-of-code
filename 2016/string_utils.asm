@@ -202,6 +202,39 @@ strcmp_len:
 
 
 ;; args:
+;; - first string
+;; - second string
+;; - length
+;; returns: nothing
+strcpy_len:
+  push ebp
+  mov ebp, esp
+
+  push eax
+  push ecx
+  push esi
+  push edi
+
+  mov ecx, [THIRD_OF_THREE_ARGS]
+  mov esi, [FIRST_OF_THREE_ARGS]
+  mov edi, [SECOND_OF_THREE_ARGS]
+
+.loop:
+  lodsb
+  stosb
+  loop .loop
+
+  pop edi
+  pop esi
+  pop ecx
+  pop eax
+
+  mov esp, ebp
+  pop ebp
+  ret
+
+
+;; args:
 ;; - zero terminated string
 ;; - char to find
 ;; returns:
@@ -232,5 +265,58 @@ str_index_of_char:
   pop ebp
   ret
 
+
+;; args:
+;; - string, zero terminated if length equals -1
+;; - specified length
+;; returns:
+;; - specified length of actual length
+strlen_if_not_specified:
+  push ebp
+  mov ebp, esp
+
+  mov eax, [SECOND_OF_TWO_ARGS]
+  cmp eax, -1
+  jne .return
+
+  mov eax, [FIRST_OF_TWO_ARGS]
+  push eax
+  call strlen
+  add esp, 1*4
+
+.return:
+  mov esp, ebp
+  pop ebp
+  ret
+
+
+;; args:
+;; - zero terminated string
+;; returns:
+;; - eax: index of the first 0x0 byte found
+strlen:
+  cld
+
+  push ebp
+  mov ebp, esp
+
+  push esi
+
+  mov esi, [SINGLE_ARG]
+.loop:
+  lodsb
+  cmp al, 0x0
+  je .end
+  jmp .loop
+
+.end:
+  mov eax, esi
+  sub eax, [SINGLE_ARG]
+
+  pop esi
+
+  mov esp, ebp
+  pop ebp
+  ret
 
 %endif

@@ -1,5 +1,5 @@
 %include "constants.asm"
-%include "syscalls.asm"
+%include "io.asm"
 %include "integer_utils.asm"
 %include "string_utils.asm"
 
@@ -13,10 +13,6 @@ EAST      equ 3
 GRID_WIDTH equ 500
 
 section .bss
-  input_buffer resb 1024
-  input_bufsize equ $ - input_buffer
-  output_buffer resb 1024
-  output_bufsize equ $ - output_buffer
   grid resb GRID_WIDTH * GRID_WIDTH
 
 section .data

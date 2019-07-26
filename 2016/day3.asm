@@ -1,5 +1,5 @@
 %include "constants.asm"
-%include "syscalls.asm"
+%include "io.asm"
 %include "integer_utils.asm"
 %include "string_utils.asm"
 
@@ -8,10 +8,6 @@ N_ROWS equ 1734
 N_ITEMS_PER_ROW equ 3
 
 section .bss
-  input_buffer resb 32768
-  input_bufsize equ $ - input_buffer
-  output_buffer resb 1024
-  output_bufsize equ $ - output_buffer
   numbers resd N_ROWS * N_ITEMS_PER_ROW
 
 section .data

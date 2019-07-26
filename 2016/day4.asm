@@ -1,14 +1,10 @@
 %include "constants.asm"
-%include "syscalls.asm"
+%include "io.asm"
 %include "integer_utils.asm"
 %include "string_utils.asm"
 %include "shiftcipher.asm"
 
 section .bss
-  input_buffer resb 65536
-  input_bufsize equ $ - input_buffer
-  output_buffer resb 1024
-  output_bufsize equ $ - output_buffer
   counts resb 26
   counts_len equ $ - counts
   checksum resb 5

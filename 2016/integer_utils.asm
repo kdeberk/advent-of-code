@@ -99,49 +99,6 @@ integer_to_string:
 
 
 ;; args:
-;; - integer
-;; vars:
-;; - start of integer
-;; - string char size, including 0xa
-;; returns:
-;; - eax: bytes written
-print_integer:
-  push ebp
-  mov ebp, esp
-
-  sub esp, 2*4
-
-  mov eax, output_buffer
-  add eax, output_bufsize
-  dec eax
-  mov BYTE [eax], 0xa
-
-  push DWORD [SINGLE_ARG]
-  push output_buffer
-  mov eax, output_bufsize
-  sub eax, 2
-  push eax
-  call integer_to_string
-  add esp, 3*4
-
-  mov [FIRST_VAR], eax
-  mov eax, output_buffer
-  add eax, output_bufsize
-  sub eax, [FIRST_VAR]
-
-  mov [SECOND_VAR], eax
-
-  push DWORD [FIRST_VAR]
-  push DWORD [SECOND_VAR]
-  call write_stdout
-  add esp, 2*4
-
-  mov esp, ebp
-  pop ebp
-  ret
-
-
-;; args:
 ;; - esi: zero-terminated string
 ;; vars:
 ;; - read integer
