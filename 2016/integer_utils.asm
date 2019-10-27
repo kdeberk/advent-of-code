@@ -37,7 +37,7 @@ integer_abs:
 ;; - output buffer size
 ;; returns:
 ;; - eax: location in output buffer
-;; - ebx: byte length
+;; N.B. doesn't support 0
 integer_to_string:
   std                           ; decreasing edi for every stosb
 
@@ -52,6 +52,7 @@ integer_to_string:
   mov ebx, DIV_10_CONSTANT
   mov edi, [SECOND_OF_THREE_ARGS]
   add edi, [THIRD_OF_THREE_ARGS]
+  sub edi, 1
 
   push DWORD [FIRST_OF_THREE_ARGS]
   call integer_abs
