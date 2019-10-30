@@ -56,7 +56,7 @@ run: <%= files.select(&:main_file?).map(&:target).join(' ') %>
 % end
 
 % files.select(&:main_file?).each do |file|
-<%= file.objectname %>: <%= file.name %> <%= file.includes.join(' ') %>
+<%= file.object %>: <%= file.name %> <%= file.includes.join(' ') %>
 	nasm $(NASM_FLAGS) <%= file.name %>
 % end
 

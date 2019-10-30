@@ -11,13 +11,13 @@ section .bss
   answer2_len equ $ - answer2
   plaintext resb 32
   plaintext_len equ $ - plaintext
+  integer resb 16
+  integer_len equ $ - integer
   hash resb 16                  ; 128 bits
 
 section .data
   input db "cxdnnyjw"
   input_len equ $ - input
-  integer times 16 db 0x0
-  integer_len equ $ - integer
   hexchars db "0123456789abcdef"
 
 section .text

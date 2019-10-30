@@ -319,4 +319,32 @@ strlen:
   pop ebp
   ret
 
+
+;; args:
+;; - destination
+;; - character
+;; - n times
+memset:
+  push ebp
+  mov ebp, esp
+
+  push ecx
+  push edi
+
+  mov edi, [FIRST_OF_THREE_ARGS]
+  mov al, [SECOND_OF_THREE_ARGS]
+  mov ecx, [THIRD_OF_THREE_ARGS]
+.loop:
+  stosb
+  dec ecx
+  cmp ecx, 0x0
+  jne .loop
+
+  pop edi
+  pop ecx
+
+  mov esp, ebp
+  pop ebp
+  ret
+
 %endif
