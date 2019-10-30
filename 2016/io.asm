@@ -80,6 +80,37 @@ write_stdout:
 
 
 ;; args:
+;; - string
+;; - string length
+;; returns: n bytes written
+write_stdout_append_newline:
+  push ebp
+  mov ebp, esp
+
+  push DWORD [FIRST_OF_TWO_ARGS] ; copy string to output buffer
+  push output_buffer
+  push DWORD [SECOND_OF_TWO_ARGS]
+  call strcpy_len
+  add esp, 3*4
+
+  mov eax, output_buffer        ; append newline
+  add eax, [SECOND_OF_TWO_ARGS]
+  mov BYTE [eax], 0xa
+
+  push STDOUT                   ; write
+  push output_buffer
+  mov eax, [SECOND_OF_TWO_ARGS]
+  add eax, 1
+  push eax
+  call sys_write
+  add esp, 3*4
+
+  mov esp, ebp
+  pop ebp
+  ret
+
+
+;; args:
 ;; - zero terminated filename
 ;; - destination buffer
 ;; - buffer size

@@ -17,7 +17,7 @@ N_BYTES_PER_QWORD equ 8
 %define CC (ebp-28)
 %define _DD (ebp-32)
 
-%macro F 5                      ; [AB k s i], F is in eax
+%macro sum 5                    ; [AB k s i], F is in eax
   add eax, [%1]                 ; a = b + ((a + F + X[k] + T[i])) <<< s
   add eax, [m+4*%3]
   add eax, [T+4*%5]
@@ -29,39 +29,39 @@ N_BYTES_PER_QWORD equ 8
   mov [%1], eax
 %endmacro
 
-%macro round_1 7                ; [ ABCD k s i]
+%macro round_1 7                ; [ABCD k s i]
   mov eax, [%2]                 ; F = (B∧C)∨(¬B∧D)
   and eax, [%3]
   mov ebx, [%2]
   not ebx
   and ebx, [%4]
-  or eax, ebx 
-  F %1, %2, %5, %6, %7
+  or eax, ebx
+  sum %1, %2, %5, %6, %7
 %endmacro
 
-%macro round_2 7                ; [ ABCD k s i]
+%macro round_2 7                ; [ABCD k s i]
   mov eax, [%4]                 ; F = (D∧B)∨(¬D∧C)
   and eax, [%2]
   mov ebx, [%4]
   not ebx
   and ebx, [%3]
   or eax, ebx
-  F %1, %2, %5, %6, %7  
+  sum %1, %2, %5, %6, %7
 %endmacro
 
-%macro round_3 7                ; [ ABCD k s i]
-  mov eax, [%2]                 ; F = B⊕C⊕D 
+%macro round_3 7                ; [ABCD k s i]
+  mov eax, [%2]                 ; F = B⊕C⊕D
   xor eax, [%3]
   xor eax, [%4]
-  F %1, %2, %5, %6, %7  
+  sum %1, %2, %5, %6, %7
 %endmacro
 
-%macro round_4 7                ; [ ABCD k s i]
+%macro round_4 7                ; [ABCD k s i]
   mov eax, [%4]                 ; F = C⊕(B∨(¬D))
   not eax
   or eax, [%2]
   xor eax, [%3]
-  F %1, %2, %5, %6, %7  
+  sum %1, %2, %5, %6, %7
 %endmacro
 
 
