@@ -7,5 +7,6 @@
 !*.rb
 !*.txt
 !*.test
+!*.go
 !.gitignore
 !*/
