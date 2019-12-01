@@ -6,6 +6,15 @@ import (
 	"strconv"
 )
 
+func calculateFuel(weight uint64) uint64 {
+	result := int64(weight) / 3 - 2
+	if result <= 0 {
+		return 0
+	} else {
+		return uint64(result)
+	}
+}
+
 func part1(filename string) (uint64, error) {
 	reader, err := line_reader.NewLineReader(filename)
 	if err != nil {
@@ -20,7 +29,7 @@ func part1(filename string) (uint64, error) {
 			fmt.Println(line + " could not be converted to an integer")
 			return 0, err
 		}
-		fuelsum += (weight / 3) - 2
+		fuelsum += calculateFuel(weight)
 	}
 	return fuelsum, nil
 }
@@ -40,16 +49,11 @@ func part2(filename string) (uint64, error) {
 			return 0, err
 		}
 
-		for {
-			fuel := int64(weight / 3) - 2
-			if fuel <= 0 {
-				break
-			}
-			fuelsum += uint64(fuel)
-			weight = uint64(fuel)
+		for 0 < weight {
+			fuel := calculateFuel(weight)
+			fuelsum += fuel
+			weight = fuel
 		}
-
-		fuelsum += weight / 3 - 2
 	}
 	return fuelsum, nil
 }
