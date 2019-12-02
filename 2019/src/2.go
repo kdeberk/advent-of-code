@@ -76,8 +76,6 @@ L:
 				return 0, err
 			} else if result == 19690720 {
 				break L
-			} else {
-				fmt.Printf("%d\n", result)
 			}
 			verb += 1
 		}
