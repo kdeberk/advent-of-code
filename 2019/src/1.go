@@ -7,7 +7,7 @@ import (
 )
 
 func calculateFuel(weight uint64) uint64 {
-	result := int64(weight) / 3 - 2
+	result := int64(weight)/3 - 2
 	if result <= 0 {
 		return 0
 	} else {
