@@ -29,6 +29,7 @@ func part1(filename string) (uint64, error) {
 			fmt.Println(line + " could not be converted to an integer")
 			return 0, err
 		}
+
 		fuelsum += calculateFuel(weight)
 	}
 	return fuelsum, nil
@@ -59,17 +60,17 @@ func part2(filename string) (uint64, error) {
 }
 
 func main() {
-	value1, err := part1("../data/1.txt")
+	answer1, err := part1("../data/1.txt")
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
-	fmt.Printf("Part 1: %d\n", value1)
+	fmt.Printf("Part 1: %d\n", answer1)
 
-	value2, err := part2("../data/1.txt")
+	answer2, err := part2("../data/1.txt")
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
-	fmt.Printf("Part 2: %d\n", value2)
+	fmt.Printf("Part 2: %d\n", answer2)
 }
