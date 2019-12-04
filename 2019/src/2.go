@@ -7,75 +7,77 @@ import (
 	"strings"
 )
 
-func run_program(program []string, noun uint64, verb uint64) (uint64, error) {
-	var instructions [1000]uint64
+type Machine [1000]uint64
 
-	for index, i := range program {
-		i, err := strconv.ParseUint(i, 10, 64)
-		if err != nil {
-			return 0, err
-		}
-		instructions[index] = i
+const (
+	Add      uint64 = 1
+	Multiply uint64 = 2
+	Halt     uint64 = 99
+)
+
+func loadMachine(filename string) (Machine, error) {
+	reader, err := line_reader.NewLineReader(filename)
+	if err != nil {
+		return Machine{}, err
 	}
 
-	instructions[1] = noun
-	instructions[2] = verb
+	line := reader.ReadLine()
+	numbers := strings.Split(line, ",")
+	machine := Machine{}
+	for index, i := range numbers {
+		i, err := strconv.ParseUint(i, 10, 64)
+		if err != nil {
+			return Machine{}, err
+		}
+		machine[index] = i
+	}
+
+	return machine, nil
+}
+
+func runMachine(start Machine, noun uint64, verb uint64) uint64 {
+	machine := start
+
+	machine[1] = noun
+	machine[2] = verb
 
 	var index int
-L:
-	for index <= len(instructions) {
-		opcode := instructions[index]
-		left := instructions[instructions[index+1]]
-		right := instructions[instructions[index+2]]
-		target := instructions[index+3]
+RunLoop:
+	for index <= len(machine) {
+		opcode := machine[index]
+		left := machine[machine[index+1]]
+		right := machine[machine[index+2]]
+		target := machine[index+3]
 
 		switch opcode {
-		case 1:
-			instructions[target] = left + right
-		case 2:
-			instructions[target] = left * right
-		case 99:
-			break L
+		case Add:
+			machine[target] = left + right
+		case Multiply:
+			machine[target] = left * right
+		case Halt:
+			break RunLoop
 		}
 
 		index += 4
 	}
 
-	return instructions[0], nil
+	return machine[0]
 }
 
-func part1(filename string) (uint64, error) {
-	reader, err := line_reader.NewLineReader(filename)
-	if err != nil {
-		return 0, err
-	}
-
-	line := reader.ReadLine()
-	program := strings.Split(line, ",")
-
-	return run_program(program, 12, 2)
+func part1(machine Machine) uint64 {
+	return runMachine(machine, 12, 2)
 }
 
-func part2(filename string) (uint64, error) {
-	reader, err := line_reader.NewLineReader(filename)
-	if err != nil {
-		return 0, err
-	}
-
-	line := reader.ReadLine()
-	program := strings.Split(line, ",")
-
+func part2(machine Machine) uint64 {
 	var noun uint64
 	var verb uint64
-L:
+SearchLoop:
 	for {
 		for verb <= noun {
-			result, err := run_program(program, noun, verb)
+			result := runMachine(machine, noun, verb)
 
-			if err != nil {
-				return 0, err
-			} else if result == 19690720 {
-				break L
+			if result == 19690720 {
+				break SearchLoop
 			}
 			verb += 1
 		}
@@ -83,21 +85,17 @@ L:
 		verb = 0
 	}
 
-	return 100*noun + verb, nil
+	return 100*noun + verb
 }
 
 func main() {
-	value1, err := part1("../data/2.txt")
+	machine, err := loadMachine("../data/2.txt")
 	if err != nil {
-		fmt.Println(err.Error())
-		return
+		fmt.Println(err)
 	}
-	fmt.Printf("Part 1: %d\n", value1)
 
-	value2, err := part2("../data/2.txt")
-	if err != nil {
-		fmt.Println(err.Error())
-		return
-	}
-	fmt.Printf("Part 2: %d\n", value2)
+	answer1 := part1(machine)
+	fmt.Printf("Part 1: %d\n", answer1)
+	answer2 := part2(machine)
+	fmt.Printf("Part 2: %d\n", answer2)
 }
