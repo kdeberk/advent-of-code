@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
-	"line_reader"
-	"strconv"
+	"utils"
 )
+
+const part1Answer = 3235550
+const part2Answer = 4850462
 
 func calculateFuel(weight uint64) uint64 {
 	result := int64(weight)/3 - 2
@@ -15,62 +17,43 @@ func calculateFuel(weight uint64) uint64 {
 	}
 }
 
-func part1(filename string) (uint64, error) {
-	reader, err := line_reader.NewLineReader(filename)
-	if err != nil {
-		return 0, err
-	}
-
+func part1(weights []uint64) uint64 {
 	var fuelsum uint64
-	for reader.HasLine() {
-		line := reader.ReadLine()
-		weight, err := strconv.ParseUint(line, 10, 64)
-		if err != nil {
-			fmt.Println(line + " could not be converted to an integer")
-			return 0, err
-		}
-
+	for _, weight := range weights {
 		fuelsum += calculateFuel(weight)
 	}
-	return fuelsum, nil
+	return fuelsum
 }
 
-func part2(filename string) (uint64, error) {
-	reader, err := line_reader.NewLineReader(filename)
-	if err != nil {
-		return 0, err
-	}
-
+func part2(weights []uint64) uint64 {
 	var fuelsum uint64
-	for reader.HasLine() {
-		line := reader.ReadLine()
-		weight, err := strconv.ParseUint(line, 10, 64)
-		if err != nil {
-			fmt.Println(line + " could not be converted to an integer")
-			return 0, err
-		}
-
+	for _, weight := range weights {
 		for 0 < weight {
 			fuel := calculateFuel(weight)
 			fuelsum += fuel
 			weight = fuel
 		}
 	}
-	return fuelsum, nil
+	return fuelsum
 }
 
 func main() {
-	answer1, err := part1("../data/1.txt")
+	weights, err := utils.ReadUint64s("../data/1.txt", utils.IsNewline)
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
-	fmt.Printf("Part 1: %d\n", answer1)
 
-	answer2, err := part2("../data/1.txt")
-	if err != nil {
-		fmt.Println(err.Error())
-		return
+	var answer uint64
+	answer = part1(weights)
+	if part1Answer != answer {
+		panic(fmt.Sprintf("Part 1 has wrong answer %d (correct %d)", answer, part1Answer))
 	}
-	fmt.Printf("Part 2: %d\n", answer2)
+	fmt.Printf("Part 1: %d\n", answer)
+
+	answer = part2(weights)
+	if part2Answer != answer {
+		panic(fmt.Sprintf("Part 1 has wrong answer %d (correct %d)", answer, part2Answer))
+	}
+	fmt.Printf("Part 2: %d\n", answer)
 }

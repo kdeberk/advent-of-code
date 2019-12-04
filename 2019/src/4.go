@@ -4,6 +4,9 @@ import (
 	"fmt"
 )
 
+const part1Answer uint64 = 2050
+const part2Answer uint64 = 1390
+
 func part1_test(number uint64) bool {
 	adjacents_matched := false
 
@@ -60,9 +63,17 @@ func count_matches(start uint64, end uint64, test func(n uint64) bool) uint64 {
 }
 
 func main() {
-	answer1 := count_matches(128392, 643281, part1_test)
-	fmt.Printf("Part 1: %d\n", answer1)
+	var answer uint64
 
-	answer2 := count_matches(128392, 643281, part2_test)
-	fmt.Printf("Part 2: %d\n", answer2)
+	answer = count_matches(128392, 643281, part1_test)
+	if part1Answer != answer {
+		panic(fmt.Sprintf("Part 1 has wrong answer %d (correct %d)", answer, part1Answer))
+	}
+	fmt.Printf("Part 1: %d\n", answer)
+
+	answer = count_matches(128392, 643281, part2_test)
+	if part2Answer != answer {
+		panic(fmt.Sprintf("Part 2 has wrong answer %d (correct %d)", answer, part2Answer))
+	}
+	fmt.Printf("Part 2: %d\n", answer)
 }

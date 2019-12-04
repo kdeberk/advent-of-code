@@ -2,10 +2,13 @@ package main
 
 import (
 	"fmt"
-	"line_reader"
 	"strconv"
 	"strings"
+	"utils"
 )
+
+const part1Answer uint64 = 280
+const part2Answer uint64 = 10554
 
 type Point struct {
 	x, y int64
@@ -67,16 +70,17 @@ func readPath(id uint64, line string) (Path, error) {
 }
 
 func readPaths(filename string) ([]Path, error) {
-	reader, err := line_reader.NewLineReader(filename)
+	lines, err := utils.ReadStrings(filename, utils.IsNewline)
 	if err != nil {
 		return []Path{}, err
 	}
 
 	paths := []Path{}
-	index := uint64(0)
-	for reader.HasLine() {
-		path, _ := readPath(index, reader.ReadLine())
-		index += 1
+	for index, line := range lines {
+		path, err := readPath(uint64(index), line)
+		if err != nil {
+			return []Path{}, err
+		}
 
 		paths = append(paths, path)
 	}
@@ -159,9 +163,17 @@ func main() {
 		grid.tracePath(path)
 	}
 
-	answer1 := part1(grid)
-	fmt.Printf("Part 1: %d\n", answer1)
+	var answer uint64
 
-	answer2 := part2(grid)
-	fmt.Printf("Part 2: %d\n", answer2)
+	answer = part1(grid)
+	if part1Answer != answer {
+		panic(fmt.Sprintf("Part 1 has wrong answer %d (correct %d)", answer, part1Answer))
+	}
+	fmt.Printf("Part 1: %d\n", answer)
+
+	answer = part2(grid)
+	if part2Answer != answer {
+		panic(fmt.Sprintf("Part 1 has wrong answer %d (correct %d)", answer, part2Answer))
+	}
+	fmt.Printf("Part 2: %d\n", answer)
 }

@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"line_reader"
-	"strconv"
-	"strings"
+	"utils"
 )
+
+const part1Answer = 9581917
+const part2Answer = 2505
 
 type Machine [1000]uint64
 
@@ -16,20 +17,14 @@ const (
 )
 
 func loadMachine(filename string) (Machine, error) {
-	reader, err := line_reader.NewLineReader(filename)
+	numbers, err := utils.ReadUint64s("../data/2.txt", utils.IsWhiteSpaceOrComma)
 	if err != nil {
 		return Machine{}, err
 	}
 
-	line := reader.ReadLine()
-	numbers := strings.Split(line, ",")
 	machine := Machine{}
-	for index, i := range numbers {
-		i, err := strconv.ParseUint(i, 10, 64)
-		if err != nil {
-			return Machine{}, err
-		}
-		machine[index] = i
+	for index, number := range numbers {
+		machine[index] = number
 	}
 
 	return machine, nil
@@ -42,7 +37,7 @@ func runMachine(start Machine, noun uint64, verb uint64) uint64 {
 	machine[2] = verb
 
 	var index int
-RunLoop:
+Execution:
 	for index <= len(machine) {
 		opcode := machine[index]
 		left := machine[machine[index+1]]
@@ -55,7 +50,7 @@ RunLoop:
 		case Multiply:
 			machine[target] = left * right
 		case Halt:
-			break RunLoop
+			break Execution
 		}
 
 		index += 4
@@ -94,8 +89,16 @@ func main() {
 		fmt.Println(err)
 	}
 
-	answer1 := part1(machine)
-	fmt.Printf("Part 1: %d\n", answer1)
-	answer2 := part2(machine)
-	fmt.Printf("Part 2: %d\n", answer2)
+	var answer uint64
+	answer = part1(machine)
+	if part1Answer != answer {
+		panic(fmt.Sprintf("Part 1 has wrong answer %d (correct %d)", answer, part1Answer))
+	}
+	fmt.Printf("Part 1: %d\n", answer)
+
+	answer = part2(machine)
+	if part2Answer != answer {
+		panic(fmt.Sprintf("Part 2 has wrong answer %d (correct %d)", answer, part2Answer))
+	}
+	fmt.Printf("Part 2: %d\n", answer)
 }
