@@ -33,3 +33,20 @@ func ReadUint64s(filename string, split_at func(rune) bool) ([]uint64, error) {
 	}
 	return numbers, nil
 }
+
+func ReadInt64s(filename string, split_at func(rune) bool) ([]int64, error) {
+	scanner, err := makeScannerForFile(filename, split_at)
+	if err != nil {
+		return []int64{}, err
+	}
+
+	numbers := []int64{}
+	for scanner.Scan() {
+		number, err := strconv.Atoi(scanner.Text())
+		if err != nil {
+			return []int64{}, err
+		}
+		numbers = append(numbers, int64(number))
+	}
+	return numbers, nil
+}
