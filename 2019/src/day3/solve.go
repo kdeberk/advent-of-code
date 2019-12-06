@@ -1,4 +1,4 @@
-package main
+package day3
 
 import (
 	"fmt"
@@ -6,9 +6,6 @@ import (
 	"strings"
 	"utils"
 )
-
-const part1Answer uint64 = 280
-const part2Answer uint64 = 10554
 
 type Point struct {
 	x, y int64
@@ -151,11 +148,10 @@ func part2(grid Grid) uint64 {
 	return earliest
 }
 
-func main() {
-	paths, err := readPaths("../data/3.txt")
+func Solve() error {
+	paths, err := readPaths("day3/3.txt")
 	if err != nil {
-		fmt.Println(err.Error())
-		return
+		return err
 	}
 
 	grid := Grid{}
@@ -163,17 +159,7 @@ func main() {
 		grid.tracePath(path)
 	}
 
-	var answer uint64
-
-	answer = part1(grid)
-	if part1Answer != answer {
-		panic(fmt.Sprintf("Part 1 has wrong answer %d (correct %d)", answer, part1Answer))
-	}
-	fmt.Printf("Part 1: %d\n", answer)
-
-	answer = part2(grid)
-	if part2Answer != answer {
-		panic(fmt.Sprintf("Part 1 has wrong answer %d (correct %d)", answer, part2Answer))
-	}
-	fmt.Printf("Part 2: %d\n", answer)
+	fmt.Printf("Day 3, Part 1: %d\n", part1(grid))
+	fmt.Printf("Day 3, Part 2: %d\n", part2(grid))
+	return nil
 }

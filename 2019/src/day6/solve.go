@@ -1,13 +1,10 @@
-package main
+package day6
 
 import (
 	"fmt"
 	"strings"
 	"utils"
 )
-
-const part1Answer = 251208
-const part2Answer = 397
 
 type Node struct {
 	name     string
@@ -98,22 +95,13 @@ func part2(tree *Tree) uint64 {
 	return n_transfers
 }
 
-func main() {
-	tree, err := readTree("../data/6.txt")
+func Solve() error {
+	tree, err := readTree("day6/6.txt")
 	if err != nil {
-		panic(err)
+		return err
 	}
 
-	var answer uint64
-	answer = part1(&tree)
-	if part1Answer != answer {
-		panic(fmt.Sprintf("Part 1 has wrong answer %d (correct %d)", answer, part1Answer))
-	}
-	fmt.Printf("Part 1: %d\n", answer)
-
-	answer = part2(&tree)
-	if part2Answer != answer {
-		panic(fmt.Sprintf("Part 1 has wrong answer %d (correct %d)", answer, part2Answer))
-	}
-	fmt.Printf("Part 2: %d\n", answer)
+	fmt.Printf("Day 6, Part 1: %d\n", part1(&tree))
+	fmt.Printf("Day 6, Part 2: %d\n", part2(&tree))
+	return nil
 }

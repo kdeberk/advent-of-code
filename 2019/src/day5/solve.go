@@ -1,12 +1,9 @@
-package main
+package day5
 
 import (
 	"fmt"
 	"utils"
 )
-
-const part1Answer = 13978427
-const part2Answer = 11189491
 
 func part1(machine utils.Machine) (int64, error) {
 	outputs, err := machine.Run([]int64{1})
@@ -24,10 +21,10 @@ func part2(machine utils.Machine) (int64, error) {
 	return outputs[len(outputs)-1], nil
 }
 
-func main() {
-	program, err := utils.ReadProgram("../data/5.txt")
+func Solve() error {
+	program, err := utils.ReadProgram("day5/5.txt")
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	machine := utils.Machine{}
@@ -36,17 +33,14 @@ func main() {
 	var answer int64
 	answer, err = part1(machine)
 	if err != nil {
-		fmt.Println(err)
-	} else if part1Answer != answer {
-		panic(fmt.Sprintf("Part 1 has wrong answer %d (correct %d)", answer, part1Answer))
+		return err
 	}
-	fmt.Printf("Part 1: %d\n", answer)
+	fmt.Printf("Day 5, Part 1: %d\n", answer)
 
 	answer, err = part2(machine)
 	if err != nil {
-		fmt.Println(err)
-	} else if part2Answer != answer {
-		panic(fmt.Sprintf("Part 2 has wrong answer %d (correct %d)", answer, part2Answer))
+		return err
 	}
-	fmt.Printf("Part 2: %d\n", answer)
+	fmt.Printf("Day 5, Part 2: %d\n", answer)
+	return nil
 }
