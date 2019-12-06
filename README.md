@@ -9,6 +9,7 @@ For the years 2016 - 2019, the following languages were used:
 - 2019: Go
 
 I have not decided yet on a language for the 2015 and future editions. Candidates are
+- Ada
 - APL
 - Clojure
 - Common Lisp
