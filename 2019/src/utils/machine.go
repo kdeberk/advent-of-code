@@ -8,6 +8,7 @@ import (
 // Welcome to the machine
 
 type Machine struct {
+	Name string
 	ip     uint64
 	memory [1000]int64
 	halted bool
@@ -16,8 +17,9 @@ type Machine struct {
 	Error  chan error
 }
 
-func MakeMachine() Machine {
+func MakeMachine(name string) Machine {
 	return Machine{
+		name,
 		0,
 		[1000]int64{},
 		false,
@@ -171,7 +173,9 @@ func (self *Machine) nextInstruction() (Instruction, error) {
 	return Instruction{opcode, left, right, target, size}, nil
 }
 
-func (self *Machine) LoadProgram(program []int64) {
+type Program []int64
+
+func (self *Machine) LoadProgram(program Program) {
 	for index, int := range program {
 		self.memory[index] = int
 	}
@@ -202,6 +206,6 @@ func (self *Machine) GetMemory(index uint64) int64 {
 	return self.memory[index]
 }
 
-func ReadProgram(filename string) ([]int64, error) {
+func ReadProgram(filename string) (Program, error) {
 	return ReadInt64s(filename, IsWhiteSpaceOrComma)
 }

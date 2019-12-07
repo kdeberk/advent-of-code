@@ -39,7 +39,7 @@ func Solve() error {
 		return err
 	}
 
-	machine := utils.MakeMachine()
+	machine := utils.MakeMachine("day5")
 	machine.LoadProgram(program)
 
 	var answer int64

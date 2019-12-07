@@ -7,13 +7,16 @@ import (
 	"day4"
 	"day5"
 	"day6"
+	"day7"
 	"flag"
 	"fmt"
 	"os"
 )
 
-var solvers = []func() error{
-	day1.Solve, day2.Solve, day3.Solve, day4.Solve, day5.Solve, day6.Solve,
+type Solver func()error
+
+var solvers = []Solver{
+	day1.Solve, day2.Solve, day3.Solve, day4.Solve, day5.Solve, day6.Solve, day7.Solve,
 }
 
 func main() {
@@ -24,11 +27,18 @@ func main() {
 		if *dayPtr <= 0 || len(solvers) < *dayPtr {
 			exitForError(fmt.Errorf("No solver found for day %d", *dayPtr))
 		}
-		solvers[*dayPtr-1]()
+		runSolver(solvers[*dayPtr-1])
 	} else {
 		for _, solver := range solvers {
-			solver()
+			runSolver(solver)
 		}
+	}
+}
+
+func runSolver(solver Solver) {
+	err := solver()
+	if err != nil {
+		exitForError(err)
 	}
 }
 

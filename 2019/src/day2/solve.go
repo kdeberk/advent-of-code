@@ -50,7 +50,7 @@ func Solve() error {
 		return err
 	}
 
-	machine := utils.MakeMachine()
+	machine := utils.MakeMachine("day2")
 	machine.LoadProgram(program)
 
 	answer, err = part1(machine)
