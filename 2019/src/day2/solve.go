@@ -9,12 +9,12 @@ func runMachine(machine utils.Machine, noun int64, verb int64) (int64, error) {
 	machine.SetMemory(1, noun)
 	machine.SetMemory(2, verb)
 
-	_, err := machine.Run([]int64{})
+	go machine.Run()
+	err := <-machine.Error
 	if err != nil {
 		return 0, err
-	} else {
-		return machine.GetMemory(0), nil
 	}
+	return machine.GetMemory(0), nil
 }
 
 func part1(machine utils.Machine) (int64, error) {
@@ -50,7 +50,7 @@ func Solve() error {
 		return err
 	}
 
-	machine := utils.Machine{}
+	machine := utils.MakeMachine()
 	machine.LoadProgram(program)
 
 	answer, err = part1(machine)

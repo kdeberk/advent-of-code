@@ -8,23 +8,35 @@ import (
 // Welcome to the machine
 
 type Machine struct {
-	ip      uint64
-	memory  [1000]int64
-	halted  bool
-	inputs  []int64
-	outputs []int64
+	ip     uint64
+	memory [1000]int64
+	halted bool
+	Input  chan int64
+	Output chan int64
+	Error  chan error
+}
+
+func MakeMachine() Machine {
+	return Machine{
+		0,
+		[1000]int64{},
+		false,
+		make(chan int64),
+		make(chan int64),
+		make(chan error),
+	}
 }
 
 const (
-	Add         int64 = 1
-	Multiply    int64 = 2
-	Input       int64 = 3
-	Output      int64 = 4
-	JumpIfTrue  int64 = 5
-	JumpIfFalse int64 = 6
-	LessThan    int64 = 7
-	Equals      int64 = 8
-	Halt        int64 = 99
+	add         int64 = 1
+	multiply    int64 = 2
+	input       int64 = 3
+	output      int64 = 4
+	jumpIfTrue  int64 = 5
+	jumpIfFalse int64 = 6
+	lessThan    int64 = 7
+	equals      int64 = 8
+	halt        int64 = 99
 )
 
 type ParameterMode int64
@@ -62,43 +74,38 @@ func (self *Machine) execute(instruction Instruction) error {
 	jumped := false
 
 	switch instruction.opcode {
-	case Add:
+	case add:
 		self.memory[instruction.target] = instruction.left.getValue(self) + instruction.right.getValue(self)
-	case Multiply:
+	case multiply:
 		self.memory[instruction.target] = instruction.left.getValue(self) * instruction.right.getValue(self)
-	case Input:
-		if 0 == len(self.inputs) {
-			return fmt.Errorf("No more inputs available")
-		}
-
-		var input int64
-		input, self.inputs = self.inputs[0], self.inputs[1:]
+	case input:
+		input := <-self.Input
 		self.memory[instruction.left.value] = input
-	case Output:
-		self.outputs = append(self.outputs, instruction.left.getValue(self))
-	case JumpIfTrue:
+	case output:
+		self.Output <- instruction.left.getValue(self)
+	case jumpIfTrue:
 		if 0 != instruction.left.getValue(self) {
 			self.ip = uint64(instruction.right.getValue(self))
 			jumped = true
 		}
-	case JumpIfFalse:
+	case jumpIfFalse:
 		if 0 == instruction.left.getValue(self) {
 			self.ip = uint64(instruction.right.getValue(self))
 			jumped = true
 		}
-	case LessThan:
+	case lessThan:
 		if instruction.left.getValue(self) < instruction.right.getValue(self) {
 			self.memory[instruction.target] = 1
 		} else {
 			self.memory[instruction.target] = 0
 		}
-	case Equals:
+	case equals:
 		if instruction.left.getValue(self) == instruction.right.getValue(self) {
 			self.memory[instruction.target] = 1
 		} else {
 			self.memory[instruction.target] = 0
 		}
-	case Halt:
+	case halt:
 		self.halted = true
 	}
 
@@ -128,7 +135,7 @@ func (self *Machine) nextInstruction() (Instruction, error) {
 
 	opcode = self.memory[self.ip] % 100
 	switch opcode {
-	case Add, Multiply, LessThan, Equals:
+	case add, multiply, lessThan, equals:
 		left, err = self.readParameter(1)
 		if err != nil {
 			return Instruction{}, err
@@ -139,7 +146,7 @@ func (self *Machine) nextInstruction() (Instruction, error) {
 		}
 		target = self.memory[self.ip+3]
 		size = 4
-	case JumpIfTrue, JumpIfFalse:
+	case jumpIfTrue, jumpIfFalse:
 		left, err = self.readParameter(1)
 		if err != nil {
 			return Instruction{}, err
@@ -149,13 +156,13 @@ func (self *Machine) nextInstruction() (Instruction, error) {
 			return Instruction{}, err
 		}
 		size = 3
-	case Input, Output:
+	case input, output:
 		left, err = self.readParameter(1)
 		if err != nil {
 			return Instruction{}, err
 		}
 		size = 2
-	case Halt:
+	case halt:
 		size = 1
 	default:
 		return Instruction{}, fmt.Errorf("Unknown opcode %d", opcode)
@@ -170,22 +177,21 @@ func (self *Machine) LoadProgram(program []int64) {
 	}
 }
 
-func (self *Machine) Run(inputs []int64) ([]int64, error) {
-	self.inputs = inputs
-
+func (self *Machine) Run() {
 	for !self.halted {
 		next, err := self.nextInstruction()
 		if err != nil {
-			return []int64{}, err
+			self.Error <- err
+			return
 		}
 
 		err = self.execute(next)
 		if err != nil {
-			return []int64{}, err
+			self.Error <- err
+			return
 		}
 	}
-
-	return self.outputs, nil
+	self.Error <- nil
 }
 
 func (self *Machine) SetMemory(index uint64, value int64) {

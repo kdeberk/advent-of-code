@@ -5,20 +5,32 @@ import (
 	"utils"
 )
 
-func part1(machine utils.Machine) (int64, error) {
-	outputs, err := machine.Run([]int64{1})
-	if err != nil {
-		return 0, err
+func runDiagnostics(machine utils.Machine, systemId int64) (int64, error) {
+	go machine.Run()
+
+	var outputs []int64
+
+	for {
+		select {
+		case machine.Input <- systemId:
+		case err := <-machine.Error:
+			if err != nil {
+				return 0, err
+			} else {
+				return outputs[len(outputs)-1], nil
+			}
+		case output := <-machine.Output:
+			outputs = append(outputs, output)
+		}
 	}
-	return outputs[len(outputs)-1], nil
+}
+
+func part1(machine utils.Machine) (int64, error) {
+	return runDiagnostics(machine, 1)
 }
 
 func part2(machine utils.Machine) (int64, error) {
-	outputs, err := machine.Run([]int64{5})
-	if err != nil {
-		return 0, err
-	}
-	return outputs[len(outputs)-1], nil
+	return runDiagnostics(machine, 5)
 }
 
 func Solve() error {
@@ -27,7 +39,7 @@ func Solve() error {
 		return err
 	}
 
-	machine := utils.Machine{}
+	machine := utils.MakeMachine()
 	machine.LoadProgram(program)
 
 	var answer int64
