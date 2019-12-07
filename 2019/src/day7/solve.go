@@ -5,10 +5,10 @@ import (
 	"utils"
 )
 
-func makeAmplifiers(count int, names []string, program utils.Program) []utils.Machine {
+func makeAmplifiers(names []string, program utils.Program) []utils.Machine {
 	amplifiers := []utils.Machine{}
 
-	for i := 0; i < count; i++ {
+	for i := 0; i < len(names); i++ {
 		amplifier := utils.MakeMachine(names[i])
 		amplifier.LoadProgram(program)
 		amplifiers = append(amplifiers, amplifier)
@@ -70,11 +70,8 @@ func runAmplifiers(amplifiers []utils.Machine, settings []int64, feedback bool) 
 func part1(program utils.Program) (int64, error) {
 	var max int64
 
-	for _perm := range utils.GeneratePermutations([]int64{0, 1, 2, 3, 4}) {
-		perm := make([]int64, len(_perm))
-		copy(perm, _perm)
-
-		output, err := runAmplifiers(makeAmplifiers(5, []string{"A", "B", "C", "D", "E"}, program), perm, false)
+	for perm := range utils.GeneratePermutations([]int64{0, 1, 2, 3, 4}) {
+		output, err := runAmplifiers(makeAmplifiers([]string{"A", "B", "C", "D", "E"}, program), perm, false)
 		if err != nil {
 			return 0, err
 		} else if max < output {
@@ -88,11 +85,8 @@ func part1(program utils.Program) (int64, error) {
 func part2(program utils.Program) (int64, error) {
 	var max int64
 
-	for _perm := range utils.GeneratePermutations([]int64{5, 6, 7, 8, 9}) {
-		perm := make([]int64, len(_perm))
-		copy(perm, _perm)
-
-		output, err := runAmplifiers(makeAmplifiers(5, []string{"A", "B", "C", "D", "E"}, program), perm, true)
+	for perm := range utils.GeneratePermutations([]int64{5, 6, 7, 8, 9}) {
+		output, err := runAmplifiers(makeAmplifiers([]string{"A", "B", "C", "D", "E"}, program), perm, true)
 		if err != nil {
 			return 0, err
 		} else if max < output {

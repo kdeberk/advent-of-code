@@ -6,8 +6,10 @@ func GeneratePermutations(ints []int64) <-chan []int64 {
 		defer close(channel)
 
 		stack := make([]int, len(ints))
+		output := make([]int64, len(ints))
 
-		channel <- ints
+		copy(output, ints)
+		channel <- output
 
 		for i := 0; i < len(ints); {
 			if stack[i] < i {
@@ -16,7 +18,10 @@ func GeneratePermutations(ints []int64) <-chan []int64 {
 				} else {
 					ints[stack[i]], ints[i] = ints[i], ints[stack[i]]
 				}
-				channel <- ints
+
+				output = make([]int64, len(ints))
+				copy(output, ints)
+				channel <- output
 
 				stack[i] += 1
 				i = 0

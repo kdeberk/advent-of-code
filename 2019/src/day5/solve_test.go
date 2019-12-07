@@ -10,7 +10,7 @@ const part2Answer = 11189491
 
 func TestPart1(t *testing.T) {
 	program, _ := utils.ReadProgram("5.txt")
-	machine := utils.Machine{}
+	machine := utils.MakeMachine("day5")
 	machine.LoadProgram(program)
 
 	answer, _ := part1(machine)
@@ -21,7 +21,7 @@ func TestPart1(t *testing.T) {
 
 func TestPart2(t *testing.T) {
 	program, _ := utils.ReadProgram("5.txt")
-	machine := utils.Machine{}
+	machine := utils.MakeMachine("day5")
 	machine.LoadProgram(program)
 
 	answer, _ := part2(machine)
