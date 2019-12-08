@@ -8,15 +8,17 @@ import (
 	"day5"
 	"day6"
 	"day7"
+	"day8"
 	"flag"
 	"fmt"
 	"os"
 )
 
-type Solver func()error
+type Solver func() error
 
 var solvers = []Solver{
 	day1.Solve, day2.Solve, day3.Solve, day4.Solve, day5.Solve, day6.Solve, day7.Solve,
+	day8.Solve,
 }
 
 func main() {
