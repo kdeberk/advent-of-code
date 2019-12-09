@@ -60,10 +60,9 @@ type Parameter struct {
 type Instruction struct {
 	opcode int64
 	// TODO: rename parameters to first, second
-	left   Parameter
-	right  Parameter
+	first  Parameter
+	second Parameter
 	third  Parameter
-	target int64
 	size   uint64
 }
 
@@ -98,38 +97,38 @@ func (self *Machine) execute(instruction Instruction) error {
 
 	switch instruction.opcode {
 	case add:
-		self.memory[instruction.third.getAddress(self)] = instruction.left.getValue(self) + instruction.right.getValue(self)
+		self.memory[instruction.third.getAddress(self)] = instruction.first.getValue(self) + instruction.second.getValue(self)
 	case multiply:
-		self.memory[instruction.third.getAddress(self)] = instruction.left.getValue(self) * instruction.right.getValue(self)
+		self.memory[instruction.third.getAddress(self)] = instruction.first.getValue(self) * instruction.second.getValue(self)
 	case input:
 		input := <-self.Input
-		self.memory[instruction.left.getAddress(self)] = input
+		self.memory[instruction.first.getAddress(self)] = input
 	case output:
-		self.Output <- instruction.left.getValue(self)
+		self.Output <- instruction.first.getValue(self)
 	case jumpIfTrue:
-		if 0 != instruction.left.getValue(self) {
-			self.ip = uint64(instruction.right.getValue(self))
+		if 0 != instruction.first.getValue(self) {
+			self.ip = uint64(instruction.second.getValue(self))
 			jumped = true
 		}
 	case jumpIfFalse:
-		if 0 == instruction.left.getValue(self) {
-			self.ip = uint64(instruction.right.getValue(self))
+		if 0 == instruction.first.getValue(self) {
+			self.ip = uint64(instruction.second.getValue(self))
 			jumped = true
 		}
 	case lessThan:
-		if instruction.left.getValue(self) < instruction.right.getValue(self) {
+		if instruction.first.getValue(self) < instruction.second.getValue(self) {
 			self.memory[instruction.third.getAddress(self)] = 1
 		} else {
 			self.memory[instruction.third.getAddress(self)] = 0
 		}
 	case equals:
-		if instruction.left.getValue(self) == instruction.right.getValue(self) {
+		if instruction.first.getValue(self) == instruction.second.getValue(self) {
 			self.memory[instruction.third.getAddress(self)] = 1
 		} else {
 			self.memory[instruction.third.getAddress(self)] = 0
 		}
 	case rbpOffset:
-		self.rbp = uint64(int64(self.rbp) + instruction.left.getValue(self))
+		self.rbp = uint64(int64(self.rbp) + instruction.first.getValue(self))
 	case halt:
 		self.halted = true
 	}
@@ -153,19 +152,19 @@ func (self *Machine) readParameter(nth int64) (Parameter, error) {
 }
 
 func (self *Machine) nextInstruction() (Instruction, error) {
-	var opcode, target int64
-	var left, right, third Parameter
+	var opcode int64
+	var first, second, third Parameter
 	var size uint64
 	var err error
 
 	opcode = self.memory[self.ip] % 100
 	switch opcode {
 	case add, multiply, lessThan, equals:
-		left, err = self.readParameter(1)
+		first, err = self.readParameter(1)
 		if err != nil {
 			return Instruction{}, err
 		}
-		right, err = self.readParameter(2)
+		second, err = self.readParameter(2)
 		if err != nil {
 			return Instruction{}, err
 		}
@@ -173,20 +172,19 @@ func (self *Machine) nextInstruction() (Instruction, error) {
 		if err != nil {
 			return Instruction{}, err
 		}
-		target = self.memory[self.ip+3]
 		size = 4
 	case jumpIfTrue, jumpIfFalse:
-		left, err = self.readParameter(1)
+		first, err = self.readParameter(1)
 		if err != nil {
 			return Instruction{}, err
 		}
-		right, err = self.readParameter(2)
+		second, err = self.readParameter(2)
 		if err != nil {
 			return Instruction{}, err
 		}
 		size = 3
 	case input, output, rbpOffset:
-		left, err = self.readParameter(1)
+		first, err = self.readParameter(1)
 		if err != nil {
 			return Instruction{}, err
 		}
@@ -197,7 +195,7 @@ func (self *Machine) nextInstruction() (Instruction, error) {
 		return Instruction{}, fmt.Errorf("Unknown opcode %d", opcode)
 	}
 
-	return Instruction{opcode, left, right, third, target, size}, nil
+	return Instruction{opcode, first, second, third, size}, nil
 }
 
 type Program []int64
