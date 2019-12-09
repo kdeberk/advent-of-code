@@ -8,9 +8,10 @@ import (
 // Welcome to the machine
 
 type Machine struct {
-	Name string
+	Name   string
 	ip     uint64
-	memory [1000]int64
+	rbp    uint64
+	memory [100000]int64
 	halted bool
 	Input  chan int64
 	Output chan int64
@@ -21,7 +22,8 @@ func MakeMachine(name string) Machine {
 	return Machine{
 		name,
 		0,
-		[1000]int64{},
+		0,
+		[100000]int64{},
 		false,
 		make(chan int64),
 		make(chan int64),
@@ -38,6 +40,7 @@ const (
 	jumpIfFalse int64 = 6
 	lessThan    int64 = 7
 	equals      int64 = 8
+	rbpOffset   int64 = 9
 	halt        int64 = 99
 )
 
@@ -46,6 +49,7 @@ type ParameterMode int64
 const (
 	PositionalMode   ParameterMode = 0
 	IntermediateMode ParameterMode = 1
+	RelativeMode     ParameterMode = 2
 )
 
 type Parameter struct {
@@ -55,8 +59,10 @@ type Parameter struct {
 
 type Instruction struct {
 	opcode int64
+	// TODO: rename parameters to first, second
 	left   Parameter
 	right  Parameter
+	third  Parameter
 	target int64
 	size   uint64
 }
@@ -67,6 +73,21 @@ func (self Parameter) getValue(machine *Machine) int64 {
 		return machine.memory[self.value]
 	case IntermediateMode:
 		return self.value
+	case RelativeMode:
+		return machine.memory[int64(machine.rbp)+self.value]
+	default:
+		panic("No such mode")
+	}
+}
+
+func (self Parameter) getAddress(machine *Machine) int64 {
+	switch self.mode {
+	case PositionalMode:
+		return self.value
+	case IntermediateMode:
+		panic("No such mode")
+	case RelativeMode:
+		return int64(machine.rbp) + self.value
 	default:
 		panic("No such mode")
 	}
@@ -77,12 +98,12 @@ func (self *Machine) execute(instruction Instruction) error {
 
 	switch instruction.opcode {
 	case add:
-		self.memory[instruction.target] = instruction.left.getValue(self) + instruction.right.getValue(self)
+		self.memory[instruction.third.getAddress(self)] = instruction.left.getValue(self) + instruction.right.getValue(self)
 	case multiply:
-		self.memory[instruction.target] = instruction.left.getValue(self) * instruction.right.getValue(self)
+		self.memory[instruction.third.getAddress(self)] = instruction.left.getValue(self) * instruction.right.getValue(self)
 	case input:
 		input := <-self.Input
-		self.memory[instruction.left.value] = input
+		self.memory[instruction.left.getAddress(self)] = input
 	case output:
 		self.Output <- instruction.left.getValue(self)
 	case jumpIfTrue:
@@ -97,16 +118,18 @@ func (self *Machine) execute(instruction Instruction) error {
 		}
 	case lessThan:
 		if instruction.left.getValue(self) < instruction.right.getValue(self) {
-			self.memory[instruction.target] = 1
+			self.memory[instruction.third.getAddress(self)] = 1
 		} else {
-			self.memory[instruction.target] = 0
+			self.memory[instruction.third.getAddress(self)] = 0
 		}
 	case equals:
 		if instruction.left.getValue(self) == instruction.right.getValue(self) {
-			self.memory[instruction.target] = 1
+			self.memory[instruction.third.getAddress(self)] = 1
 		} else {
-			self.memory[instruction.target] = 0
+			self.memory[instruction.third.getAddress(self)] = 0
 		}
+	case rbpOffset:
+		self.rbp = uint64(int64(self.rbp) + instruction.left.getValue(self))
 	case halt:
 		self.halted = true
 	}
@@ -120,7 +143,7 @@ func (self *Machine) execute(instruction Instruction) error {
 func (self *Machine) readParameter(nth int64) (Parameter, error) {
 	mode := ParameterMode((self.memory[self.ip] / int64(math.Pow(10, float64(1+nth)))) % 10)
 	switch mode {
-	case PositionalMode, IntermediateMode:
+	case PositionalMode, IntermediateMode, RelativeMode:
 		break
 	default:
 		return Parameter{}, fmt.Errorf("Not a valid parameter mode %d", mode)
@@ -131,7 +154,7 @@ func (self *Machine) readParameter(nth int64) (Parameter, error) {
 
 func (self *Machine) nextInstruction() (Instruction, error) {
 	var opcode, target int64
-	var left, right Parameter
+	var left, right, third Parameter
 	var size uint64
 	var err error
 
@@ -143,6 +166,10 @@ func (self *Machine) nextInstruction() (Instruction, error) {
 			return Instruction{}, err
 		}
 		right, err = self.readParameter(2)
+		if err != nil {
+			return Instruction{}, err
+		}
+		third, err = self.readParameter(3)
 		if err != nil {
 			return Instruction{}, err
 		}
@@ -158,7 +185,7 @@ func (self *Machine) nextInstruction() (Instruction, error) {
 			return Instruction{}, err
 		}
 		size = 3
-	case input, output:
+	case input, output, rbpOffset:
 		left, err = self.readParameter(1)
 		if err != nil {
 			return Instruction{}, err
@@ -170,7 +197,7 @@ func (self *Machine) nextInstruction() (Instruction, error) {
 		return Instruction{}, fmt.Errorf("Unknown opcode %d", opcode)
 	}
 
-	return Instruction{opcode, left, right, target, size}, nil
+	return Instruction{opcode, left, right, third, target, size}, nil
 }
 
 type Program []int64
