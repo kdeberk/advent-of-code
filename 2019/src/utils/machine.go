@@ -59,7 +59,6 @@ type Parameter struct {
 
 type Instruction struct {
 	opcode int64
-	// TODO: rename parameters to first, second
 	first  Parameter
 	second Parameter
 	third  Parameter
@@ -84,7 +83,7 @@ func (self Parameter) getAddress(machine *Machine) int64 {
 	case PositionalMode:
 		return self.value
 	case IntermediateMode:
-		panic("No such mode")
+		panic("getAddress does not support intermediate mode")
 	case RelativeMode:
 		return int64(machine.rbp) + self.value
 	default:
