@@ -2,6 +2,7 @@ package utils
 
 import (
 	"bufio"
+	"io"
 	"os"
 	"strconv"
 )
@@ -18,6 +19,28 @@ func ReadSingleLine(filename string) (string, error) {
 	}
 
 	return line[:len(line)-1], nil
+}
+
+func ReadLines(filename string) ([]string, error) {
+	file, err := os.Open(filename)
+	if err != nil {
+		return []string{}, err
+	}
+
+	lines := []string{}
+	reader := bufio.NewReader(file)
+ReadLinesLoop:
+	for {
+		line, err := reader.ReadString('\n')
+		if err == io.EOF {
+			break ReadLinesLoop
+		} else if err != nil {
+			return []string{}, err
+		}
+		lines = append(lines, line)
+	}
+
+	return lines, nil
 }
 
 func ReadStrings(filename string, split_at func(rune) bool) ([]string, error) {
