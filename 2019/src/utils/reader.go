@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"strconv"
+	"strings"
 )
 
 func ReadSingleLine(filename string) (string, error) {
@@ -37,7 +38,7 @@ ReadLinesLoop:
 		} else if err != nil {
 			return []string{}, err
 		}
-		lines = append(lines, line)
+		lines = append(lines, strings.Trim(line, "\n"))
 	}
 
 	return lines, nil
