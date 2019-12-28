@@ -101,8 +101,7 @@ PaintLoop:
 }
 
 func part1(program utils.Program) (int64, error) {
-	machine := utils.MakeMachine("day11")
-	machine.LoadProgram(program)
+	machine := utils.MakeMachine("day11", program)
 
 	hull := surface{}
 	painter := robot{machine, coordinate{0, 0}, north, painting}
@@ -128,8 +127,7 @@ func renderHull(hull surface) string {
 }
 
 func part2(program utils.Program) (string, error) {
-	machine := utils.MakeMachine("day11")
-	machine.LoadProgram(program)
+	machine := utils.MakeMachine("day11", program)
 
 	hull := surface{}
 	painter := robot{machine, coordinate{0, 0}, north, painting}

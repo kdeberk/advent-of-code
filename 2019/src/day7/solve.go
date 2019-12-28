@@ -9,8 +9,7 @@ func makeAmplifiers(names []string, program utils.Program) []utils.Machine {
 	amplifiers := []utils.Machine{}
 
 	for i := 0; i < len(names); i++ {
-		amplifier := utils.MakeMachine(names[i])
-		amplifier.LoadProgram(program)
+		amplifier := utils.MakeMachine(names[i], program)
 		amplifiers = append(amplifiers, amplifier)
 
 		if 0 < i {

@@ -64,8 +64,7 @@ type remoteControl struct {
 }
 
 func makeRemoteControl(program utils.Program) remoteControl {
-	computer := utils.MakeMachine("day15")
-	computer.LoadProgram(program)
+	computer := utils.MakeMachine("day15", program)
 
 	droid := coordinate{0, 0}
 	field := make(map[coordinate]thing, 2*2*size*size)
@@ -129,8 +128,6 @@ func routeToNearest(position coordinate, thing thing, field map[coordinate]thing
 }
 
 func (self *remoteControl) render() {
-	print("\033[H\033[2J")
-
 	builder := strings.Builder{}
 	for x := -size; x < size; x += 1 {
 		for y := -size; y < size; y += 1 {
@@ -154,6 +151,7 @@ func (self *remoteControl) render() {
 		builder.WriteRune('\n')
 	}
 
+	print("\033[H\033[2J")
 	fmt.Println(builder.String())
 }
 

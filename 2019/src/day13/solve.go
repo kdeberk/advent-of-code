@@ -48,8 +48,7 @@ const (
 )
 
 func makeGame(program utils.Program) game {
-	computer := utils.MakeMachine("day13")
-	computer.LoadProgram(program)
+	computer := utils.MakeMachine("day13", program)
 
 	board := make([][]tile, 50)
 	for i := range board {

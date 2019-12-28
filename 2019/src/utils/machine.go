@@ -7,28 +7,36 @@ import (
 
 // Welcome to the machine
 
+// TODO:
+// - introduce state variable: unstarted, running, halted, terminated
+// - replace first, second, third with an []Parameter
+
 type Machine struct {
 	Name   string
 	ip     uint64
 	rbp    uint64
 	memory [100000]int64
 	halted bool
+	terminated bool
 	Input  chan int64
 	Output chan int64
 	Error  chan error
 }
 
-func MakeMachine(name string) Machine {
-	return Machine{
+func MakeMachine(name string, program Program) Machine {
+	machine := Machine{
 		name,
 		0,
 		0,
 		[100000]int64{},
 		false,
+		false,
 		make(chan int64),
 		make(chan int64),
 		make(chan error),
 	}
+	machine.loadProgram(program)
+	return machine
 }
 
 const (
@@ -199,7 +207,7 @@ func (self *Machine) nextInstruction() (Instruction, error) {
 
 type Program []int64
 
-func (self *Machine) LoadProgram(program Program) {
+func (self *Machine) loadProgram(program Program) {
 	for index, int := range program {
 		self.memory[index] = int
 	}
@@ -220,16 +228,26 @@ func (self *Machine) Run() {
 		}
 	}
 	self.Error <- nil
+	self.terminated = true
 }
 
-func (self *Machine) SetMemory(index uint64, value int64) {
-	self.memory[index] = value
+func (self *Machine) SetMemory(address uint64, value int64) {
+	self.memory[address] = value
 }
 
-func (self *Machine) GetMemory(index uint64) int64 {
-	return self.memory[index]
+func (self *Machine) GetMemory(address uint64) int64 {
+	return self.memory[address]
+}
+
+func (self *Machine) Halt() {
+	self.halted = true
+}
+
+func (self *Machine) HasTerminated() bool {
+	return self.terminated
 }
 
 func ReadProgram(filename string) (Program, error) {
 	return ReadInt64s(filename, IsWhiteSpaceOrComma)
 }
+

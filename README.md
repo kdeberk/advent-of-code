@@ -19,5 +19,6 @@ I have not decided yet on a language for the 2015 and future editions. Candidate
 - Idris
 - Pony
 - Prolog
+- Scala
 - Scheme
 - Zig

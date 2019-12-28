@@ -6,8 +6,7 @@ import (
 )
 
 func runMachine(program utils.Program, mode int64) (int64, error) {
-	machine := utils.MakeMachine("day9")
-	machine.LoadProgram(program)
+	machine := utils.MakeMachine("day9", program)
 	go machine.Run()
 
 	var lastOutput int64
