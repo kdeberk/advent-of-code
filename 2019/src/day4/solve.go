@@ -4,53 +4,52 @@ import (
 	"fmt"
 )
 
-func count_matches(start uint64, end uint64, test func(n uint64) bool) uint64 {
-	count := uint64(0)
-	current := start
-	for current <= end {
+func count_matches(start int, end int, test func(n int) bool) int {
+	var count int
+
+	for current := start; current <= end; current += 1 {
 		if test(current) {
 			count += 1
 		}
-		current += 1
 	}
 	return count
 }
 
-func part1() uint64 {
-	return count_matches(128392, 643281, func(number uint64) bool {
+func part1() int {
+	return count_matches(128392, 643281, func(number int) bool {
 		adjacents_matched := false
 
-		prev := uint8(10)
-		for 0 < number {
-			current := uint8(number % 10)
+		var prev int = 10
+		var current int
+		for 0 < number { // Iterating backwards over digits
+			current, number = number%10, number/10
 
 			if prev < current {
+				// Digits are not in ascending order
 				return false
 			} else if current == prev {
 				adjacents_matched = true
 			}
-
-			number /= 10
 			prev = current
 		}
 		return adjacents_matched
 	})
 }
 
-func part2() uint64 {
-	return count_matches(128392, 643281, func(number uint64) bool {
-		counts := map[uint8]uint64{}
+func part2() int {
+	return count_matches(128392, 643281, func(number int) bool {
+		counts := map[int]int{}
 
-		prev := uint8(10)
-		for 0 < number {
-			current := uint8(number % 10)
-			counts[current] += 1
+		var prev int = 10
+		var current int
+		for 0 < number { // Iterating backwards over digits
+			current, number = number%10, number/10
 
 			if prev < current {
+				// Digits are not in ascending order
 				return false
 			}
-
-			number /= 10
+			counts[current] += 1
 			prev = current
 		}
 
@@ -64,7 +63,9 @@ func part2() uint64 {
 }
 
 func Solve() error {
-	fmt.Printf("Day 4, Part 1: %d\n", part1())
-	fmt.Printf("Day 4, Part 2: %d\n", part2())
+	fmt.Println("Day 4, Part 1. Count number of passwords that meet the criteria.")
+	fmt.Println(" ", part1())
+	fmt.Println("Day 4, Part 2. Count number of passwords that meet stricter criteria: a digit must appear exactly twice consecutively.")
+	fmt.Println(" ", part2())
 	return nil
 }

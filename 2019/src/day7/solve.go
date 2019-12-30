@@ -30,18 +30,18 @@ func runAmplifiers(amplifiers []utils.Machine, settings []int64, feedback bool) 
 		select {
 		case amplifiers[i].Input <- settings[i]:
 		case err := <-amplifiers[i].Error:
-			return 0, fmt.Errorf("Amplifier %d unexpectedly terminated %v", i, err)
+			return 0, fmt.Errorf("Amplifier %s unexpectedly terminated: %v", amplifiers[i].Name, err)
 		}
 	}
 
 	first.Input <- 0
 
-	var output int64
+	var lastOutput int64
 	nLivingAmplifiers := len(amplifiers)
 
 	for 0 < nLivingAmplifiers {
 		select {
-		case output = <-last.Output:
+		case lastOutput = <-last.Output:
 		case err := <-amplifiers[0].Error:
 			if err != nil {
 				return 0, err
@@ -52,7 +52,7 @@ func runAmplifiers(amplifiers []utils.Machine, settings []int64, feedback bool) 
 
 		if feedback {
 			select {
-			case first.Input <- output:
+			case first.Input <- lastOutput:
 			case err := <-amplifiers[0].Error:
 				if err != nil {
 					return 0, err
@@ -63,7 +63,7 @@ func runAmplifiers(amplifiers []utils.Machine, settings []int64, feedback bool) 
 			}
 		}
 	}
-	return output, nil
+	return lastOutput, nil
 }
 
 func part1(program utils.Program) (int64, error) {
@@ -106,13 +106,15 @@ func Solve() error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Day 7, Part 1: %d\n", answer)
+	fmt.Println("Day 7, Part 1. Try every settings permutation on a series of Intcode amplifiers and find the highest output value.")
+	fmt.Println(" ", answer)
 
 	answer, err = part2(program)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Day 7, Part 2: %d\n", answer)
+	fmt.Println("Day 7, Part 2. Try every settings permutation on a series of Intcode amplifiers with a feedback loop, and find the highest output value.")
+	fmt.Println(" ", answer)
 
 	return nil
 }

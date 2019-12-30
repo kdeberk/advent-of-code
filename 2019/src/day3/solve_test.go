@@ -2,15 +2,11 @@ package day3
 
 import "testing"
 
-const part1Answer uint64 = 280
-const part2Answer uint64 = 10554
+const part1Answer uint = 280
+const part2Answer int = 10554
 
 func TestPart1(t *testing.T) {
-	paths, _ := readPaths("3.txt")
-	grid := Grid{}
-	for _, path := range paths {
-		grid.tracePath(path)
-	}
+	grid, _ := readGrid("3.txt")
 
 	answer := part1(grid)
 	if part1Answer != answer {
@@ -19,11 +15,7 @@ func TestPart1(t *testing.T) {
 }
 
 func TestPart2(t *testing.T) {
-	paths, _ := readPaths("3.txt")
-	grid := Grid{}
-	for _, path := range paths {
-		grid.tracePath(path)
-	}
+	grid, _ := readGrid("3.txt")
 
 	answer := part2(grid)
 	if part2Answer != answer {

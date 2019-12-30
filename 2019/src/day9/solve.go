@@ -10,6 +10,7 @@ func runMachine(program utils.Program, mode int64) (int64, error) {
 	go machine.Run()
 
 	var lastOutput int64
+RunLoop:
 	for {
 		select {
 		case machine.Input <- mode:
@@ -19,10 +20,12 @@ func runMachine(program utils.Program, mode int64) (int64, error) {
 			if err != nil {
 				return 0, err
 			} else {
-				return lastOutput, nil
+				break RunLoop
 			}
 		}
 	}
+
+	return lastOutput, nil
 }
 
 func part1(program utils.Program) (int64, error) {
@@ -44,12 +47,14 @@ func Solve() error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Day 9, Part 1: %d\n", answer)
+	fmt.Println("Day 9, Part 1. Received a distress signal, but in order to lock on we need to boost the sensors. First, determine the keyword produced by the boosted sensor.")
+	fmt.Println(" ", answer)
 
 	answer, err = part2(program)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Day 9, Part 2: %d\n", answer)
+	fmt.Println("Day 9, Part 2. Coordinates of the distress signal that was received from Ceres.")
+	fmt.Println(" ", answer)
 	return nil
 }

@@ -5,12 +5,12 @@ import (
 	"utils"
 )
 
-func runMachine(machine utils.Machine, noun int64, verb int64) (int64, error) {
+func runMachine(machine utils.Machine, noun, verb int64) (int64, error) {
 	machine.SetMemory(1, noun)
 	machine.SetMemory(2, verb)
 
 	go machine.Run()
-	err := <-machine.Error
+	err := machine.WaitForTermination()
 	if err != nil {
 		return 0, err
 	}
@@ -22,8 +22,8 @@ func part1(machine utils.Machine) (int64, error) {
 }
 
 func part2(machine utils.Machine) (int64, error) {
-	var noun int64
-	var verb int64
+	var noun, verb int64
+
 SearchLoop:
 	for {
 		for verb <= noun {
@@ -43,8 +43,6 @@ SearchLoop:
 }
 
 func Solve() error {
-	var answer int64
-
 	program, err := utils.ReadProgram("day2/2.txt")
 	if err != nil {
 		return err
@@ -52,16 +50,19 @@ func Solve() error {
 
 	machine := utils.MakeMachine("day2", program)
 
+	var answer int64
 	answer, err = part1(machine)
 	if nil != err {
 		return err
 	}
-	fmt.Printf("Day 2, Part 1: %d\n", answer)
+	fmt.Println("Day 2. Part 1. Construct a working Intcode computer and restore the gravity assist program.")
+	fmt.Println(" ", answer)
 
 	answer, err = part2(machine)
 	if nil != err {
 		return err
 	}
-	fmt.Printf("Day 2, Part 2: %d\n", answer)
+	fmt.Println("Day 2. Part 2. Find the input parameters that generate a certain output value.")
+	fmt.Println(" ", answer)
 	return nil
 }

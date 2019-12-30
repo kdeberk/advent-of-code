@@ -12,15 +12,15 @@ import (
 // - replace first, second, third with an []Parameter
 
 type Machine struct {
-	Name   string
-	ip     uint64
-	rbp    uint64
-	memory [100000]int64
-	halted bool
+	Name       string
+	ip         uint64
+	rbp        uint64
+	memory     [100000]int64
+	halted     bool
 	terminated bool
-	Input  chan int64
-	Output chan int64
-	Error  chan error
+	Input      chan int64
+	Output     chan int64
+	Error      chan error
 }
 
 func MakeMachine(name string, program Program) Machine {
@@ -247,7 +247,16 @@ func (self *Machine) HasTerminated() bool {
 	return self.terminated
 }
 
+func (self *Machine) WaitForTermination() error {
+	for {
+		select {
+		case <-self.Output:
+		case err := <-self.Error:
+			return err
+		}
+	}
+}
+
 func ReadProgram(filename string) (Program, error) {
 	return ReadInt64s(filename, IsWhiteSpaceOrComma)
 }
-

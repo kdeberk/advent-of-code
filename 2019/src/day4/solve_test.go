@@ -2,8 +2,8 @@ package day4
 
 import "testing"
 
-const part1Answer uint64 = 2050
-const part2Answer uint64 = 1390
+const part1Answer int = 2050
+const part2Answer int = 1390
 
 func TestPart1(t *testing.T) {
 	answer := part1()

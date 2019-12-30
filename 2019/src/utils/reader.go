@@ -25,7 +25,7 @@ func ReadSingleLine(filename string) (string, error) {
 func ReadLines(filename string) ([]string, error) {
 	file, err := os.Open(filename)
 	if err != nil {
-		return []string{}, err
+		return nil, err
 	}
 
 	lines := []string{}
@@ -36,7 +36,7 @@ ReadLinesLoop:
 		if err == io.EOF {
 			break ReadLinesLoop
 		} else if err != nil {
-			return []string{}, err
+			return nil, err
 		}
 		lines = append(lines, strings.Trim(line, "\n"))
 	}
@@ -47,7 +47,7 @@ ReadLinesLoop:
 func ReadStrings(filename string, split_at func(rune) bool) ([]string, error) {
 	scanner, err := makeScannerForFile(filename, split_at)
 	if err != nil {
-		return []string{}, err
+		return nil, err
 	}
 
 	strings := []string{}
@@ -60,14 +60,14 @@ func ReadStrings(filename string, split_at func(rune) bool) ([]string, error) {
 func ReadUint64s(filename string, split_at func(rune) bool) ([]uint64, error) {
 	scanner, err := makeScannerForFile(filename, split_at)
 	if err != nil {
-		return []uint64{}, err
+		return nil, err
 	}
 
 	numbers := []uint64{}
 	for scanner.Scan() {
 		number, err := strconv.Atoi(scanner.Text())
 		if err != nil {
-			return []uint64{}, err
+			return nil, err
 		}
 		numbers = append(numbers, uint64(number))
 	}
@@ -77,16 +77,34 @@ func ReadUint64s(filename string, split_at func(rune) bool) ([]uint64, error) {
 func ReadInt64s(filename string, split_at func(rune) bool) ([]int64, error) {
 	scanner, err := makeScannerForFile(filename, split_at)
 	if err != nil {
-		return []int64{}, err
+		return nil, err
 	}
 
 	numbers := []int64{}
 	for scanner.Scan() {
 		number, err := strconv.Atoi(scanner.Text())
 		if err != nil {
-			return []int64{}, err
+			return nil, err
 		}
 		numbers = append(numbers, int64(number))
+	}
+	return numbers, nil
+}
+
+func ReadInts(filename string, split_at func(rune) bool) ([]int, error) {
+	scanner, err := makeScannerForFile(filename, split_at)
+	if err != nil {
+		return nil, err
+	}
+
+	numbers := []int{}
+	for scanner.Scan() {
+		number, err := strconv.Atoi(scanner.Text())
+		if err != nil {
+			return nil, err
+		} else {
+			numbers = append(numbers, int(number))
+		}
 	}
 	return numbers, nil
 }

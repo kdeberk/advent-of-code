@@ -5,11 +5,11 @@ import (
 	"utils"
 )
 
-func runDiagnostics(machine utils.Machine, systemId int64) (int64, error) {
+func runDiagnostics(machine *utils.Machine, systemId int64) (int64, error) {
 	go machine.Run()
 
-	var outputs []int64
-
+	var last_output int64
+WaitForTerminationLoop:
 	for {
 		select {
 		case machine.Input <- systemId:
@@ -17,20 +17,20 @@ func runDiagnostics(machine utils.Machine, systemId int64) (int64, error) {
 			if err != nil {
 				return 0, err
 			} else {
-				return outputs[len(outputs)-1], nil
+				break WaitForTerminationLoop
 			}
-		case output := <-machine.Output:
-			outputs = append(outputs, output)
+		case last_output = <-machine.Output:
 		}
 	}
+	return last_output, nil
 }
 
 func part1(machine utils.Machine) (int64, error) {
-	return runDiagnostics(machine, 1)
+	return runDiagnostics(&machine, 1)
 }
 
 func part2(machine utils.Machine) (int64, error) {
-	return runDiagnostics(machine, 5)
+	return runDiagnostics(&machine, 5)
 }
 
 func Solve() error {
@@ -46,12 +46,14 @@ func Solve() error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Day 5, Part 1: %d\n", answer)
+	fmt.Println("Day 5, Part 1. Run a diagnostic program on System 1 of the Thermal Environment Supervisor Terminal (Test) machine.")
+	fmt.Println(" ", answer)
 
 	answer, err = part2(machine)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Day 5, Part 2: %d\n", answer)
+	fmt.Println("Day 5, Part 2. Run a diagnostic program on System 5 of the Thermal Environment Supervisor Terminal (Test) machine.")
+	fmt.Println(" ", answer)
 	return nil
 }
