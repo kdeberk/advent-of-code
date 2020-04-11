@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 	"time"
+
 	"github.com/kdeberk/advent-of-code/2019/internal/utils"
 )
 
@@ -230,7 +231,7 @@ func part2(remote remoteControl) int {
 }
 
 func Solve() error {
-	program, err := utils.ReadProgram("day15/15.txt")
+	program, err := utils.ReadProgram("./input/15.txt")
 	if err != nil {
 		return err
 	}

@@ -15,6 +15,6 @@ func TestPart1(t *testing.T) {
 func TestPart2(t *testing.T) {
 	answer := part2()
 	if part2Answer != answer {
-		t.Errorf("part1(input) == %d, want %d", answer, part2Answer)
+		t.Errorf("part2(input) == %d, want %d", answer, part2Answer)
 	}
 }

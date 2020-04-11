@@ -90,7 +90,7 @@ SearchAndDestroy:
 				nBlownUp += 1
 
 				if true == render {
-					print("\033[H\033[2J\n")
+					fmt.Println("\033[H\033[2J")
 					fmt.Println("Asteroids blown up: ", nBlownUp)
 					fmt.Println(renderAsteroidField(laser, blownUp, groups))
 					time.Sleep(100 * time.Millisecond)
@@ -107,13 +107,15 @@ SearchAndDestroy:
 }
 
 func Solve() error {
-	asteroids, err := readAsteroids("day10/10.txt")
+	asteroids, err := readAsteroids("./input/10.txt")
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("Day 10, Part 1: %d\n", part1(asteroids))
-	fmt.Printf("Day 10, Part 2: %d\n", part2(asteroids))
+	fmt.Println("Day 10, Part 1. Need to destroy an asteroid field. Calculate the best spot to place the laser.")
+	fmt.Println(" ", part1(asteroids))
+	fmt.Println("Day 10, Part 2. Determine the 200th asteroid to be destroyed.")
+	fmt.Println(" ", part2(asteroids))
 
 	return nil
 }

@@ -2,6 +2,7 @@ package day18
 
 import (
 	"fmt"
+
 	"github.com/kdeberk/advent-of-code/2019/internal/utils"
 )
 
@@ -247,13 +248,13 @@ func Solve() error {
 	var maze maze
 	var err error
 
-	maze, err = readMaze("day18/18_part1.txt")
+	maze, err = readMaze("./input/18_part1.txt")
 	if err != nil {
 		return err
 	}
 	fmt.Printf("Day 18, Part 1: %d\n", collectKeysInMaze(&maze))
 
-	maze, err = readMaze("day18/18_part2.txt")
+	maze, err = readMaze("./input/18_part2.txt")
 	if err != nil {
 		return err
 	}

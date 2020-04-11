@@ -1,8 +1,8 @@
 package day7
 
 import (
-	"testing"
 	"github.com/kdeberk/advent-of-code/2019/internal/utils"
+	"testing"
 )
 
 const part1Answer = 46014

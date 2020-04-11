@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
 	"github.com/kdeberk/advent-of-code/2019/internal/utils"
 )
 
@@ -127,7 +128,7 @@ func part2(reactions map[string]reaction) int {
 }
 
 func Solve() error {
-	reactions, err := readReactions("day14/14.txt")
+	reactions, err := readReactions("./input/14.txt")
 	if err != nil {
 		return err
 	}

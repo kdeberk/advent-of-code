@@ -2,6 +2,7 @@ package day9
 
 import (
 	"fmt"
+
 	"github.com/kdeberk/advent-of-code/2019/internal/utils"
 )
 
@@ -37,7 +38,7 @@ func part2(program utils.Program) (int64, error) {
 }
 
 func Solve() error {
-	program, err := utils.ReadProgram("day9/9.txt")
+	program, err := utils.ReadProgram("./input/9.txt")
 	if err != nil {
 		return err
 	}
@@ -47,7 +48,7 @@ func Solve() error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("Day 9, Part 1. Received a distress signal, but in order to lock on we need to boost the sensors. First, determine the keyword produced by the boosted sensor.")
+	fmt.Println("Day 9, Part 1. Received a distress signal, but in order to lock on we need to boost the sensors.")
 	fmt.Println(" ", answer)
 
 	answer, err = part2(program)

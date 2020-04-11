@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 	"time"
+
 	"github.com/kdeberk/advent-of-code/2019/internal/utils"
 )
 
@@ -205,7 +206,7 @@ GameLoop:
 }
 
 func Solve() error {
-	program, err := utils.ReadProgram("day13/13.txt")
+	program, err := utils.ReadProgram("./input/13.txt")
 	if err != nil {
 		return err
 	}

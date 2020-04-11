@@ -2,8 +2,8 @@ package day6
 
 import (
 	"fmt"
-	"strings"
 	"github.com/kdeberk/advent-of-code/2019/internal/utils"
+	"strings"
 )
 
 type node struct {

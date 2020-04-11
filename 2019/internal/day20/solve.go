@@ -2,6 +2,7 @@ package day20
 
 import (
 	"fmt"
+
 	"github.com/kdeberk/advent-of-code/2019/internal/utils"
 )
 
@@ -204,7 +205,7 @@ func part2(maze maze) int {
 }
 
 func Solve() error {
-	maze, err := readMaze("day20/20.txt")
+	maze, err := readMaze("./input/20.txt")
 	if err != nil {
 		return err
 	}

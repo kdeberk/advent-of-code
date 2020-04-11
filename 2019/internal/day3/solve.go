@@ -31,7 +31,7 @@ func part2(grid grid) int {
 }
 
 func Solve() error {
-	grid, err := readGrid("day3/3.txt")
+	grid, err := readGrid("./input/3.txt")
 	if err != nil {
 		return err
 	}

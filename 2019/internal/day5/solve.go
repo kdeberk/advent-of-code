@@ -2,6 +2,7 @@ package day5
 
 import (
 	"fmt"
+
 	"github.com/kdeberk/advent-of-code/2019/internal/utils"
 )
 
@@ -34,7 +35,7 @@ func part2(machine utils.Machine) (int64, error) {
 }
 
 func Solve() error {
-	program, err := utils.ReadProgram("day5/5.txt")
+	program, err := utils.ReadProgram("./input/5.txt")
 	if err != nil {
 		return err
 	}

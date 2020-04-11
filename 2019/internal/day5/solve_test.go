@@ -2,6 +2,7 @@ package day5
 
 import (
 	"testing"
+
 	"github.com/kdeberk/advent-of-code/2019/internal/utils"
 )
 
@@ -24,6 +25,6 @@ func TestPart2(t *testing.T) {
 
 	answer, _ := part2(machine)
 	if part2Answer != answer {
-		t.Errorf("part1(input) == %d, want %d", answer, part2Answer)
+		t.Errorf("part2(input) == %d, want %d", answer, part2Answer)
 	}
 }

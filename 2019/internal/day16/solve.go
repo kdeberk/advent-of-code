@@ -2,6 +2,7 @@ package day16
 
 import (
 	"fmt"
+
 	"github.com/kdeberk/advent-of-code/2019/internal/utils"
 )
 
@@ -91,7 +92,7 @@ func part2(numbers []int) int {
 }
 
 func Solve() error {
-	line, err := utils.ReadSingleLine("day16/16.txt")
+	line, err := utils.ReadSingleLine("./input/16.txt")
 	if err != nil {
 		return err
 	}

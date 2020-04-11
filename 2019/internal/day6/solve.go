@@ -33,7 +33,7 @@ func part2(a_tree *tree) int {
 }
 
 func Solve() error {
-	tree, err := readTree("day6/6.txt")
+	tree, err := readTree("./input/6.txt")
 	if err != nil {
 		return err
 	}

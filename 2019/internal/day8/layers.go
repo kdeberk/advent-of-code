@@ -1,8 +1,8 @@
 package day8
 
 import (
-	"strings"
 	"github.com/kdeberk/advent-of-code/2019/internal/utils"
+	"strings"
 )
 
 const imageWidth = 25

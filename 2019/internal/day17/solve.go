@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+
 	"github.com/kdeberk/advent-of-code/2019/internal/utils"
 )
 
@@ -281,7 +282,7 @@ ReadAnswerLoop:
 }
 
 func Solve() error {
-	program, err := utils.ReadProgram("day17/17.txt")
+	program, err := utils.ReadProgram("./input/17.txt")
 	if err != nil {
 		return err
 	}

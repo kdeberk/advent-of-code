@@ -5,6 +5,7 @@ import (
 	"math/big"
 	"regexp"
 	"strconv"
+
 	"github.com/kdeberk/advent-of-code/2019/internal/utils"
 )
 
@@ -127,7 +128,7 @@ func part2(steps []step) int {
 }
 
 func Solve() error {
-	steps, err := readSteps("day22/22.txt")
+	steps, err := readSteps("./input/22.txt")
 	if err != nil {
 		return err
 	}

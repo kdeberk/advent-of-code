@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
 	"github.com/kdeberk/advent-of-code/2019/internal/utils"
 )
 
@@ -45,7 +46,7 @@ func answerPrompt(ch chan int64, answer string) {
 }
 
 func Solve() error {
-	program, err := utils.ReadProgram("day25/25.txt")
+	program, err := utils.ReadProgram("./input/25.txt")
 	if err != nil {
 		return err
 	}

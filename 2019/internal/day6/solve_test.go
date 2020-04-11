@@ -27,6 +27,6 @@ func TestPart2(t *testing.T) {
 
 	answer := part2(&tree)
 	if part2Answer != answer {
-		t.Errorf("part1(input) == %d, want %d", answer, part2Answer)
+		t.Errorf("part2(input) == %d, want %d", answer, part2Answer)
 	}
 }

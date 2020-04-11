@@ -2,6 +2,7 @@ package day24
 
 import (
 	"fmt"
+
 	"github.com/kdeberk/advent-of-code/2019/internal/utils"
 )
 
@@ -163,7 +164,7 @@ func part2(grid int32) int32 {
 }
 
 func Solve() error {
-	grid, err := readGrid("day24/24.txt")
+	grid, err := readGrid("./input/24.txt")
 	if err != nil {
 		return err
 	}

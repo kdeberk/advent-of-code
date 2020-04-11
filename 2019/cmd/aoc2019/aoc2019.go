@@ -1,8 +1,12 @@
 package main
 
 import (
+	"flag"
+	"fmt"
+	"os"
+
 	"github.com/kdeberk/advent-of-code/2019/internal/day1"
- 	"github.com/kdeberk/advent-of-code/2019/internal/day10"
+	"github.com/kdeberk/advent-of-code/2019/internal/day10"
 	"github.com/kdeberk/advent-of-code/2019/internal/day11"
 	"github.com/kdeberk/advent-of-code/2019/internal/day12"
 	"github.com/kdeberk/advent-of-code/2019/internal/day13"
@@ -26,9 +30,6 @@ import (
 	"github.com/kdeberk/advent-of-code/2019/internal/day7"
 	"github.com/kdeberk/advent-of-code/2019/internal/day8"
 	"github.com/kdeberk/advent-of-code/2019/internal/day9"
-	"flag"
-	"fmt"
-	"os"
 )
 
 type Solver func() error

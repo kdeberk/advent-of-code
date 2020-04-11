@@ -3,6 +3,7 @@ package day10
 import (
 	"math"
 	"strings"
+
 	"github.com/kdeberk/advent-of-code/2019/internal/utils"
 )
 

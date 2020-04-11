@@ -3,6 +3,7 @@ package day21
 import (
 	"fmt"
 	"strings"
+
 	"github.com/kdeberk/advent-of-code/2019/internal/utils"
 )
 
@@ -52,7 +53,7 @@ func part2(program utils.Program) (int, error) {
 }
 
 func Solve() error {
-	program, err := utils.ReadProgram("day21/21.txt")
+	program, err := utils.ReadProgram("./input/21.txt")
 	if err != nil {
 		return err
 	}

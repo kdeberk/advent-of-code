@@ -11,7 +11,6 @@ func TestPart1(t *testing.T) {
 		t.Fatal("Could not open grid", err)
 	}
 
-
 	answer := part1(grid)
 	if part1Answer != answer {
 		t.Errorf("part1(input) == %d, want %d", answer, part1Answer)
@@ -24,9 +23,8 @@ func TestPart2(t *testing.T) {
 		t.Fatal("Could not open grid", err)
 	}
 
-
 	answer := part2(grid)
 	if part2Answer != answer {
-		t.Errorf("part1(input) == %d, want %d", answer, part2Answer)
+		t.Errorf("part2(input) == %d, want %d", answer, part2Answer)
 	}
 }

@@ -2,6 +2,7 @@ package day8
 
 import (
 	"fmt"
+
 	"github.com/kdeberk/advent-of-code/2019/internal/utils"
 )
 
@@ -25,11 +26,11 @@ func part1(layers []layer) int {
 }
 
 func part2(layers []layer) string {
-	return renderLayer(combineLayers(layers))
+	return utils.TrimASCIIArt(renderLayer(combineLayers(layers)))
 }
 
 func Solve() error {
-	layers, err := readLayers("day8/8.txt")
+	layers, err := readLayers("./input/8.txt")
 	if err != nil {
 		return err
 	}

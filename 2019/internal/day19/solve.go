@@ -2,6 +2,7 @@ package day19
 
 import (
 	"fmt"
+
 	"github.com/kdeberk/advent-of-code/2019/internal/utils"
 )
 
@@ -51,7 +52,7 @@ SearchLoop:
 }
 
 func Solve() error {
-	program, err := utils.ReadProgram("day19/19.txt")
+	program, err := utils.ReadProgram("./input/19.txt")
 	if err != nil {
 		return err
 	}

@@ -1,8 +1,8 @@
 package day2
 
 import (
-	"testing"
 	"github.com/kdeberk/advent-of-code/2019/internal/utils"
+	"testing"
 )
 
 const part1Answer = 9581917
@@ -14,7 +14,6 @@ func TestPart1(t *testing.T) {
 		t.Fatal("Could not open program", err)
 	}
 
-	
 	machine := utils.MakeMachine("day2", program)
 
 	answer, _ := part1(machine)
@@ -29,7 +28,6 @@ func TestPart2(t *testing.T) {
 		t.Fatal("Could not open program", err)
 	}
 
-	
 	machine := utils.MakeMachine("day2", program)
 
 	answer, _ := part2(machine)

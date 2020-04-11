@@ -2,15 +2,19 @@ package day8
 
 import (
 	"testing"
+
+	"github.com/kdeberk/advent-of-code/2019/internal/utils"
 )
 
 const part1Answer = 1320
-const part2Answer = `###   ##  #   ##  # ###  
-#  # #  # #   ## #  #  # 
-#  # #     # # ##   #  # 
-###  #      #  # #  ###  
-# #  #  #   #  # #  # #  
-#  #  ##    #  #  # #  # `
+const part2Answer = `
+###   ##  #   ##  # ###
+#  # #  # #   ## #  #  #
+#  # #     # # ##   #  #
+###  #      #  # #  ###
+# #  #  #   #  # #  # #
+#  #  ##    #  #  # #  #
+`
 
 func TestPart1(t *testing.T) {
 	layers, err := readLayers("../../input/8.txt")
@@ -27,11 +31,13 @@ func TestPart1(t *testing.T) {
 func TestPart2(t *testing.T) {
 	layers, err := readLayers("../../input/8.txt")
 	if err != nil {
-		t .Fatal("Could not read layers", err)
+		t.Fatal("Could not read layers", err)
 	}
-	answer := part2(layers)
 
-	if part2Answer != answer {
-		t.Errorf("part2(input) == \n%v, want\n%v", answer, part2Answer)
+	expected := utils.TrimASCIIArt(part2Answer)
+
+	answer := part2(layers)
+	if expected != answer {
+		t.Errorf("part2(input) == \n%v, want\n%v", answer, expected)
 	}
 }
