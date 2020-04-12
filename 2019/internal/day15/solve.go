@@ -2,10 +2,10 @@ package day15
 
 import (
 	"fmt"
-	"os"
 	"strings"
 	"time"
 
+	"github.com/kdeberk/advent-of-code/2019/internal/config"
 	"github.com/kdeberk/advent-of-code/2019/internal/utils"
 )
 
@@ -58,13 +58,13 @@ const (
 )
 
 type remoteControl struct {
-	computer utils.Machine
-	droid    coordinate
-	oxygen   coordinate
-	field    map[coordinate]thing
+	computer     utils.Machine
+	droid        coordinate
+	oxygenSystem coordinate
+	field        map[coordinate]thing
 }
 
-func makeRemoteControl(program utils.Program) remoteControl {
+func newRemoteControl(program utils.Program) *remoteControl {
 	computer := utils.MakeMachine("day15", program)
 
 	droid := coordinate{0, 0}
@@ -77,7 +77,7 @@ func makeRemoteControl(program utils.Program) remoteControl {
 	}
 	field[droid] = open
 
-	return remoteControl{
+	return &remoteControl{
 		computer,
 		droid,
 		coordinate{},
@@ -156,7 +156,7 @@ func (self *remoteControl) render() {
 	fmt.Println(builder.String())
 }
 
-func (self *remoteControl) explore(render bool) {
+func (self *remoteControl) explore() {
 	go self.computer.Run()
 
 ExploreLoop:
@@ -179,17 +179,18 @@ ExploreLoop:
 			case movedAndFoundOxygen:
 				self.droid = next
 				self.field[next] = oxygen
-				self.oxygen = next
+				self.oxygenSystem = next
 			}
 		}
-		if render {
+		if config.Render {
 			self.render()
 			time.Sleep(10 * time.Millisecond)
 		}
 	}
 }
 
-func part1(remote remoteControl) int {
+func part1(remote *remoteControl) int {
+	remote.explore()
 	steps, _ := routeToNearest(coordinate{0, 0}, oxygen, remote.field)
 	return len(steps)
 }
@@ -199,32 +200,39 @@ type depthState struct {
 	depth    int
 }
 
-func part2(remote remoteControl) int {
+func part2(remote *remoteControl) int {
 	queue := []depthState{}
-	seen := make(map[coordinate]bool)
 
-	queue = append(queue, depthState{remote.oxygen, 0})
+	queue = append(queue, depthState{remote.oxygenSystem, 0})
 
 	var current depthState
 	for 0 < len(queue) {
 		current, queue = queue[0], queue[1:]
 
-		if _, found := seen[current.position]; found {
+		switch {
+		case remote.oxygenSystem == current.position:
+			break
+		case oxygen == remote.field[current.position]:
 			continue
-		} else {
-			seen[current.position] = true
+		default:
+			remote.field[current.position] = oxygen
 		}
 
 		for _, d := range []direction{north, east, west, south} {
 			neighbor := current.position.neighbor(d)
 
-			if _, found := seen[neighbor]; found {
-				continue
-			} else if wall == remote.field[neighbor] {
+			switch remote.field[neighbor] {
+			case oxygen, wall:
 				continue
 			}
 
 			queue = append(queue, depthState{neighbor, current.depth + 1})
+
+			if config.Render {
+				remote.render()
+				time.Sleep(10 * time.Millisecond)
+			}
+
 		}
 	}
 	return current.depth
@@ -236,12 +244,11 @@ func Solve() error {
 		return err
 	}
 
-	render := "1" == os.Getenv("AOC_RENDER")
-	remote := makeRemoteControl(program)
-	remote.explore(render)
-
-	fmt.Printf("Day 15, Part 1: %d\n", part1(remote))
-	fmt.Printf("Day 15, Part 2: %d\n", part2(remote))
+	remote := newRemoteControl(program)
+	fmt.Println("Day 15, Part 1. Use a blind robot to find the Oxygen system in a maze")
+	fmt.Println(" ", part1(remote))
+	fmt.Println("Day 15, Part 2: Turn on the Oxygen system and wait until the maze is filled.")
+	fmt.Println(" ", part2(remote))
 
 	return nil
 }

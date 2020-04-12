@@ -108,3 +108,16 @@ func ReadInts(filename string, split_at func(rune) bool) ([]int, error) {
 	}
 	return numbers, nil
 }
+
+func ReadDigits(filename string) ([]int, error) {
+	line, err := ReadSingleLine(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	digits := []int{}
+	for _, r := range line {
+		digits = append(digits, int(r-'0'))
+	}
+	return digits, nil
+}

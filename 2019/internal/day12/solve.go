@@ -2,6 +2,7 @@ package day12
 
 import (
 	"fmt"
+
 	"github.com/kdeberk/advent-of-code/2019/internal/utils"
 )
 
@@ -118,8 +119,10 @@ func Solve() error {
 		moon{vector{12, -14, 18}, vector{}},
 	}
 
-	fmt.Printf("Day 12, Part 1: %d\n", part1(moons))
-	fmt.Printf("Day 12, Part 2: %d\n", part2(moons))
+	fmt.Println("Day 12, Part 1. The total energy stored in the orbits of 4 moons after 1000 steps.")
+	fmt.Println(" ", part1(moons))
+	fmt.Println("Day 12, Part 2. The length of the entire orbital cycle in steps.")
+	fmt.Println(" ", part2(moons))
 
 	return nil
 }

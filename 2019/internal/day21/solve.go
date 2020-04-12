@@ -63,13 +63,15 @@ func Solve() error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Day 21, Part 1: %d\n", answer)
+	fmt.Println("Day 21, Part 1. Program a droid that jump over the damage in the hull of the spaceship.")
+	fmt.Println(" ", answer)
 
 	answer, err = part2(program)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Day 21, Part 2: %d\n", answer)
+	fmt.Println("Day 21, Part 2. Program a droid that jump over larger holes in the hull of the spaceship.")
+	fmt.Println(" ", answer)
 
 	return nil
 }

@@ -57,8 +57,10 @@ func Solve() error {
 		return err
 	}
 
-	fmt.Printf("Day 19, Part 1: %d\n", part1(program))
-	fmt.Printf("Day 19, Part 2: %d\n", part2(program))
+	fmt.Println("Day 19, Part 1. Calculate the area of the tractor beam.")
+	fmt.Println(" ", part1(program))
+	fmt.Println("Day 19, Part 2. Determine the point at which the tractor beam can hold the spaceship.")
+	fmt.Println(" ", part2(program))
 
 	return nil
 }

@@ -92,18 +92,15 @@ func part2(numbers []int) int {
 }
 
 func Solve() error {
-	line, err := utils.ReadSingleLine("./input/16.txt")
+	digits, err := utils.ReadDigits("./input/16.txt")
 	if err != nil {
 		return err
 	}
 
-	numbers := []int{}
-	for _, r := range line {
-		numbers = append(numbers, int(r-'0'))
-	}
-
-	fmt.Printf("Day 16, Part 1: %d\n", part1(numbers))
-	fmt.Printf("Day 16, Part 2: %d\n", part2(numbers))
+	fmt.Println("Day 16, Part 1. Apply a Flawed Frequence Transform for 100 iterations.")
+	fmt.Println(" ", part1(digits))
+	fmt.Println("Day 16, Part 2. Apply the same FFT for much more iterations.")
+	fmt.Println(" ", part2(digits))
 
 	return nil
 }

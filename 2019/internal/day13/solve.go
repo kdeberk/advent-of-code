@@ -2,10 +2,10 @@ package day13
 
 import (
 	"fmt"
-	"os"
 	"strings"
 	"time"
 
+	"github.com/kdeberk/advent-of-code/2019/internal/config"
 	"github.com/kdeberk/advent-of-code/2019/internal/utils"
 )
 
@@ -51,7 +51,7 @@ const (
 func makeGame(program utils.Program) game {
 	computer := utils.MakeMachine("day13", program)
 
-	board := make([][]tile, 50)
+	board := make([][]tile, 24)
 	for i := range board {
 		board[i] = make([]tile, 50)
 	}
@@ -140,8 +140,6 @@ GameLoop:
 }
 
 func renderBoard(board [][]tile) {
-	print("\033[H\033[2J")
-
 	builder := strings.Builder{}
 	for y := 0; y < len(board); y++ {
 		for x := 0; x < len(board[y]); x++ {
@@ -173,7 +171,7 @@ func movePad(game game) int64 {
 	return stay
 }
 
-func part2(program utils.Program, render bool) (int, error) {
+func part2(program utils.Program) (int, error) {
 	game := makeGame(program)
 	go game.Start(2)
 
@@ -185,7 +183,8 @@ GameLoop:
 		case game.joystick <- movePad(game):
 		case <-game.render:
 			if ball != game.ball {
-				if true == render {
+				if config.Render {
+					print("\033[H\033[2J")
 					renderBoard(game.board)
 					time.Sleep(10 * time.Millisecond)
 				}
@@ -216,12 +215,14 @@ func Solve() error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Day 13, Part 1: %d\n", answer)
+	fmt.Println("Day 13, Part 1. Play breakout and count the number of blocks.")
+	fmt.Println(" ", answer)
 
-	answer, err = part2(program, "1" == os.Getenv("AOC_RENDER"))
+	answer, err = part2(program)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Day 13, Part 2: %d\n", answer)
+	fmt.Println("Day 13, Part 2. Get the highest possible score in the Breakout game.")
+	fmt.Println(" ", answer)
 	return nil
 }

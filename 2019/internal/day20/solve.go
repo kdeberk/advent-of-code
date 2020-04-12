@@ -210,8 +210,10 @@ func Solve() error {
 		return err
 	}
 
-	fmt.Printf("Day 20, Part 1: %d\n", part1(maze))
-	fmt.Printf("Day 20, Part 2: %d\n", part2(maze))
+	fmt.Println("Day 20, Part 1. Determine a path through a donut-shaped maze.")
+	fmt.Println(" ", part1(maze))
+	fmt.Println("Day 20, Part 2. Determine a path through a recursive donut-shaped maze.")
+	fmt.Println(" ", part2(maze))
 
 	return nil
 }

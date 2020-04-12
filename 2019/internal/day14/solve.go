@@ -2,6 +2,7 @@ package day14
 
 import (
 	"fmt"
+	"math"
 	"regexp"
 	"strconv"
 	"strings"
@@ -66,65 +67,74 @@ func readReactions(filename string) (map[string]reaction, error) {
 	return reactions, nil
 }
 
-func calculateRequiredOreForFuel(n_fuel int, reactions map[string]reaction) int {
-	needed, leftover := make(map[string]int, 0), make(map[string]int, 0)
-	ore_needed := 0
+func createDependencyHierarchy(reactions map[string]reaction) [][]string {
+	deps := map[string]int{"FUEL": 0}
+	queue := []string{"FUEL"}
 
-	needed["FUEL"] = n_fuel
+	maxDepth := 0
+	var current string
+	for 0 < len(queue) {
+		current, queue = queue[0], queue[1:]
 
-	for 0 < len(needed) {
-		for resource, n_needed := range needed {
-			reaction := reactions[resource]
+		depth := deps[current]
+		if maxDepth < depth {
+			maxDepth = depth
+		}
 
-			// Check previous generated leftovers
-			if n_needed < leftover[resource] {
-				n_needed = 0
-				leftover[resource] -= n_needed
-			} else {
-				n_needed -= leftover[resource]
-				leftover[resource] = 0
+		for child, _ := range reactions[current].required {
+			if child_depth, ok := deps[child]; ok && depth < child_depth {
+				// If child already exists in tree and is deep enough, then skip
+				continue
 			}
-
-			// Calculate how many reactions we need to execute
-			var n_reactions int
-			if 0 == n_needed%reaction.quantity {
-				n_reactions = n_needed / reaction.quantity
-			} else {
-				n_reactions = n_needed/reaction.quantity + 1
-			}
-
-			// Store leftover products
-			leftover[reaction.product] += n_reactions*reaction.quantity - n_needed
-
-			// Cascade requirements
-			for required, quantity := range reaction.required {
-				if "ORE" == required {
-					ore_needed += n_reactions * quantity
-				} else {
-					needed[required] += n_reactions * quantity
-				}
-			}
-
-			delete(needed, resource)
+			deps[child] = depth + 1
+			queue = append(queue, child)
 		}
 	}
 
-	return ore_needed
+	levels := make([][]string, maxDepth+1)
+	for level := 0; level <= maxDepth; level++ {
+		levels[level] = []string{}
+	}
+
+	for resource, level := range deps {
+		levels[level] = append(levels[level], resource)
+	}
+
+	return levels
+}
+
+func requiredOreForFuel(nFuel int, reactions map[string]reaction) int {
+	hier := createDependencyHierarchy(reactions)
+
+	needed := map[string]int{}
+	for resource := range reactions {
+		needed[resource] = 0
+	}
+	needed["FUEL"] = nFuel
+
+	for _, level := range hier[:len(hier)-1] {
+		for _, resource := range level {
+			n_reactions := int(math.Ceil(float64(needed[resource]) / float64(reactions[resource].quantity)))
+
+			for dep, amount := range reactions[resource].required {
+				needed[dep] += n_reactions * amount
+			}
+		}
+	}
+
+	return needed["ORE"]
 }
 
 func part1(reactions map[string]reaction) int {
-	return calculateRequiredOreForFuel(1, reactions)
+	return requiredOreForFuel(1, reactions)
 }
 
 func part2(reactions map[string]reaction) int {
-	var n_fuel int
-	for n_fuel = 1_800_000; ; n_fuel++ {
-		n_ore := calculateRequiredOreForFuel(n_fuel, reactions)
+	oneFuel := requiredOreForFuel(1, reactions)
+	ratio := 10e12 / oneFuel
 
-		if 1_000_000_000_000 < n_ore {
-			return n_fuel - 1
-		}
-	}
+	// Don't ask me, I don't know how this works...
+	return int(float64(ratio) * (float64(10e11) / float64(requiredOreForFuel(ratio, reactions))))
 }
 
 func Solve() error {
@@ -133,8 +143,10 @@ func Solve() error {
 		return err
 	}
 
-	fmt.Printf("Day 14, Part 1: %d\n", part1(reactions))
-	fmt.Printf("Day 14, Part 2: %d\n", part2(reactions))
+	fmt.Println("Day 14, Part 1. Calculate the minimum amount of ORE needed to produce 1 FUEL")
+	fmt.Println(" ", part1(reactions))
+	fmt.Println("Day 14, Part 2. Calculate the amount of FUEL that can be produced given 10**12 ORE")
+	fmt.Println(" ", part2(reactions))
 
 	return nil
 }

@@ -2,9 +2,10 @@ package day10
 
 import (
 	"fmt"
-	"os"
 	"sort"
 	"time"
+
+	"github.com/kdeberk/advent-of-code/2019/internal/config"
 )
 
 func bestAsteroid(asteroids []asteroid) (asteroid, int) {
@@ -75,8 +76,6 @@ func groupAsteroidsBySlope(laser asteroid, asteroids []asteroid) (map[slope][]as
 }
 
 func part2(asteroids []asteroid) int {
-	render := "1" == os.Getenv("AOC_RENDER")
-
 	laser, _ := bestAsteroid(asteroids)
 	groups, slopes := groupAsteroidsBySlope(laser, asteroids)
 
@@ -89,7 +88,7 @@ SearchAndDestroy:
 				blownUp, groups[slope] = groups[slope][0], groups[slope][1:]
 				nBlownUp += 1
 
-				if true == render {
+				if config.Render {
 					fmt.Println("\033[H\033[2J")
 					fmt.Println("Asteroids blown up: ", nBlownUp)
 					fmt.Println(renderAsteroidField(laser, blownUp, groups))

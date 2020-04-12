@@ -55,22 +55,6 @@ func mod(a, b int) int {
 	return m
 }
 
-func applyStepsKeepTrackOf(steps []step, card int, n_cards int) int {
-	position := card
-
-	for _, step := range steps {
-		switch step.kind {
-		case deal_into_new_stack:
-			position = n_cards - position - 1
-		case cut:
-			position = mod(position-step.value, n_cards)
-		case deal_with_increment:
-			position = mod(position*step.value, n_cards)
-		}
-	}
-	return position
-}
-
 func calcLinear(steps []step, exp, mod *big.Int) (*big.Int, *big.Int) {
 	increment, offset := big.NewInt(1), big.NewInt(0)
 
@@ -92,7 +76,20 @@ func calcLinear(steps []step, exp, mod *big.Int) (*big.Int, *big.Int) {
 }
 
 func part1(steps []step) int {
-	return applyStepsKeepTrackOf(steps, 2019, 10_007)
+	position := 2019
+	n_cards := 10_007
+
+	for _, step := range steps {
+		switch step.kind {
+		case deal_into_new_stack:
+			position = n_cards - position - 1
+		case cut:
+			position = mod(position-step.value, n_cards)
+		case deal_with_increment:
+			position = mod(position*step.value, n_cards)
+		}
+	}
+	return position
 }
 
 func part2(steps []step) int {
@@ -118,7 +115,7 @@ func part2(steps []step) int {
 	inv.Sub(big.NewInt(1), increment_mul)               // inv := inv(1 - increment_mul)
 	inv.Exp(&inv, &exp, n_cards)                        //
 	offset.Mul(offset_diff, &pow)                       // offset := offset_diff * (1 - (increment_mul^n_iterations mod n_cards)) * inv(1 - increment_mul)
-	offset.Mul(&offset, &inv)                           //  This is the formula of the geometric series a + ar + ar^2 + .. + ar^(n-1)= a + (1 - r^n) * inv(1 - r)
+	offset.Mul(&offset, &inv)                           //  This is the formula of the geometric series a + ar + ar^2 + .. + ar^(n-1) = a + (1 - r^n) * inv(1 - r)
 
 	answer.Mul(position, &increment) // answer := increment * n + offset (mod n_cards)
 	answer.Add(&answer, &offset)
@@ -133,7 +130,9 @@ func Solve() error {
 		return err
 	}
 
-	fmt.Println("Day 22, Part 1:", part1(steps))
-	fmt.Println("Day 22, Part 2:", part2(steps))
+	fmt.Println("Day 22, Part 1. Shuffle a deck of 10_007 cards.")
+	fmt.Println(" ", part1(steps))
+	fmt.Println("Day 22, Part 2. Shuffle a deck of 119_315_717_514_047 cards")
+	fmt.Println(" ", part2(steps))
 	return nil
 }

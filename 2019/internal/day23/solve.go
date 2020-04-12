@@ -159,13 +159,15 @@ func Solve() error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("Day 23, Part 1:", answer)
+	fmt.Println("Day 23, Part 1. Run 50 computers with the same code and let them communicate. The first message to address 255.")
+	fmt.Println(" ", answer)
 
 	answer, err = part2(program)
 	if err != nil {
 		return err
 	}
-	fmt.Println("Day 23, Part 2:", answer)
+	fmt.Println("Day 23, Part 2. Keep restarting the system when the network goes idle. The first message written twice to address 0.")
+	fmt.Println(" ", answer)
 
 	return nil
 }

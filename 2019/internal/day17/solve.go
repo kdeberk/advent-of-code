@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
+	"github.com/kdeberk/advent-of-code/2019/internal/config"
 	"github.com/kdeberk/advent-of-code/2019/internal/utils"
 )
 
@@ -259,12 +261,19 @@ func part2(program utils.Program) (int, error) {
 			return 0, err
 		}
 	}
-	err = answerPrompt(&robot, "Continuous video feed", "N")
+
+	videoFeed := "N"
+	if config.Render {
+		videoFeed = "Y"
+	}
+	err = answerPrompt(&robot, "Continuous video feed", videoFeed)
 	if err != nil {
 		return 0, err
 	}
 
 	var answer int64
+	var r, prev rune
+	builder := strings.Builder{}
 ReadAnswerLoop:
 	for {
 		select {
@@ -275,6 +284,18 @@ ReadAnswerLoop:
 				break ReadAnswerLoop
 			}
 		case answer = <-robot.Output:
+			if config.Render {
+				r = rune(answer)
+				if '\n' == r && r == prev {
+					fmt.Print("\033[H\033[2J")
+					fmt.Println(builder.String())
+					time.Sleep(10 * time.Millisecond)
+					builder.Reset()
+				} else {
+					builder.WriteRune(r)
+				}
+				prev = r
+			}
 		}
 	}
 
@@ -292,12 +313,14 @@ func Solve() error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("Day 17, Part 1:", answer)
+	fmt.Println("Day 17, Part 1. Calibrate the camera pointing at a scaffold")
+	fmt.Println(" ", answer)
 
 	answer, err = part2(program)
 	if err != nil {
 		return err
 	}
-	fmt.Println("Day 17, Part 2:", answer)
+	fmt.Println("Day 17, Part 2. Turn on a vacuum robot and let it navigate over the scaffold.")
+	fmt.Println(" ", answer)
 	return nil
 }

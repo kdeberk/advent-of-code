@@ -2,10 +2,10 @@ package day11
 
 import (
 	"fmt"
-	"os"
 	"strings"
 	"time"
 
+	"github.com/kdeberk/advent-of-code/2019/internal/config"
 	"github.com/kdeberk/advent-of-code/2019/internal/utils"
 )
 
@@ -155,13 +155,12 @@ func renderHull(hull surface, r *robot) string {
 }
 
 func part2(program utils.Program) (string, error) {
-	render := "1" == os.Getenv("AOC_RENDER")
 	machine := utils.MakeMachine("day11", program)
 
 	hull := surface{}
 	painter := &robot{machine, coordinate{0, 0}, north, painting}
 	hull[painter.location] = white
-	painter.paintHull(hull, render)
+	painter.paintHull(hull, config.Render)
 
 	return utils.TrimASCIIArt(renderHull(hull, painter)), nil
 }

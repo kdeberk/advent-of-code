@@ -2,6 +2,8 @@ package day18
 
 import (
 	"fmt"
+	"strings"
+	"time"
 
 	"github.com/kdeberk/advent-of-code/2019/internal/utils"
 )
@@ -9,6 +11,8 @@ import (
 type coordinate struct {
 	x, y int
 }
+
+// TODO: this could be fun to visualize
 
 func (self coordinate) neighbors() []coordinate {
 	return []coordinate{
@@ -51,13 +55,13 @@ type maze struct {
 	grid      [][]rune
 }
 
-func makeMaze(height, width int) maze {
+func newMaze(height, width int) *maze {
 	grid := make([][]rune, height)
 	for y := 0; y < height; y += 1 {
 		grid[y] = make([]rune, width)
 	}
 
-	return maze{[]entrance{}, make(map[rune]key, 0), grid}
+	return &maze{[]entrance{}, make(map[rune]key, 0), grid}
 }
 
 type gatherState struct {
@@ -67,7 +71,7 @@ type gatherState struct {
 	door_bitmap int64
 }
 
-func gatherPaths(from rune, start coordinate, maze maze) []path {
+func gatherPaths(from rune, start coordinate, maze *maze) []path {
 	seen := make(map[coordinate]bool, len(maze.grid)*len(maze.grid[0]))
 	queue := []gatherState{}
 	paths := []path{}
@@ -105,13 +109,13 @@ func gatherPaths(from rune, start coordinate, maze maze) []path {
 	return paths
 }
 
-func readMaze(filename string) (maze, error) {
+func readMaze(filename string) (*maze, error) {
 	lines, err := utils.ReadLines(filename)
 	if err != nil {
-		return makeMaze(0, 0), err
+		return newMaze(0, 0), err
 	}
 
-	maze := makeMaze(len(lines), len(lines[0]))
+	maze := newMaze(len(lines), len(lines[0]))
 
 	for y, line := range lines {
 		for x, r := range line {
@@ -207,6 +211,9 @@ func collectKeys(state collectKeysState, best int, maze *maze, cache cache) int 
 			}
 
 			state.traversePath(i, path)
+			// if config.Render {
+			// 	renderMaze(maze)
+			// }
 			score := collectKeys(state, best, maze, cache)
 			state.backtrack(i, path)
 
@@ -217,6 +224,30 @@ func collectKeys(state collectKeysState, best int, maze *maze, cache cache) int 
 	}
 	cache[state] = best
 	return best
+}
+
+func renderMaze(maze *maze) {
+	builder := strings.Builder{}
+	builder.WriteString("\033[H\033[2J")
+	for y := 0; y < len(maze.grid); y++ {
+		for x := 0; x < len(maze.grid[0]); x++ {
+			switch ch := maze.grid[y][x]; {
+			case 'a' <= ch && ch <= 'z':
+				builder.WriteString("\033[1;31m")
+				builder.WriteRune(ch)
+				builder.WriteString("\033[0m")
+			case 'A' <= ch && ch <= 'Z':
+				builder.WriteString("\033[1;32m")
+				builder.WriteRune(ch)
+				builder.WriteString("\033[0m")
+			default:
+				builder.WriteRune(maze.grid[y][x])
+			}
+		}
+		builder.WriteRune('\n')
+	}
+	fmt.Println(builder.String())
+	time.Sleep(20 * time.Millisecond)
 }
 
 func collectKeysInMaze(maze *maze) int {
@@ -245,20 +276,22 @@ func collectKeysInMaze(maze *maze) int {
 }
 
 func Solve() error {
-	var maze maze
+	var maze *maze
 	var err error
 
 	maze, err = readMaze("./input/18_part1.txt")
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Day 18, Part 1: %d\n", collectKeysInMaze(&maze))
+	fmt.Println("Day 18, Part 1. Let a robot navigate a vault with keys and doors.")
+	fmt.Println(" ", collectKeysInMaze(maze))
 
 	maze, err = readMaze("./input/18_part2.txt")
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Day 18, Part 2: %d\n", collectKeysInMaze(&maze))
+	fmt.Println("Day 18, Part 2. Let 4 robots navigate 4 vaults in parallel.")
+	fmt.Println(" ", collectKeysInMaze(maze))
 
 	return nil
 }

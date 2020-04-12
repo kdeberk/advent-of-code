@@ -169,8 +169,10 @@ func Solve() error {
 		return err
 	}
 
-	fmt.Println("Day 24, Part 1:", part1(grid))
-	fmt.Println("Day 24, Part 2:", part2(grid))
+	fmt.Println("Day 24, Part 1. Measure the biodiversity rate on Eris.")
+	fmt.Println(" ", part1(grid))
+	fmt.Println("Day 24, Part 2. Measure the biodiversity on a recursive Plutonian grid.")
+	fmt.Println(" ", part2(grid))
 
 	return nil
 }
