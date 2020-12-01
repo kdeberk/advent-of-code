@@ -1,14 +1,13 @@
 (ns aoc.2020.day1)
 
 (defn combinations [m coll] 
-  (letfn [(comb [m start]
+  (letfn [(comb [m coll]
             (if (= 1 m)
-              (for [x (subvec coll start)]
-                (list x))
-              (for [x (range start (count coll))
-                    xs (comb (dec m) (inc x))]
-                (cons (get coll x) xs))))]
-    (comb m 0)))
+              (map list coll)
+              (for [[i x] (map-indexed vector coll)
+                    xs    (comb (dec m) (subvec coll (inc i)))]
+                (cons x xs))))]
+    (comb m coll)))
 
 (defn calc-expense-report [input size]
   (map (fn [t] (apply * t))
