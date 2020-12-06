@@ -16,7 +16,7 @@
   (count (filter valid-fn (parse-batch-file input))))
 
 (defn all-fields-present? [passport]
-  (every? #(contains? passport %) [:ecl :pid :eyr :hcl :byr :iyr :hgt]))
+  (every? passport [:ecl :pid :eyr :hcl :byr :iyr :hgt]))
 
 (defn part1 [input]
   (count-valid input all-fields-present?))

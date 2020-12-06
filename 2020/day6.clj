@@ -7,7 +7,8 @@
        (.split input "\n\n")))
 
 (defn count-questions [input fn]
-  (apply + (map #(count (apply fn %)) (parse-input input))))
+  (apply + (map #(count (apply fn %))
+                (parse-input input))))
 
 (defn part1 [input]
   (count-questions input union))
