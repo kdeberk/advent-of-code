@@ -15,31 +15,28 @@
 (defn parse-rules [input]
   (apply merge-with union
          (map parse-rule
-              (.split input "\n"))))
+                (.split input "\n"))))
 
-(defn all-parents [b bags]
-  (letfn [(search [c found]
-            (if-let [ps (bags c)]
-              (map #(search % (union found #{%})) ps)
+(defn find-all-parents [bag child-to-parents]
+  (letfn [(search [b found]
+            (if-let [parents (child-to-parents b)]
+              (apply union (map #(search % (conj found %)) parents))
               found))]
-    (apply union (flatten (search b #{})))))
+    (search bag #{})))
 
 (defn part1 [input]
   (let [rules (parse-rules input)
         child-to-parents (apply merge-with union
-                                (flatten
-                                 (map (fn [[p cs]]
-                                        (map (fn [[_ c]] {c #{p}}) cs))
-                                      rules)))]
-    (count (all-parents "shiny gold" child-to-parents))))
+                                (mapcat (fn [[parent children]]
+                                          (map (fn [[_ child]] {child #{parent}}) children))
+                                        rules))]
+    (count (find-all-parents "shiny gold" child-to-parents))))
 
 (defn count-bag+children [bag rules]
   (let [cs (rules bag)]
-    (if (< 0 (count cs))
-      (apply + 1 (map (fn [[n c]]
-                        (* n (count-children c rules)))
-                      cs))
-      1)))
+    (apply + 1 (map (fn [[n c]]
+                      (* n (count-bag+children c rules)))
+                    cs))))
 
 (defn part2 [input]
   (let [rules (parse-rules input)]
