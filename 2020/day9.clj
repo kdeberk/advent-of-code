@@ -1,13 +1,5 @@
-(ns aoc.2020.day9)
-
-(defn combinations [m coll] 
-  (letfn [(comb [m coll]
-            (if (= 1 m)
-              (map list coll)
-              (for [[i x] (map-indexed vector coll)
-                    xs    (comb (dec m) (subvec coll (inc i)))]
-                (cons x xs))))]
-    (comb m coll)))
+(ns aoc.2020.day9
+  (:require [aoc.2020.utils :refer [combinations]]))
 
 (defn parse-input [input]
   (vec (map #(Long/parseLong %) (.split input "\n"))))
@@ -25,14 +17,14 @@
 (defn part2 [input len-preamble]
   (let [numbers (parse-input input)
         to-find (part1 input len-preamble)]
-    (letfn [(find-starting-at [i len]
-              (let [xs (subvec numbers i (+ i len))
-                    sum (apply + xs)]
-                (cond
-                  (< to-find sum) nil
-                  (= to-find sum) (+ (apply min xs) (apply max xs))
-                  :else (recur i (inc len)))))
-            (find-from [i]
-              (or (find-starting-at i 2)
-                  (recur (inc i))))]
-      (find-from 0))))
+    (letfn [(find-fixed-beg [beg end sum]
+              (cond
+                (< to-find sum) nil
+                (= to-find sum) (let [xs (subvec numbers beg end)]
+                                  (+ (apply min xs) (apply max xs)))
+                :else (recur beg (inc end) (+ sum (numbers end)))))
+            (find [beg]
+              (or (let [end (+ beg 2)]
+                    (find-fixed-beg beg end (apply + (subvec numbers beg end))))
+                  (recur (inc beg))))]
+      (find 0))))
