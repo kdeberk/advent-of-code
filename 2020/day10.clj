@@ -5,28 +5,21 @@
                   (.split input "\n" )))))
 
 (defn part1 [input]
-  (letfn [(count-diffs [cur as ds]
-            (if (empty? as)
-              ds
-              (let [[a & as] as
-                    d (- a cur)]
-                (if (ds d)
-                  (recur a as (update ds d inc))
-                  (recur a as (assoc ds d 1))))))]
-    (let [adapters (parse-adapters input)
-          adapters (conj adapters (+ 3 (last adapters)))
-          diffs (count-diffs 0 adapters {})]
-      (* (diffs 1) (diffs 3)))))
+  (let [numbers (parse-adapters input)
+        [_ counts] (reduce (fn [[prev diffs] cur]
+                             (let [d (- cur prev)]
+                               [cur (assoc diffs d (inc (get diffs d 0)))]))
+                           [0 {}]
+                           (conj numbers (+ (last numbers) 3)))]
+    (* (counts 1) (counts 3))))
 
 
 (defn part2 [input]
-  (letfn [(count-combinations [cur as]
-            (if (empty? as)
-              {cur 1}
-              (let [xs (count-combinations (first as) (rest as))]
-                (assoc xs cur (+ (get xs (+ cur 1) 0)
-                                 (get xs (+ cur 2) 0)
-                                 (get xs (+ cur 3) 0))))))]
-    (let [adapters (parse-adapters input)
-          counts (count-combinations 0 adapters)]
-      (counts 0))))
+  (let [adapters (parse-adapters input)
+        counts (reduce (fn [cs cur]
+                         (assoc cs cur (+ (get cs (+ cur 1) 0)
+                                          (get cs (+ cur 2) 0)
+                                          (get cs (+ cur 3) 0))))
+                       {(+ 3 (last adapters)) 1}
+                       (reverse (cons 0 adapters)))]
+    (counts 0)))
