@@ -1,3 +1,7 @@
+(defpackage #:day1
+  (:use :cl))
+(in-package #:day1)
+
 (defun part1 (input)
   (loop for (a b) on input
         count (and b (< a b))))
