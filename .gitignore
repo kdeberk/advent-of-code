@@ -5,8 +5,6 @@
 !*.py
 !*.rs
 !*.rb
-!*.txt
-test*.txt
 !*.test
 !*.go
 !.gitignore
