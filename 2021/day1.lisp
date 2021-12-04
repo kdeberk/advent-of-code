@@ -1,7 +1,7 @@
 (in-package #:day1)
 
-(defvar *input* (read-numbers "day1.txt"))
-(defvar *test-input* (read-numbers "day1_test.txt"))
+(defvar *input* (utils:read-numbers "day1.txt"))
+(defvar *test-input* (utils:read-numbers "day1_test.txt"))
 
 (defun part1 (input)
   (loop for (a b) on input

@@ -1,7 +1,7 @@
 (in-package :day3)
 
-(defvar *input* (read-lines "day3.txt"))
-(defvar *test-input* (read-lines "day3_test.txt"))
+(defvar *input* (utils:read-lines "day3.txt"))
+(defvar *test-input* (utils:read-lines "day3_test.txt"))
 
 (defun string-to-bitvector (str)
   (coerce str 'list))
@@ -23,7 +23,7 @@
 
 (defun part2 (input)
   (labels ((filter (rows pos fn)
-             (let* ((bit (funcall fn (mapcar (partial #'nth pos) rows)))
+             (let* ((bit (funcall fn (mapcar (utils:partial #'nth pos) rows)))
                     (rows (remove-if-not (lambda (str) (char= bit (nth pos str))) rows)))
                (if (= 1 (length rows))
                    (first rows)

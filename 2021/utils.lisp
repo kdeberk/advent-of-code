@@ -4,14 +4,13 @@
   (with-open-file (stream (format nil "input/~a" name))
     (let ((str (make-string (file-length stream))))
       (read-sequence str stream)
-      str)))
+      (subseq str 0 (1- (length str))))))
 
 (defun read-lines (name)
-  (butlast (str:split #\Newline (read-input name))))
+  (str:split #\Newline (read-input name)))
 
 (defun read-numbers (name)
   (mapcar #'parse-integer (read-lines name)))
-
 
 (defmacro stringcase (expr &body entries)
   (let ((val (gensym)))
