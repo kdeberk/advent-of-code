@@ -31,3 +31,8 @@
           ("down" (incf (aim sub) x))
           ("up" (decf (aim sub) x)))))
     (* (depth sub) (horizontal sub))))
+
+
+(define-test day2
+  (is = 150 (part1 *test-input*))
+  (is = 900 (part2 *test-input*)))

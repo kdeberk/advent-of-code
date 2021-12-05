@@ -59,3 +59,7 @@
     (dolist (line lines)
       (trace-line grid line))
     (count-overlaps grid)))
+
+(define-test day5
+  (is = 5 (part1 *test-input*))
+  (is = 12 (part2 *test-input*)))

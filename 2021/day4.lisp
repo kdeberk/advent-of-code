@@ -39,8 +39,8 @@
           do (loop for board in boards
                    do (progn
                         (cross-out n board)
-                        (if (bingo? board)
-                            (return-from part1 (* n (score board)))))))))
+                        (when (bingo? board)
+                          (return-from part1 (* n (score board)))))))))
 
 (defun part2 (input)
   (destructuring-bind (numbers boards) (read-boards input)
@@ -49,3 +49,8 @@
                (when (not open)
                  (return-from part2 (* n (score (first boards)))))
                (setf boards open)))))
+
+
+(define-test day4
+  (is = 4512 (part1 *test-input*))
+  (is = 1924 (part2 *test-input*)))

@@ -10,3 +10,7 @@
 (defun part2 (input)
   (part1 (loop for (a b c) on input
                if (and b c) collect (+ a b c))))
+
+(define-test day1
+  (is = 7 (part1 *test-input*))
+  (is = 5 (part2 *test-input*)))
