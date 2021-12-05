@@ -12,42 +12,40 @@
                       (make-array '(5 5) :initial-contents (read-from-string board))))
                   boards))))
 
-(defun cross-out (board n)
-  (dotimes (i 5)
-    (dotimes (j 5)
-      (when (eq n (aref board i j))
-        (setf (aref board i j) nil)))))
+(defun cross-out (n board)
+  (loop for i from 0 below 5
+        do (loop for j from 0 below 5
+                 when (eq n (aref board i j))
+                   do (setf (aref board i j) nil)))
+  board)
 
 (defun bingo? (board)
   (labels ((crossed-out-rowcol? (getcell)
              (loop for i from 0 below 5
-                   if (funcall getcell i) return nil
-                     finally (return t))))
+                   always (null (funcall getcell i)))))
     (loop for i from 0 below 5
           if (or (crossed-out-rowcol? (lambda (row) (aref board row i)))
                  (crossed-out-rowcol? (lambda (col) (aref board i col))))
             return t)))
 
 (defun score (board)
-  (let ((sum 0))
-    (dotimes (i 5)
-      (dotimes (j 5)
-        (incf sum (or (aref board i j) 0))))))
+  (loop for i from 0 below 5
+        sum (loop for j from 0 below 5
+                  sum (or (aref board i j) 0))))
 
 (defun part1 (input)
   (destructuring-bind (numbers boards) (read-boards input)
-    (dolist (n numbers)
-      (dolist (board boards)
-        (cross-out board n)
-        (if (bingo? board)
-            (return-from part1 (* n (score board))))))))
+    (loop for n in numbers
+          do (loop for board in boards
+                   do (progn
+                        (cross-out n board)
+                        (if (bingo? board)
+                            (return-from part1 (* n (score board)))))))))
 
 (defun part2 (input)
   (destructuring-bind (numbers boards) (read-boards input)
-    (dolist (n numbers)
-      (dolist (board boards)
-        (cross-out board n))
-      (let ((open (remove-if #'bingo? boards)))
-        (when (not open)
-          (return-from part2 (* n (score (first boards)))))
-        (setf boards open)))))
+    (loop for n in numbers
+          do (let* ((open (remove-if #'bingo? (mapcar (utils:partial #'cross-out n) boards))))
+               (when (not open)
+                 (return-from part2 (* n (score (first boards)))))
+               (setf boards open)))))
