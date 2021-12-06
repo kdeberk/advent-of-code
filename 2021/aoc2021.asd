@@ -5,7 +5,8 @@
                (:file "day2" :depends-on ("utils"))
                (:file "day3" :depends-on ("utils"))
                (:file "day4" :depends-on ("utils"))
-               (:file "day5" :depends-on ("utils")))
+               (:file "day5" :depends-on ("utils"))
+               (:file "day6" :depends-on ("utils")))
   :depends-on (:parachute :cl-ppcre :str))
 
 (defpackage #:utils
@@ -25,4 +26,7 @@
   (:use :cl :parachute))
 
 (defpackage #:day5
+  (:use :cl :parachute))
+
+(defpackage #:day6
   (:use :cl :parachute))

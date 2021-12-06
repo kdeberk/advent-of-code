@@ -10,7 +10,7 @@
   (str:split #\Newline (read-input name)))
 
 (defun read-numbers (name)
-  (mapcar #'parse-integer (read-lines name)))
+  (mapcar #'parse-integer (cl-ppcre:split "[^0-9]+" (read-input name))))
 
 (defmacro stringcase (expr &body entries)
   (let ((val (gensym)))
