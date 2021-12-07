@@ -1,5 +1,6 @@
 (asdf:defsystem "aoc2021"
   :description "Code for the Advent of Code 2021 Challenge"
+  :depends-on (:parachute :cl-ppcre :str)
   :components ((:file "utils")
                (:file "matrix")
                (:file "day1" :depends-on ("utils"))
@@ -7,8 +8,8 @@
                (:file "day3" :depends-on ("utils"))
                (:file "day4" :depends-on ("utils"))
                (:file "day5" :depends-on ("utils"))
-               (:file "day6" :depends-on ("utils" "matrix")))
-  :depends-on (:parachute :cl-ppcre :str))
+               (:file "day6" :depends-on ("utils" "matrix"))
+               (:file "day7" :depends-on ("utils"))))
 
 (defpackage #:utils
   (:use :cl :str)
@@ -34,4 +35,7 @@
   (:use :cl :parachute))
 
 (defpackage #:day6
+  (:use :cl :parachute))
+
+(defpackage #:day7
   (:use :cl :parachute))
