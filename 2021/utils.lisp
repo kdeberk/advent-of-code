@@ -23,3 +23,7 @@
 (defun partial (fn &rest args1)
   (lambda (&rest args2)
     (apply fn (append args1 args2))))
+
+(defmacro if-let ((var test-form) then-form &optional else-form)
+  `(let ((,var ,test-form))
+     (if ,var ,then-form ,else-form)))
