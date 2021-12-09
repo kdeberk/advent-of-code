@@ -2,57 +2,50 @@
 
 This year I will try to solve the challenges using Common Lisp.
 
-## Day 1: Sonar Sweep
-### Part 1: Consecutive pairs
-Goal: Given a list of numbers, count how many times a number is bigger than its predecessor.
+Some interesting solutions follow:
 
-One of the many features that `loop` provides, is a sliding window over a sequence, with the form `loop for (a b) on l`.  For example, to print all consecutive pairs in the list `(1 2 3 4)`:
+## Day 6: Laternfish
 
-```lisp
-> (loop for (a b) on (list 1 2 3 4)
-         do (print (list a b)))
+The problem describes a school of Lanternfish that each day grows in size with discrete steps where each fish of a certain age spawns to produce a single new fish.
 
-(1 2)
-(2 3)
-(3 4)
-(4 NIL)
-```
+To simplify the problem statement, we can group the individual fishes by their spawn timers.  9 possible values exists and so the problem can be modeled as a vector of 9 integers where each integer at index `i` represents the number of fish with the timer value of `i`.
 
-We will count the number of times that the second number in the pair is larger than the first number, but we must ignore the final pair because not only does it not represent an actual pair in the list, but also because `>` will raise an error when one it's argument is not a number.
+Each day, we do the following:
 
-```lisp
-> (loop for (a b) on (list 199 200 208 210 200 207 240 269 260 263)
-        count (and b (< a b)))
-7
-```
+1. Shift the vector one place to the left.
+2. The number that was original at the first place is no longer in the vector.  Push it back to the last place and also add it to the value at the 6th place
 
-# Part 2: 3-Measurement windows
-Goal: Given a list of numbers, count how many times the sum of a 3-window pair is bigger than the sum of the preceding window.
+Iterating these steps for 80 or 256 days and then summing all the numbers in the vector will produce the solution.
 
-We can solve this in nearly the same way as we solved the first part: we convert each window to a number and we will again count how often there is an increase in consecutive numbers.  The new part is to generate a number (the sum) of each window.  For this we can use the same `loop for on` feature and extend the window by one element:
+In Common Lisp, we can produce cyclic lists by point the `cdr` of the last `cons` cell of a list to the first `cons` cell of the list
 
 ```lisp
-> (loop for (a b c) on (list 1 2 3 4)
-        do (print (list a b c)))
-(1 2 3)
-(2 3 4)
-(3 4 NIL)
-(4 NIL NIL)
+> (let ((counts (list 0 1 1 2 1 0 0 0 0)))
+      (setf (cdr (last counts)) counts))
+(0 1 1 2 1 0 0 0 0 0 1 1 2 1 0 0 0 0 0 1 1 2 1 0 0 0 0 0 1 1 2 1 0 0 0 0 0 1 1
+ 2 1 0 0 0 0 0 1 1 2 1 0 0 0 0 0 1 1 2 1 0 0 0 0 0 1 1 2 1 0 0 0 0 0 1 1 2 1 0
+ ...)
 ```
-Also:
-
-- we use `if` to only consider the windows without a `NIL` value
-- we `collect` the sum of the values, instead of counting
+The implementation rotates this sequence by simply updating the reference to the next `cons` in the list.
 
 ```lisp
-> (loop for (a b c) on (list 199 200 208 210 200 207 240 269 260 263)
-        if (and b c)
-        collect (+ a b c))
-(607 618 618 617 647 716 769 792)
+(setf counts (cdr counts))
 ```
 
-Feeding this sequence into the part1 solver gives us the answer for part 2.
+### the Matrix and the Fish
 
+Using a single vector is quite a straightforward approach to this problem, but there is a nicer one that can be expressed in linear algebra.  It works as follows.
 
-## Day 2:
-## Part 1
+- We express the initial timer count as a vector (like we did in the straightforward solution): 
+
+![](img/day6_v0.png)
+
+- We express the daily change in the form of a matrix.  This matrix is similar to the `9x9` identity matrix but is shifted by one row to reflect the daily timer update.  Also, the cell at `0,6` is set to 1 to show that fishes with a timer of `0` are added to the value at position `6`.
+
+![](img/day6_A.png)
+
+- With those constants, we define the solution as the product of the vector and the matrix raised to some power:
+
+![](img/day6_part1part2.png)
+
+We can use some tricks to speed up the matrix exponentiation, but as I've not been able to find a matrix package that supports integer values, this nicer approach is slower than the earlier implementation.

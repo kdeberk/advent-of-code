@@ -10,6 +10,7 @@
 !.gitignore
 !*/
 !*clj
-!*lisp
-!*asd
-!*md
+!*.lisp
+!*.asd
+!*.md
+!*.png
