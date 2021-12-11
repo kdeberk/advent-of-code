@@ -5,16 +5,8 @@
 
 (defvar *basin-wall* 9)
 
-(defun read-grid (input)
-  (let ((lines (str:split #\Newline input)))
-    (make-array (list (length lines)
-                      (length (first lines)))
-                :initial-contents (mapcar (lambda (row)
-                                            (map 'list (lambda (ch) (- (char-code ch) (char-code #\0))) row))
-                                          lines))))
-
 (defun part1 (input)
-  (let ((grid (read-grid input)))
+  (let ((grid (utils:read-grid input :integer)))
     (destructuring-bind (width height) (array-dimensions grid)
       (loop for x from 0 below width
             sum (loop for y from 0 below height
@@ -38,7 +30,7 @@
                    do (let ((cell (aref grid x y)))
                         (unless (= cell *basin-wall*)
                           (setf (aref grid x y) (+ (* 100 (1+ x)) y))))))
-    ;; Some basic 'basin election', whereby we let each cell take over the lowest id.
+    ;; Some basic 'basin leader election', whereby we let each cell take over the lowest id.
     (loop
       (let (updated)
         (loop for x from 0 below width
@@ -64,7 +56,7 @@
       basins)))
 
 (defun part2 (input)
-  (let ((grid (read-grid input)))
+  (let ((grid (utils:read-grid input :integer)))
     (let ((counts (count-basins (mark-basins grid))))
       (apply #'* (subseq (sort (mapcar #'cdr counts) #'>) 0 3)))))
 

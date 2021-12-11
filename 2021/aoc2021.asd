@@ -1,6 +1,6 @@
 (defpackage #:utils
   (:use :cl :str)
-  (:export :read-input :read-lines :read-numbers :stringcase :partial :if-let))
+  (:export :read-input :read-lines :read-numbers :stringcase :partial :if-let :read-grid))
 
 (defpackage #:matrix
   (:use :cl)
@@ -36,6 +36,9 @@
 (defpackage #:day10
   (:use :cl :parachute))
 
+(defpackage #:day11
+  (:use :cl :parachute))
+
 (asdf:defsystem "aoc2021"
   :description "Code for the Advent of Code 2021 Challenge"
   :depends-on (:parachute :cl-ppcre :str)
@@ -50,4 +53,5 @@
                (:file "day7" :depends-on ("utils"))
                (:file "day8" :depends-on ("utils"))
                (:file "day9" :depends-on ("utils"))
-               (:file "day10" :depends-on ("utils"))))
+               (:file "day10" :depends-on ("utils"))
+               (:file "day11" :depends-on ("utils"))))

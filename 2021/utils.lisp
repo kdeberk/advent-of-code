@@ -12,6 +12,13 @@
 (defun read-numbers (name)
   (mapcar #'parse-integer (cl-ppcre:split "[^0-9]+" (read-input name))))
 
+(defun read-grid (input type)
+  (let ((lines (str:split #\Newline input)))
+    (make-array (list (length lines)
+                      (length (first lines)))
+                :initial-contents (cond ((eq type :integer) (mapcar (lambda (row)
+                                                                      (map 'list (lambda (ch) (- (char-code ch) (char-code #\0))) row))
+                                                                    lines))))))
 (defmacro stringcase (expr &body entries)
   (let ((val (gensym)))
     `(let ((,val ,expr))
