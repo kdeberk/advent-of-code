@@ -1,7 +1,7 @@
 (in-package :day10)
 
-(setf *input* (utils:read-lines "day10.txt"))
-(setf *test-input* (utils:read-lines "day10_test.txt"))
+(defvar *input* (utils:read-lines "day10.txt"))
+(defvar *test-input* (utils:read-lines "day10_test.txt"))
 
 (defvar *pairs* '((#\( . #\)) (#\[ . #\]) (#\{ . #\}) (#\< . #\>)))
 (defvar *part1-scores* '((#\) . 3) (#\] . 57) (#\} . 1197) (#\> . 25137)))
