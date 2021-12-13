@@ -7,7 +7,7 @@
 
 (defstruct (cave (:conc-name nil)
                  (:print-function (lambda (cave out depth)
-                                    (declare (ignore depth)) p;; Needed to prevent an infinite loop when printing.
+                                    (declare (ignore depth)) ;; Needed to prevent an infinite loop when printing.
                                     (format out "#S(cave :NAME ~a :NEIGHBORS ~a)" (name cave) (mapcar #'name (neighbors cave))))))
   cave-name small? start? end? neighbors visits)
 

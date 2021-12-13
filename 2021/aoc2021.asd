@@ -42,6 +42,9 @@
 (defpackage #:day12
   (:use :cl :parachute))
 
+(defpackage #:day13
+  (:use :cl :parachute))
+
 (asdf:defsystem "aoc2021"
   :description "Code for the Advent of Code 2021 Challenge"
   :depends-on (:parachute :cl-ppcre :str)
@@ -58,5 +61,5 @@
                (:file "day9" :depends-on ("utils"))
                (:file "day10" :depends-on ("utils"))
                (:file "day11" :depends-on ("utils"))
-               ;; (:file "day12" :depends-on ("utils"))
-               ))
+               (:file "day12" :depends-on ("utils"))
+               (:file "day13" :depends-on ("utils"))))
