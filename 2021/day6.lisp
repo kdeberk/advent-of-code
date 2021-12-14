@@ -23,31 +23,6 @@
 (defun part2 (input)
   (grow-lanternfish (count-fishes input) 256))
 
-;; Aternative form using matrix multiplications
-
-(defvar *laternfish-matrix* #2A((0 1 0 0 0 0 0 0 0)
-                                (0 0 1 0 0 0 0 0 0)
-                                (0 0 0 1 0 0 0 0 0)
-                                (0 0 0 0 1 0 0 0 0)
-                                (0 0 0 0 0 1 0 0 0)
-                                (0 0 0 0 0 0 1 0 0)
-                                (1 0 0 0 0 0 0 1 0)
-                                (0 0 0 0 0 0 0 0 1)
-                                (1 0 0 0 0 0 0 0 0)))
-
-(defun grow-lanternfish-alt (counts days)
-  (let ((v (matrix:*-vector (matrix:exponent *laternfish-matrix* days)
-                            (make-array 9 :initial-contents counts))))
-    (apply #'+ (coerce v 'list))))
-
-(defun part1-alt (input)
-  (grow-lanternfish-alt (count-fishes input) 80))
-
-(defun part2-alt (input)
-  (grow-lanternfish-alt (count-fishes input) 256))
-
 (define-test day6
   (is = 5934 (part1 *test-input*))
-  (is = 5934 (part1-alt *test-input*))
-  (is = 26984457539 (part2 *test-input*))
-  (is = 26984457539 (part2-alt *test-input*)))
+  (is = 26984457539 (part2 *test-input*)))

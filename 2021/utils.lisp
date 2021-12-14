@@ -34,3 +34,13 @@
 (defmacro if-let ((var test-form) then-form &optional else-form)
   `(let ((,var ,test-form))
      (if ,var ,then-form ,else-form)))
+
+(defmacro push-or-inc (item alist &rest args &key (by 1) &allow-other-keys)
+  (let ((found (gensym))
+        (assoc-args (if-let (pos (position :by args))
+                      (append (subseq args 0 pos) (subseq args (+ pos 2)))
+                      args)))
+    `(let ((,found (assoc ,item ,alist ,@assoc-args)))
+       (if ,found
+           (incf (cdr ,found) ,by)
+           (push (cons ,item ,by) ,alist)))))
