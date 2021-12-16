@@ -26,9 +26,7 @@
                                                improved t)))))
                    improved)))
         (setf (aref best 0 0) 0)
-        (loop for i from 0 below width
-              unless (dyn-pass i i)
-                do (return)))
+        (loop while (dyn-pass 0 0)))
       (aref best (1- width) (1- height)))))
 
 (defun embiggen (smaller)
@@ -38,14 +36,12 @@
             do (loop for grid-y from 0 below 5
                      do (loop for cell-x from 0 below width
                               do (loop for cell-y from 0 below height
-                                       do (progn
-                                            (setf (aref bigger (+ (* width grid-x) cell-x) (+ (* height grid-y) cell-y))
-                                                       (let ((val (+ (aref smaller cell-x cell-y)
-                                                                     grid-x grid-y)))
-                                                         (loop
-                                                           (when (< 0 val 10)
-                                                             (return val))
-                                                           (setf val (- val 9))))))))))
+                                       do (setf (aref bigger (+ (* width grid-x) cell-x) (+ (* height grid-y) cell-y))
+                                                (let ((val (+ (aref smaller cell-x cell-y)
+                                                              grid-x grid-y)))
+                                                  (if (< 0 val 10)
+                                                      val
+                                                      (mod val 9))))))))
       bigger)))
 
 (defun part1 (input)
@@ -53,3 +49,7 @@
 
 (defun part2 (input)
   (walk-path (embiggen input)))
+
+(define-test part15
+  (is = 40 (part1 *test-input*))
+  (is = 315 (part2 *test-input*)))
