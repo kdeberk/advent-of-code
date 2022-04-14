@@ -1,10 +1,12 @@
+(ql:quickload '(:str :cl-ppcre :parachute))
+
 (defpackage #:utils
   (:use :cl :str)
   (:export :read-input :read-lines :read-numbers :stringcase :partial :if-let :read-grid :push-or-inc))
 
 (defpackage #:matrix
   (:use :cl)
-  (:export :*-vector :*-matrix :exponent))
+  (:export :*-vector :*-matrix :exponent :+-vector :--vector))
 
 (defpackage #:day1
   (:use :cl :parachute))
@@ -63,6 +65,30 @@
 (defpackage #:day17
   (:use :cl :parachute))
 
+(defpackage #:day18
+  (:use :cl :parachute))
+
+(defpackage #:day19
+  (:use :cl :parachute))
+
+(defpackage #:day20
+  (:use :cl :parachute))
+
+(defpackage #:day21
+  (:use :cl :parachute))
+
+(defpackage #:day22
+  (:use :cl :parachute))
+
+(defpackage #:day23
+  (:use :cl :parachute))
+
+(defpackage #:day24
+  (:use :cl :parachute))
+
+(defpackage #:day25
+  (:use :cl :parachute))
+
 (asdf:defsystem "aoc2021"
   :description "Code for the Advent of Code 2021 Challenge"
   :depends-on (:parachute :cl-ppcre :str)
@@ -86,4 +112,12 @@
                (:file "day14-pairs" :depends-on ("utils"))
                (:file "day15" :depends-on ("utils"))
                (:file "day16" :depends-on ("utils"))
-               (:file "day17" :depends-on ("utils"))))
+               (:file "day17" :depends-on ("utils"))
+               (:file "day18" :depends-on ("utils"))
+               (:file "day19" :depends-on ("utils" "matrix"))
+               (:file "day20" :depends-on ("utils"))
+               (:file "day21" :depends-on ("utils"))
+;;               (:file "day22" :depends-on ("utils"))
+               (:file "day23" :depends-on ("utils"))
+;;               (:file "day24" :depends-on ("utils"))
+               ))

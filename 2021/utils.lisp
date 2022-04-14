@@ -18,7 +18,9 @@
                       (length (first lines)))
                 :initial-contents (cond ((eq type :integer) (mapcar (lambda (row)
                                                                       (map 'list (lambda (ch) (- (char-code ch) (char-code #\0))) row))
-                                                                    lines))))))
+                                                                    lines))
+                                        ((eq type :char) (mapcar (lambda (row) (coerce row 'list)) lines))))))
+
 (defmacro stringcase (expr &body entries)
   (let ((val (gensym)))
     `(let ((,val ,expr))
