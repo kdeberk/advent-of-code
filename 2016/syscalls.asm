@@ -1,181 +1,55 @@
 %ifndef __SYSCALLS__
 %define __SYSCALLS__
 
-%include "constants.asm"
-
-;; System calls
-SYS_CLOSE equ 6
-SYS_EXIT  equ 1
-SYS_OPEN  equ 5
-SYS_READ  equ 3
-SYS_WRITE equ 4
-
+;; Syscalls in Mac OS X works as follows:
+;; - Syscall values start at 2000000
+;; - Parameters are in registers
+;;   rax, rdi, rsi, rdx, r8, r9
 
 section .text
 
-kernel:
-  int	0x80
-  ret
+STDOUT equ 1
+STDERR equ 2
+SYSCALL_EXIT  equ 0x2000001
+SYSCALL_WRITE equ 0x2000004
 
-;; args: 2 items on the stack
-;; returns:
-;; - eax: result value of syscall
-sys_call_2:
-  push ebp
-  mov ebp, esp
+;; writeStderr(string, n)
+;; rdi: string; rsi: n
+;; Writes n bytes of the given string to stderr.
+writeStderr:
+    push rbp
+    mov rbp, rsp
 
-  push ebx
+    mov rdx, rsi                ; set length
+    mov rsi, rdi                ; set string
+    mov rdi, STDERR             ; set fd
+    mov rax, SYSCALL_WRITE      ; set syscall
+    syscall
 
-  mov eax, [FIRST_OF_TWO_ARGS]
-  mov ebx, [SECOND_OF_TWO_ARGS]
-  call kernel
+    mov rsp, rbp
+    pop rbp
+    ret
 
-  pop ebx
+;; writeStdout(string, n)
+;; rdi: string; rsi: n
+;; Writes n bytes of the given string to stdout.
+writeStdout:
+    push rbp
+    mov rbp, rsp
 
-  mov esp, ebp
-  pop ebp
-  ret
+    mov rdx, rsi                ; set length
+    mov rsi, rdi                ; set string
+    mov rdi, STDOUT             ; set fd
+    mov rax, SYSCALL_WRITE      ; set syscall
+    syscall
 
-
-;; args: 3 items on the stack
-;; returns:
-;; - eax: result value of syscall
-sys_call_3:
-  push ebp
-  mov ebp, esp
-
-  push ebx
-  push ecx
-
-  mov eax, [FIRST_OF_THREE_ARGS]
-  mov ebx, [SECOND_OF_THREE_ARGS]
-  mov ecx, [THIRD_OF_THREE_ARGS]
-  call kernel
-
-  pop ecx
-  pop ebx
-
-  mov esp, ebp
-  pop ebp
-  ret
+    mov rsp, rbp
+    pop rbp
+    ret
 
 
-;; args: 4 items on the stack
-;; returns:
-;; - eax: result value of syscall
-sys_call_4:
-  push ebp
-  mov ebp, esp
-
-  push ebx
-  push ecx
-  push edx
-
-  mov eax, [FIRST_OF_FOUR_ARGS]
-  mov ebx, [SECOND_OF_FOUR_ARGS]
-  mov ecx, [THIRD_OF_FOUR_ARGS]
-  mov edx, [FOURTH_OF_FOUR_ARGS]
-  call kernel
-
-  pop edx
-  pop ecx
-  pop ebx
-
-  mov esp, ebp
-  pop ebp
-  ret
-
-
-;; args:
-;; - file descriptor
-;; returns:
-;; - error code
-sys_close:
-  push ebp
-  mov ebp, esp
-
-  push SYS_CLOSE
-  push DWORD [SINGLE_ARG]
-  call sys_call_2
-
-  mov esp, ebp
-  pop ebp
-  ret
-
-
-;; args:
-;; - exitcode
-;; does not return
-sys_exit:
-  push ebp
-  mov ebp, esp
-
-  push SYS_EXIT
-  push DWORD [SINGLE_ARG]
-  call sys_call_2
-  ; no ret
-
-
-;; args:
-;; - file descriptor
-;; - chars
-;; - number of chars
-sys_write:
-  push ebp
-  mov ebp, esp
-
-  push SYS_WRITE
-  push DWORD [FIRST_OF_THREE_ARGS]
-  push DWORD [SECOND_OF_THREE_ARGS]
-  push DWORD [THIRD_OF_THREE_ARGS]
-  call sys_call_4
-  add esp, 4*4
-
-  mov esp, ebp
-  pop ebp
-  ret
-
-
-;; args:
-;; - zero terminated filename
-;; - file mode
-;; returns on success:
-;; - eax: file descriptor
-sys_open:
-  push ebp
-  mov ebp, esp
-
-  push SYS_OPEN
-  push DWORD [FIRST_OF_TWO_ARGS]
-  push DWORD [SECOND_OF_TWO_ARGS]
-  call sys_call_3
-  add esp, 3*4
-
-  mov esp, ebp
-  pop ebp
-  ret
-
-
-;; args:
-;; - file descriptor
-;; - destination buffer
-;; - buffer size
-;; returns on success:
-;; - eax: n bytes read, -1 if failed
-sys_read:
-  push ebp
-  mov ebp, esp
-
-  push SYS_READ
-  push DWORD [FIRST_OF_THREE_ARGS]
-  push DWORD [SECOND_OF_THREE_ARGS]
-  push DWORD [THIRD_OF_THREE_ARGS]
-  call sys_call_4
-  add esp, 4*4
-
-  mov esp, ebp
-  pop ebp
-  ret
-
+exit:
+    mov rax, SYSCALL_EXIT
+    syscall
 
 %endif

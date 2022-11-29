@@ -19,7 +19,7 @@ class AssemblyFile
   def includes
     File.readlines(@name)
       .select {|line| line.start_with?("%include")}
-      .map {|line| (/%include "(.+)"/.match(line))[1]}
+      .map {|line| (/^%include "(.+)"/.match(line))[1]}
       .sort
   end
 
@@ -35,7 +35,7 @@ files = Dir
 
 template = %q{
 LD_FLAGS=-m elf_i386
-NASM_FLAGS=-f elf -F dwarf -g
+NASM_FLAGS=-f elf64 -F dwarf -g
 
 .PHONY: all
 all: run

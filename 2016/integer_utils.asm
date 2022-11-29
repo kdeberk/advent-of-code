@@ -1,153 +1,93 @@
-%ifndef __INTEGER_UTILS__
-%define __INTEGER_UTILS__
+%ifndef __INTEGER_UTILS_ASM__
+%define __INTEGER_UTILS_ASM__
 
-%include "constants.asm"
-%include "syscalls.asm"
+; Division (by non-powers-of-2) is expensive in CPU land, so we prefer to use
+; multiplication and right-shifting (division by powers-of-2) instead. To divide
+; by 5, we can multiply by 4/5 and then divide by 4.
+;   x/5 = x*1/5 = (x*4/5)/4
+; The following constant is 2^64 multiplied by 4/5. Not sure why 2^64 and not
+; sure why we're only interested in the upper 64 bits of the 128-bit result.
+DIV_BY_5_MAGIC equ -3689348814741910323 ; 2^64 * 4/5. Multiplication by 2^64
 
-DIV_10_CONSTANT equ 0xCCCCCCCD
-
+section .bss
+    intBuffer resb 20
+    intBufferEnd resb 1
 
 section .text
 
-;; args:
-;; - integer
-;; returns:
-;; - eax: absolute value
-integer_abs:
-  push ebp
-  mov ebp, esp
+;; uintToString(uint, bytes) uint
+;; rdi: n, rsi: dst, rax: n bytes
+;; Copies the string representation of the integer to the given buffer, returns
+;; the number of bytes copied.
+uintToString:
+    push rbp
+    mov rbp, rsp
+    sub rsp, 8                  ; room for current location buffer
 
-  push ecx
+    mov rcx, rdi
+    mov [rsp], rsi
 
-  mov eax, [SINGLE_ARG]
-  mov ecx, eax
-  neg eax
-  cmovl eax, ecx                ; if eax is negative, replace with positive
-
-  pop ecx
-
-  mov esp, ebp
-  pop ebp
-  ret
-
-
-;; args:
-;; - integer
-;; - output buffer
-;; - output buffer size
-;; returns:
-;; - eax: location in output buffer
-;; N.B. doesn't support 0
-integer_to_string:
-  std                           ; decreasing edi for every stosb
-
-  push ebp
-  mov ebp, esp
-
-  push ebx
-  push ecx
-  push edx
-  push edi
-
-  mov ebx, DIV_10_CONSTANT
-  mov edi, [SECOND_OF_THREE_ARGS]
-  add edi, [THIRD_OF_THREE_ARGS]
-  sub edi, 1
-
-  push DWORD [FIRST_OF_THREE_ARGS]
-  call integer_abs
-  add esp, 1*4
+    std                         ; set direction flag, stosb will now decrement
 .loop:
-  mov ecx, eax
+    mov rdi, rcx
+    call mod10
 
-  mul ebx
-  shr edx, 3
+    add rax, '0'
+    mov rdi, [rsp]
+    stosb                       ; write al to [rdi] and decrement rdi
+    mov [rsp], rdi
+                                ;
+    mov rdi, rcx
+    call div10
+    mov rcx, rax
 
-  mov eax, edx
+    test rcx, rcx               ; check if n is 0
+    je uintToString_end         ; we're done
 
-  lea edx, [edx*4 + edx]
-  lea edx, [edx*2 - '0']
-  sub ecx, edx
+    jmp .loop                   ; continue loop
+uintToString_end:
+    cld                         ; reset direction flag.
 
-  push eax
-  mov eax, ecx
-  stosb
-  pop eax
+    mov rsp, rbp
+    pop rbp
+    ret
 
-  test eax, eax
-  jnz .loop
-.end:
-  mov eax, [FIRST_OF_THREE_ARGS] ; print '-' if input was negative
-  cmp eax, 0x0
-  jge .no_sign
+;; mod10(uint) uint
+;; rdi: n, rax: n%10
+mod10:
+    push rbp
+    mov rbp, rsp
 
-  mov al, '-'
-  stosb
-.no_sign:
-  mov eax, edi
-  inc eax
+    mov rdx, DIV_BY_5_MAGIC  ; rdx = 4/5*2^64
+    mov rax, rdi
+    mul rdx                     ; rdx = n*4/5
+    shr rdx, 3                  ; rdx = (n*4/5)/8 = n*(1/10)
+    mov rax, rdx                ; rax = n*(1/10)
+    sal rax, 2                  ; rax = n*(4/10)
+    add rax, rdx                ; rax = n*(5/10)
+    add rax, rax                ; rax = n*(10/10) = n, after integer truncation
+    mov rdx, rax
+    mov rax, rdi
+    sub rax, rdx                ; n%10 = n-(n/10)
 
-  pop edi
-  pop edx
-  pop ecx
-  pop ebx
+    mov rsp, rbp
+    pop rbp
+    ret
 
-  cld                           ; TODO: pop original value of DF
+;; mod10(uint) uint
+;; rdi: n, rax: n/10
+div10:
+    push rbp
+    mov rbp, rsp
 
-  mov esp, ebp
-  pop ebp
-  ret
+    mov rdx, DIV_BY_5_MAGIC  ; rdx = 4/5*2^64
+    mov rax, rdi
+    mul rdx                     ; rdx = n*4/5
+    shr rdx, 3                  ; rdx = (n*4/5)/8 = n*(1/10)
+    mov rax, rdx                ; rax = n*(1/10)
 
-
-;; args:
-;; - esi: zero-terminated string
-;; vars:
-;; - read integer
-;; returns:
-;; - eax: read integer
-read_integer:
-  cld
-
-  push ebp
-  mov ebp, esp
-
-  sub esp, 1*4
-
-  push ecx
-
-  mov DWORD [FIRST_VAR], 0
-  mov ecx, 0
-.loop:
-  mov eax, 0
-
-  lodsb
-  cmp al, 0
-  je .end_of_stream
-
-  sub al, '0'
-  cmp al, 0
-  jl .return_integer            ; expected non-digits are < '0'
-  cmp al, 9
-  jg .return_integer            ; expected non-digits are > '9'
-
-  mov cl, al                    ; distance += 10*distance + cl
-  mov eax, [FIRST_VAR]
-  imul eax, 10
-  add eax, ecx
-  mov DWORD [FIRST_VAR], eax
-
-  jmp .loop
-.end_of_stream:
-  mov eax, 0
-  dec esi                       ; we read one byte too many
-  jmp .return
-.return_integer:
-  mov eax, [FIRST_VAR]
-.return:
-  pop ecx
-
-  mov esp, ebp
-  pop ebp
-  ret
+    mov rsp, rbp
+    pop rbp
+    ret
 
 %endif

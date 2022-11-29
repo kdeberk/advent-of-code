@@ -1,23 +1,31 @@
-(ns aoc.2020.day3)
+(ns aoc.2020.day3
+  (:use clojure.test))
 
-(defn count-trees [lines dx dy]
-  (let [;; Get the lines for the slope
-        rows (map second
-                  (filter (fn [[y _]]
-                            (= 0 (mod y dy)))
-                          (map-indexed vector lines)))
-        ;; Get the cells for each line
-        cells (map (fn [[y line]]
-                     (get line (mod (* y dx) (.length line))))
-                   (map-indexed vector rows))]
-    (count (filter #(= \# %) cells))))
+(defn count-trees [lines dy dx]
+  (loop [y 0 r 0 c 0]
+    (if (<= (count lines) y)
+      c
+      (let [line (get lines y)
+            x    (mod (* r dx) (count line))
+            cell (get line x)]
+        (if (= \# cell)
+          (recur (+ y dy) (inc r) (inc c))
+          (recur (+ y dy) (inc r) c))))))
 
-(defn part1 [input]
-  (count-trees (.split input "\n") 3 1))
+(defn part1 [^String input]
+  (count-trees (.split input "\n") 1 3))
 
-(defn part2 [input]
+(defn part2 [^String input]
   (let [lines  (.split input "\n")
-        slopes [[1 1] [3 1] [5 1] [7 1] [1 2]]]
-    (apply * (map (fn [[dx dy]]
-                    (count-trees lines dx dy))
+        slopes [[1 1] [1 3] [1 5] [1 7] [2 1]]]
+    (apply * (map (fn [[dy dx]]
+                    (count-trees lines dy dx))
                   slopes))))
+
+(deftest part1-test
+  (is (= 7   (part1 (slurp "data/day3-example.txt"))))
+  (is (= 294 (part1 (slurp "data/day3-puzzle.txt")))))
+
+(deftest part2-test
+  (is (= 336        (part2 (slurp "data/day3-example.txt"))))
+  (is (= 5774564250 (part2 (slurp "data/day3-puzzle.txt")))))
