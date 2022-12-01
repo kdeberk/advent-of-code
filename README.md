@@ -4,3 +4,4 @@
 - 2019: Go
 - 2020: Clojure
 - 2021: Common Lisp
+- 2022: Javascript
