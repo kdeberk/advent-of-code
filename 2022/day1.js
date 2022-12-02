@@ -3,10 +3,10 @@ const fs = require('fs')
 
 const input = fs.readFileSync('./input/day1.txt', 'utf8')
 
-const calPerElf = input.split('\n\n')
-      .map((elf) => elf.split('\n')
-	   .map(line => (line * 1))
-	   .reduce((acc, cur) => (acc + cur)))
+const calPerElf = input.split('\n\n').
+      map((elf) => elf.split('\n').
+          map(line => (line * 1)).
+          reduce((acc, cur) => (acc + cur)))
 
 console.log("Part 1: ", calPerElf.reduce((max, cur) => Math.max(max, cur)))
 
