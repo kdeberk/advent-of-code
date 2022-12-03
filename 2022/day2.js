@@ -1,3 +1,5 @@
+require('./shared.js')
+
 const fs = require('fs')
 
 const input = fs.readFileSync('./input/day2.txt', 'utf8')
@@ -10,24 +12,27 @@ const scores = {
   "paper":    {"rock": 1+0, "paper": 2+3, "scissors": 3+6},
   "scissors": {"rock": 1+6, "paper": 2+0, "scissors": 3+3},
 }
-const action = {
+
+const response = {
   "X": {"rock": "scissors", "paper": "rock", "scissors": "paper"},
   "Y": {"rock": "rock", "paper": "paper", "scissors": "scissors"},
   "Z": {"rock": "paper", "paper": "scissors", "scissors": "rock"},
 }
 
-console.log("Part1: ", input.
+console.log("Part1:", input.
             split("\n").slice(0, -1).
             map(line => {
               const [a, b] = line.split(" ")
               return scores[abc[a]][xyz[b]]
             }).
-            reduce((acc, cur) => acc + cur))
+            sum())
 
-console.log("Part2: ", input.
+console.log("Part2:", input.
             split("\n").slice(0, -1).
             map(line => {
               const [a, b] = line.split(" ")
-              return scores[abc[a]][action[b][abc[a]]]
+              const action = abc[a]
+              const answer = response[b]
+              return scores[action][answer[action]]
             }).
-            reduce((acc, cur) => acc + cur))
+            sum())
