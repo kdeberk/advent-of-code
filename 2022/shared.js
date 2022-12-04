@@ -1,8 +1,17 @@
+
 // chunks breaks up the array into chunks of the given size.
 Array.prototype.chunks = function(size) {
   return Array(this.length / size).
     fill(0).
     map((_, i) => this.slice(i * size, (i+1) * size))  
+}
+
+// count returns a count of the items that match the predicate
+Array.prototype.count = function(pred = null) {
+  if(pred === null) {
+    return this.length
+  }
+  return this.filter(pred).length
 }
 
 // intersect returns the intersection of both arrays.
