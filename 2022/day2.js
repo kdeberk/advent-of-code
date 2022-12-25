@@ -19,20 +19,22 @@ const response = {
   "Z": {"rock": "paper", "paper": "scissors", "scissors": "rock"},
 }
 
-console.log("Part1:", input.
-            split("\n").slice(0, -1).
-            map(line => {
-              const [a, b] = line.split(" ")
-              return scores[abc[a]][xyz[b]]
-            }).
-            sum())
+console.log("Part1:",
+            input.split("\n")
+                 .slice(0, -1)
+                 .map(line => {
+                   const [a, b] = line.split(" ")
+                   return scores[abc[a]][xyz[b]]
+                 })
+                 .sum())
 
-console.log("Part2:", input.
-            split("\n").slice(0, -1).
-            map(line => {
-              const [a, b] = line.split(" ")
-              const action = abc[a]
-              const answer = response[b]
-              return scores[action][answer[action]]
-            }).
-            sum())
+console.log("Part2:",
+            input.split("\n")
+                 .slice(0, -1)
+                 .map(line => {
+                   const [a, b] = line.split(" ")
+                   const action = abc[a]
+                   const answer = response[b]
+                   return scores[action][answer[action]]
+                 })
+                 .sum())

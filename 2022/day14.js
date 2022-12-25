@@ -129,4 +129,4 @@ const dropUnits = (grid) => {
 }
 
 console.log("Part1: ", dropUnits(drawPaths(paths, new InfiniteFallGrid(minX, maxX, maxY))))
-console.log("Part1: ", dropUnits(drawPaths(paths, new BottomedGrid(2000, maxY+2))))
+console.log("Part2: ", dropUnits(drawPaths(paths, new BottomedGrid(2000, maxY+2))))

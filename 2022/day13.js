@@ -41,8 +41,8 @@ const compare = (a, b) => {
 
 console.log("Part1:", input.split("\n\n")
                            .map(p => p.split("\n")
-                                     .slice(0, 2)
-                                     .map(eval))
+                                      .slice(0, 2)
+                                      .map(eval))
                            .map(([a, b], idx) => compare(a, b) === inOrder ? idx+1 : 0)
                            .sum())
 
