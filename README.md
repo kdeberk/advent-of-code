@@ -1,4 +1,4 @@
-- 2016: x86 Assembly
+- 2016: Python
 - 2017: Ruby
 - 2018: Rust
 - 2019: Go

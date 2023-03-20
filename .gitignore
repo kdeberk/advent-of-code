@@ -1,7 +1,6 @@
 .#*
 *
 !Makefile
-!*.asm
 !*.py
 !*.rs
 !*.rb
@@ -9,7 +8,7 @@
 !*.go
 !.gitignore
 !*/
-!*clj
+!*.clj
 !*.lisp
 !*.asd
 !*.md
