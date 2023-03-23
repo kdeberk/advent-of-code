@@ -1,3 +1,9 @@
+# 2016, Day 3.
+# Input is a table of numbers with 3 columns.
+#
+# Part 1: Count the rows that form a possible triangle number set.
+# Part 2: For each group of three lines, count the number of columns
+#   (of size 3) that form a possible triangle number set.
 
 def trianglish(a, b, c):
     return a+b > c and a+c > b and b+c > a

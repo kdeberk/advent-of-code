@@ -1,3 +1,9 @@
+# 2016, Day 6.
+# Input forms a table. Each line has same length and contains only letters.
+#
+# Part 1: For each column, find the most occurring letter.
+# Part 2: For each column, find the least occurring letter.
+
 def calcCounts(lines):
     lines = [l.strip() for l in lines]
     counts = [dict() for col in range(0, len(lines[0]))]

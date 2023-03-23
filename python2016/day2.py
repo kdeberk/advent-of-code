@@ -1,3 +1,10 @@
+# 2016, Day 2.
+# Input is a set of lines consisting only of U, L, R and D chars. Imagine a finger over a
+# keypad, each line controls the movement the finger and press the button once the end of the line is reached.
+#
+# Part 1: 3x3 grid keypad.
+# Part 2: Triangular keypad with 13 buttons.
+
 moves = {
     'U': lambda x, y: [x-1, y  ],
     'L': lambda x, y: [  x, y-1],

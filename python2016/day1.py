@@ -1,3 +1,11 @@
+# 2016, Day 1.
+# Input is a single line consisting of movement instructions separated by commas.
+# Start facing north, each movement instruction dictates whether to turn left or
+# right and then walking a certain distance on a manhattan grid.
+#
+# Part 1: Calculate final distance from starting point.
+# Part 2: Determine first point on grid that we visit twice.
+
 NORTH = lambda x, y, d : [x + d, y]
 SOUTH = lambda x, y, d : [x - d, y]
 WEST = lambda x, y, d : [x, y - d]

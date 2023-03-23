@@ -1,3 +1,9 @@
+# 2016, Day 4.
+# Input consists of encrypted room identifiers. Each contains a name, a digit and a checksum part.
+#
+# Part 1: Count the number of rooms with the correct checksum.
+# Part 2: Decrypt the room identifiers and find the one named 'northpole object storage'.
+
 import re
 from itertools import groupby
 
