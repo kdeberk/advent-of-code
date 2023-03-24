@@ -1,10 +1,12 @@
 # 2016, Day 9.
-# Data contains a compressed string, where consecutive repeated substrings are replaced
-# with a `(MxN)` marker and a single copy of the substring. The string contains multiple
-# of these markers and these markers can be nested.
+# Data contains a compressed string, where consecutive repeated substrings are replaced with a block consisting of a
+# `(MxN)` marker followed by a single copy of the substring. The string contains multiple of these markers and these
+# blocks can be nested. The final string can be huge but only the size of the final string is needed. The approach
+# is to count the sizes of the decompressed blocks without decompressing.
 #
 # Part 1: Ignore nested markers.
-# Part 2: Decompress the nested substring and then apply the marker.
+# Part 2: Don't ignore nested markers. First recurse on the substring to determine the final length of decompressing
+#   the substring, and then apply the marker.
 
 
 class Reader:
@@ -42,9 +44,9 @@ def part1(input):
 
     count = 0
     while not rdr.done():
-        if b := rdr.readMarker():
-            rdr.read(b[0])
-            count += b[0] * b[1]
+        if m := rdr.readMarker():
+            rdr.read(m[0])
+            count += m[0] * m[1]
         else:
             rdr.read(1)
             count += 1
@@ -55,8 +57,8 @@ def part2(input):
 
     count = 0
     while not rdr.done():
-        if b := rdr.readMarker():
-            count += b[1] * part2(rdr.read(b[0]))
+        if m := rdr.readMarker():
+            count += m[1] * part2(rdr.read(m[0]))
         else:
             rdr.read(1)
             count += 1

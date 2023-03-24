@@ -3,7 +3,7 @@
 # keypad, each line controls the movement the finger and press the button once the end of the line is reached.
 #
 # Part 1: 3x3 grid keypad.
-# Part 2: Triangular keypad with 13 buttons.
+# Part 2: Diamond keypad with 13 buttons.
 
 moves = {
     'U': lambda x, y: [x-1, y  ],
@@ -11,6 +11,17 @@ moves = {
     'R': lambda x, y: [  x, y+1],
     'D': lambda x, y: [x+1, y  ],
 }
+
+pad1 = [[1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9]]
+
+pad2 = [[None, None,   1,  None, None],
+        [None,   2 ,   3 ,   4 , None],
+        [   5,   6 ,   7 ,   8 ,    9],
+        [None,  'A',  'B',  'C', None],
+        [None, None,  'D', None, None]]
+
 
 def findFive(pad):
     for x, row in enumerate(pad):
@@ -33,10 +44,10 @@ def walkPad(route, pad):
     return code + str(pad[x][y])
 
 def part1(input):
-    return walkPad(input, [[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+    return walkPad(input, pad1)
 
 def part2(input):
-    return walkPad(input, [[None, None, 1, None, None], [None, 2, 3, 4, None], [5, 6, 7, 8, 9], [None, 'A', 'B', 'C', None], [None, None, 'D', None, None]])
+    return walkPad(input, pad2)
 
 if __name__ == "__main__":
     input = open("input/day2.txt").read().strip()

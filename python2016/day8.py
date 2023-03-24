@@ -1,8 +1,8 @@
 # 2016, Day 8.
 # Input contains render instructions for a display.
 #
-# Part 1: Excecute the render instructions and count the number of turned on display cells.
-# Part 2: Render the display cells in a 50x6 grid and see the password.
+# Part 1: Excecute the render instructions and count the number of display cells that are turned on.
+# Part 2: Render the display cells in a 50x6 grid and observe the password.
 
 import re
 
