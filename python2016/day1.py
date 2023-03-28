@@ -14,38 +14,34 @@ EAST = lambda x, y, d : [x, y + d]
 LEFT  = {NORTH: WEST, WEST: SOUTH, SOUTH: EAST, EAST: NORTH}
 RIGHT = {NORTH: EAST, EAST: SOUTH, SOUTH: WEST, WEST: NORTH}
 
+def parseInput(input):
+    return [({'L': LEFT, 'R': RIGHT}[x[0]], int(x[1:]))
+            for x in input.strip().split(", ")]
 
-def part1(input):
+def part1(moves):
     x, y, z = [0, 0, NORTH]
-    for m in input.split(", "):
-        if m[0] == 'L':
-            z = LEFT[z]
-        else:
-            z = RIGHT[z]
-        x, y = z(x, y, int(m[1:]))
+    for (c, d) in moves:
+        z = c[z]
+        x, y = z(x, y, d)
     return abs(x)+abs(y)
 
-def part2(input):
+def part2(moves):
     seen = set()
 
     x, y, z = [0, 0, NORTH]
-    for m in input.split(", "):
-        if m[0] == 'L':
-            z = LEFT[z]
-        else:
-            z = RIGHT[z]
+    for (c, d) in moves:
+        z = c[z]
 
-        # Visit each block along the way.
-        for _ in range(int(m[1:])):
-            k = f'{x}-{y}'
-            if k in seen:
+        # Visit each point along the way.
+        for _ in range(d):
+            if (x, y) in seen:
                 return abs(x)+abs(y)
-            seen.add(k)
+            seen.add((x, y))
             x, y = z(x, y, 1)
 
 
 if __name__ == "__main__":
-    input = open("input/day1.txt").read().strip()
+    input = parseInput(open("input/day1.txt").read())
 
     print("Part 1:", part1(input))
     print("Part 2:", part2(input))
