@@ -28,7 +28,7 @@ class Grid:
             return WALL
         return OPEN
 
-# walkGrid traverses the entire grid using BFS. That guarantees that for every new cell it
+# walkGrid traverses the open cells of the grid using BFS. That guarantees that for every new cell it
 # reaches, it came there by using the shortest path.
 def walkGrid(grid, fn):
     seen = {(0, 0): (0, OPEN)}

@@ -5,44 +5,21 @@
 # Part 1: For the first 8 generated MD5 hashes that have the prefix '00000', gather the first char following that prefix.
 # Part 2: Until we've filled an 8-char string, use the 6th and 7th chars of the prefixed hashed to fill the places.
 
-from hashlib import md5
+from md5 import MD5Generator
 
-input = 'cxdnnyjw'
-
-class Generator(object):
-    # List value [] is default so that all instances of Generator will share it.
-    def __init__(self, l=[]):
-        self.idx = 0
-        self.n = 0
-        self.l = l
-
-    def next(self):
-        if self.idx < len(self.l):
-            self.idx += 1
-            return self.l[self.idx-1]
-
-        while True:
-            h = md5((input + str(self.n)).encode('utf-8')).hexdigest()
-            self.n += 1
-
-            if h.startswith('00000'):
-                self.idx += 1
-                self.l.append(h)
-                return  h
-
-
-def part1():
+def part1(input):
     p = ''
-    g = Generator()
+    g = MD5Generator(input, lambda h: h.startswith('00000'))
     while len(p) < 8:
-        p += g.next()[5]
+        h, _ = g.next()
+        p += h[5]
     return p
 
-def part2():
+def part2(input):
     p = [None] * 8
-    g = Generator()
+    g = MD5Generator(input, lambda h: h.startswith('00000'))
     while None in p:
-        h = g.next()
+        h, _ = g.next()
         idx = int(h[5], base=16)
         if idx < len(p) and not p[idx]:
             p[idx] = h[6]
@@ -50,5 +27,6 @@ def part2():
 
 
 if __name__ == "__main__":
-    print("Part 1:", part1())
-    print("Part 2:", part2())
+    input = 'cxdnnyjw'
+    print("Part 1:", part1(input))
+    print("Part 2:", part2(input))
