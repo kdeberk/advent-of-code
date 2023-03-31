@@ -30,24 +30,24 @@ def fiveInARow(h):
             cs.add(h[idx])
     return cs
 
-def findMatches(g):
-    triples = {c: [] for c in '0123456789abcdef'} # map hex chars to indexes that contained that char as a triple.
+def findKey(g):
+    threes = {c: [] for c in '0123456789abcdef'} # map hex chars to indexes that contained that char as a triple.
 
     keys = []
     while True:
         h, idx = g.next()
 
-        for c in triples:
-            # delete triple entries that have gone out of scope.
-            while 0 < len(triples[c]) and triples[c][0] + 1000 < idx:
-                triples[c].pop(0)
+        for c in threes:
+            # delete threes entries that have gone out of scope.
+            while 0 < len(threes[c]) and threes[c][0] + 1000 < idx:
+                threes[c].pop(0)
 
         if c := threeInARow(h):
-            triples[c].append(idx)
+            threes[c].append(idx)
 
         for c in fiveInARow(h):
-            while 0 < len(triples[c]) and triples[c][0] < idx:
-                keys.append(triples[c].pop(0))
+            while 0 < len(threes[c]) and threes[c][0] < idx:
+                keys.append(threes[c].pop(0))
 
         # wait for the 64th candidate to go out of scope before we return.
         keys.sort()
@@ -55,10 +55,10 @@ def findMatches(g):
             return keys[63]
 
 def part1(input):
-    return findMatches(MD5Generator(input, threeInARow))
+    return findKey(MD5Generator(input, threeInARow))
 
 def part2(input):
-    return findMatches(MD5Generator(input, threeInARow, 2017))
+    return findKey(MD5Generator(input, threeInARow, 2017))
 
 if __name__ == "__main__":
     input = 'ngcjuoqr'
