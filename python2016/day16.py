@@ -13,6 +13,9 @@
 # - a certain number of bits from the dragon fractal sprinkled throughout.
 # - a prefix of an AB pair, the AB pair is then split between two checksum blocks.
 # - a suffix of an AB pair, because the prefix is in the previous block.
+#
+# Part 1: Calculate the checksum for a disk of 242 bits.
+# Part 2: Calculate the checksum for a disk of 35651584 bits.
 
 # The parity of the first n digits of the dragon fractal.
 # Apparently, no one knows how this works.
