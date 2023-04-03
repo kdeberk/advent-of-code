@@ -14,8 +14,12 @@
 # Part 1: Number of safe tiles on first 40 rows.
 # Part 2: Number of safe tiles on first 400_000 rows.
 
-def parseInput(line):
-    return int("".join(["1" if c == '^' else "0" for c in line]), 2)
+NAME = "Day 18: Like a Rogue"
+
+def parseInput(stream):
+    firstRow = stream.read().strip()
+    return int("".join(["1" if tile == '^' else "0"
+                        for tile in firstRow]), 2)
 
 def nextRow(row, width):
     row |= 2**(width+1) # Add a single on-bit to guard the left side
@@ -35,8 +39,3 @@ def part1(input):
 
 def part2(input):
     return countSafeTiles(input, 100, 400_000)
-
-if __name__ == "__main__":
-    input = parseInput(open("input/day18.txt").read().strip())
-    print("Part 1:", part1(input))
-    print("Part 2:", part2(input))

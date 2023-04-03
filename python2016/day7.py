@@ -5,8 +5,12 @@
 # Part 1: Count addresses for which at least one outer has an ABBA but no inner has one.
 # Part 2: Count addresses for which an outer has an ABA and an inner has an associated BAB.
 
+NAME = "Day 7: Internet Protocol Version 7"
 
 import re
+
+def parseInput(stream):
+    return stream.readlines()
 
 def splitBlocks(line):
     inners = []
@@ -52,8 +56,3 @@ def part2(lines):
                 break
 
     return count
-
-if __name__ == "__main__":
-    counts = open("input/day7.txt").readlines()
-    print("Part 1:", part1(counts))
-    print("Part 2:", part2(counts))

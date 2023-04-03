@@ -5,6 +5,8 @@
 # Part 1: 3x3 grid keypad.
 # Part 2: Diamond keypad with 13 buttons.
 
+NAME = "Day 2: Bathroom Security"
+
 moves = {
     'U': lambda x, y: [x-1, y  ],
     'L': lambda x, y: [  x, y-1],
@@ -22,6 +24,9 @@ pad2 = [[None, None,   1,  None, None],
         [None,  'A',  'B',  'C', None],
         [None, None,  'D', None, None]]
 
+
+def parseInput(stream):
+    return stream.read().strip()
 
 def findFive(pad):
     for x, row in enumerate(pad):
@@ -48,9 +53,3 @@ def part1(input):
 
 def part2(input):
     return walkPad(input, pad2)
-
-if __name__ == "__main__":
-    input = open("input/day2.txt").read().strip()
-
-    print("Part 1:", part1(input))
-    print("Part 2:", part2(input))

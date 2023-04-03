@@ -9,6 +9,8 @@
 # Part 1: What is the fewest number of steps needed to bring 5 generators and chips up to the top floor.
 # Part 2: What is the fewest number of steps needed to bring 7 generators and chips up to the top floor.
 
+NAME = "Day 11: Radioisotope Thermoelectric Generators"
+
 from itertools import combinations
 
 def solve(puzzle):
@@ -90,8 +92,3 @@ def part1():
 def part2():
     # Order is hero, then chips and generators for Dilithium, Elerium, Promethium, Plutonium, Ruthenium, Strontium and Thullium.
     return solve([0, 0, 0, 0, 0, 2, 2, 1, 0, 2, 2, 1, 0, 0, 0])
-
-
-if __name__ == "__main__":
-    print("Part 1:", part1())
-    print("Part 2:", part2())

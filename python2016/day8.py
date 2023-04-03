@@ -4,6 +4,8 @@
 # Part 1: Excecute the render instructions and count the number of display cells that are turned on.
 # Part 2: Render the display cells in a 50x6 grid and observe the password.
 
+NAME = "Day 8: Two-Factor Authentication"
+
 import re
 
 WIDTH = 50
@@ -43,15 +45,11 @@ def render(lines):
                 grid[y][col] = c[y]
     return grid
 
+def parseInput(stream):
+    return render(stream.readlines())
+
 def part1(grid):
     return len([cell for row in grid for cell in row if cell == '#'])
 
 def part2(grid):
     return '\n' + '\n'.join([''.join(row) for row in grid])
-
-if __name__ == "__main__":
-    lines = open("input/day8.txt").readlines()
-    grid = render(lines)
-
-    print("Part 1:", part1(grid))
-    print("Part 2:", part2(grid))

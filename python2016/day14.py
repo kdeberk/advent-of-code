@@ -15,7 +15,13 @@
 # Part 2: Find the 64th key with the same properties as with part 1, but after applying
 #   MD5 2017 times.
 
+NAME = "Day 14: One-Time Pad"
+SLOW = True
+
 from md5 import MD5Generator
+
+def parseInput(stream):
+    return stream.read().strip()
 
 def threeInARow(h):
     for idx in range(0, len(h) - 2):
@@ -59,8 +65,3 @@ def part1(input):
 
 def part2(input):
     return findKey(MD5Generator(input, threeInARow, 2017))
-
-if __name__ == "__main__":
-    input = 'ngcjuoqr'
-    print("Part 1:", part1(input))
-    print("Part 2:", part2(input))

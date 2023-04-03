@@ -4,6 +4,8 @@
 # Part 1: Length of shortest path to (31, 39)
 # Part 2: Number of open cells you can reach within 50 steps of starting position.
 
+NAME = "Day 13: A Maze of Twisty Little Cubicles"
+
 WALL = '#'
 OPEN = '.'
 
@@ -54,18 +56,16 @@ def walkGrid(grid, fn):
                 continue
 
             q.append((steps + 1, (x + dx, y + dy)))
+    assert False
 
-def part1(grid):
+def part1():
+    grid = Grid(1364)
     steps, _, _ = walkGrid(grid, lambda _, xy: xy == (31, 39))
     return steps
 
-def part2(grid):
+def part2():
+    grid = Grid(1364)
     _, _, seen = walkGrid(grid, lambda steps, _: steps == 50)
-    # the seen dictionary maps (x, y) positions to fewest number of steps to reach and OPEN/WALL. We filter and
+    # The seen dictionary maps (x, y) positions to fewest number of steps to reach and OPEN/WALL. We filter and
     # count using a list comprehension.
     return len([v for v in seen.values() if v[0] < 50 and v[1] == OPEN])
-
-if __name__ == "__main__":
-    grid = Grid(1364)
-    print("Part 1:", part1(grid))
-    print("Part 2:", part2(grid))

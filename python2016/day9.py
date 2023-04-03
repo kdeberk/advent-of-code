@@ -8,6 +8,10 @@
 # Part 2: Don't ignore nested markers. First recurse on the substring to determine the final length of decompressing
 #   the substring, and then apply the marker.
 
+NAME = "Day 9: Explosives in Cyberspace"
+
+def parseInput(stream):
+    return stream.read().strip()
 
 class Reader:
     def __init__(self, string):
@@ -38,7 +42,6 @@ class Reader:
         self.read(1) # )
         return [n, m]
 
-
 def part1(input):
     rdr = Reader(input)
 
@@ -63,9 +66,3 @@ def part2(input):
             rdr.read(1)
             count += 1
     return count
-
-if __name__ == "__main__":
-    input = open("input/day9.txt").read().strip()
-
-    print("Part 1:", part1(input))
-    print("Part 2:", part2(input))

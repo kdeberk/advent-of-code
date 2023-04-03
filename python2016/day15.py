@@ -12,13 +12,15 @@
 # Part 1: Calculate the earliest possible time for 6 discs.
 # Part 2: Calculate the earliest possible time for 7 discs.
 
+NAME = "Day 15: Timing is Everything"
+
 import re
 
 discRegex = r'Disc #\d has (?P<npos>\d+) positions; at time=0, it is at position (?P<pos>\d+)'
 
-def parseInput(input):
+def parseInput(stream):
     discs = []
-    for l in input.strip().split("\n"):
+    for l in stream.readlines():
         if m := re.match(discRegex, l):
             discs.append({k: int(v) for (k, v) in m.groupdict().items()})
     return discs
@@ -46,8 +48,3 @@ def part1(discs):
 
 def part2(discs):
     return calcDropTime(discs + [{'npos': 11, 'pos': 0}])
-
-if __name__ == "__main__":
-    input = parseInput(open("input/day15.txt").read())
-    print("Part 1:", part1(input))
-    print("Part 2:", part2(input))

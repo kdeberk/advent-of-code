@@ -5,7 +5,12 @@
 # Part 1: A more kid-friendly version of the Josephus problem with k=2.
 # Part 2: Elves take away presents from the elf opposite to them in the circle.
 
+NAME = "Day 19: An Elephant Named Joseph"
+
 from math import log
+
+def parseInput(stream):
+    return int(stream.read())
 
 def part1(n):
     # Solution for Josephus problem with k=2 (immediate to the left) is cyclic bitshift,
@@ -18,8 +23,3 @@ def part2(n):
     if 2 * p3 < n:
         return 2*n-3*p3
     return n-p3
-
-if __name__ == "__main__":
-    n = 3017957
-    print("Part 1:", part1(n))
-    print("Part 2:", part2(n))

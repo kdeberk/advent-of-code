@@ -9,8 +9,13 @@
 # Part 2: Find the length of the longest path that leads to the bottom-right door.
 #   Simple BFS using a queue.
 
+NAME = "Day 17: Two Steps Forward"
+
 from heap import Heap
 from md5 import md5
+
+def parseInput(stream):
+    return stream.read().strip()
 
 UP    = lambda x, y: (x, y - 1)
 DOWN  = lambda x, y: (x, y + 1)
@@ -65,8 +70,3 @@ def part2(input):
             elif 0 <= nx and nx < 4 and 0 <= ny and ny < 4:
                 q.append((path + n, (nx, ny)))
     return longest
-
-if __name__ == "__main__":
-    input = "hhhxzeay"
-    print("Part 1:", part1(input))
-    print("Part 2:", part2(input))

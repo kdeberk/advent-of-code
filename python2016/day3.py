@@ -5,21 +5,20 @@
 # Part 2: For each group of three lines, count the number of columns
 #   (of size 3) that form a possible set of triangle numbers.
 
+NAME = "Day 3: Squares With Three Sides"
+
 def trianglish(a, b, c):
     return a+b > c and a+c > b and b+c > a
 
-def part1(input):
-    count = 0
-    for row in input.split("\n"):
-        [a, b, c] = [int(x) for x in row.split()]
-        if trianglish(a, b, c):
-            count += 1
-    return count
+def parseInput(stream):
+    return [[int(x) for x in line.split()] for line in stream.readlines()]
 
-def part2(input):
+def part1(rows):
+    return len([1 for [a, b, c] in rows
+                if trianglish(a, b, c)])
+
+def part2(rows):
     count = 0
-    rows = [[int(x) for x in row.split()]
-            for row in input.split("\n")]
     for row in range(0, len(rows), 3):
         for col in range(3):
             if trianglish(rows[row+0][col],
@@ -27,9 +26,3 @@ def part2(input):
                           rows[row+2][col]):
                 count += 1
     return count
-
-if __name__ == "__main__":
-    input = open("input/day3.txt").read().strip()
-
-    print("Part 1:", part1(input))
-    print("Part 2:", part2(input))

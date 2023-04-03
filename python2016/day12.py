@@ -2,6 +2,8 @@
 # Input is a program in assembunny. Instead of writing an emulator, we manually decode
 # the instructions to python and execute that.
 
+NAME = "Day 12: Leonardo's Monorail"
+
 # cpy 1 a      a, b, c, d = 1, 1, 0, 26
 # cpy 1 b
 # cpy 26 d
@@ -39,7 +41,3 @@ def part1():
 
 def part2():
     return fib(26+7, 1, 1) + 14 * 14
-
-if __name__ == "__main__":
-    print("Part 1:", part1())
-    print("Part 2:", part2())

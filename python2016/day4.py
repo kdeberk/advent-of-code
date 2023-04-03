@@ -4,10 +4,14 @@
 # Part 1: Count the number of rooms with the correct checksum.
 # Part 2: Decrypt the room identifiers and find the one named 'northpole object storage'.
 
+NAME = "Day 4: Security Through Obscurity"
+
 import re
-from itertools import groupby
 
 lineRegex = r'^(?P<name>[a-z-]+)-(?P<id>[0-9]+)\[(?P<checksum>[a-z]+)\]'
+
+def parseInput(stream):
+    return stream.readlines()
 
 def parseRoom(line: str):
     if m := re.search(lineRegex, line):
@@ -42,9 +46,3 @@ def part2(lines):
         room = parseRoom(line)
         if validChecksum(room) and 'northpole object storage' == decryptRoom(room):
             return room['id']
-
-
-if __name__ == "__main__":
-    input = open("input/day4.txt").readlines()
-    print("Part 1:", part1(input))
-    print("Part 2:", part2(input))

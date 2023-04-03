@@ -5,7 +5,13 @@
 # Part 1: For the first 8 generated MD5 hashes that have the prefix '00000', gather the first char following that prefix.
 # Part 2: Until we've filled an 8-char string, use the 6th and 7th chars of the prefixed hashed to fill the places.
 
+NAME = "Day 5: How About a Nice Game of Chess?"
+SLOW = True
+
 from md5 import MD5Generator
+
+def parseInput(stream):
+    return stream.read().strip()
 
 def part1(input):
     p = ''
@@ -24,9 +30,3 @@ def part2(input):
         if idx < len(p) and not p[idx]:
             p[idx] = h[6]
     return ''.join(p)
-
-
-if __name__ == "__main__":
-    input = 'cxdnnyjw'
-    print("Part 1:", part1(input))
-    print("Part 2:", part2(input))

@@ -17,6 +17,8 @@
 # Part 1: Calculate the checksum for a disk of 242 bits.
 # Part 2: Calculate the checksum for a disk of 35651584 bits.
 
+NAME = "Day 16: Dragon Checksum"
+
 # The parity of the first n digits of the dragon fractal.
 # Apparently, no one knows how this works.
 def dragonParity(n):
@@ -52,13 +54,11 @@ def solve(pattern, diskSize):
 
     return ''.join([str(x) for x in sum])
 
+def parseInput(stream):
+    return [int(x) for x in stream.read().strip()]
+
 def part1(input):
     return solve(input, 272)
 
 def part2(input):
     return solve(input, 35651584)
-
-if __name__ == "__main__":
-    input = [int(x) for x in '10111011111001111']
-    print("Part 1:", part1(input))
-    print("Part 2:", part2(input))

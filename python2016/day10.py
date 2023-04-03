@@ -5,6 +5,8 @@
 # Part 1: Which robot will hold chips 17 and 61?
 # Part 2: What is the product of the chips that end up in buckets 0, 1, and 2?
 
+NAME = "Day 10: Balance Bots"
+
 import re
 from functools import reduce
 
@@ -37,6 +39,9 @@ def parseInstruction(line):
         bot, low, high = m.group('bot'), m.group('low'), m.group('high')
         return (lambda m: bot in m and 2 <= len(m[bot]), lambda m: split(m, bot, low, high))
 
+def parseInput(stream):
+    return [parseInstruction(line.strip()) for line in stream.readlines()]
+
 def prepareBots(instructions):
     m = dict()
     for ins in instructions:
@@ -65,9 +70,3 @@ def part2(instructions):
         for ins in instructions:
             if ins[0] is not None and ins[0](m):
                 ins[1](m)
-
-if __name__ == "__main__":
-    instructions = [parseInstruction(line.strip()) for line in open("input/day10.txt").readlines()]
-
-    print("Part 1:", part1(instructions))
-    print("Part 2:", part2(instructions))
