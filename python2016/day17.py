@@ -11,7 +11,7 @@
 
 NAME = "Day 17: Two Steps Forward"
 
-from heap import Heap
+from heap import MinHeap
 from md5 import md5
 
 def parseInput(stream):
@@ -41,7 +41,7 @@ def part1(input):
     dist = lambda x, y: (3 - x) + (3 - y)
     shortest = None
 
-    h = Heap()
+    h = MinHeap()
     h.push(("", (0, 0)), dist(0, 0))
     while h.any():
         path, (x, y) = h.pop()

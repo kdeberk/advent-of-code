@@ -6,6 +6,8 @@
 
 NAME = "Day 13: A Maze of Twisty Little Cubicles"
 
+from geo import Point
+
 WALL = '#'
 OPEN = '.'
 
@@ -14,10 +16,10 @@ class Grid:
         self.secret = secret
         self.cells = {}
 
-    def get(self, x, y):
-        if (x, y) not in self.cells:
-            self.cells[(x, y)] = self.cell(x, y)
-        return self.cells[(x, y)]
+    def get(self, p: Point):
+        if p not in self.cells:
+            self.cells[p] = self.cell(p.x, p.y)
+        return self.cells[p]
 
     def cell(self, x, y):
         v = x*x + 3*x + 2*x*y + y + y*y + self.secret
@@ -33,39 +35,39 @@ class Grid:
 # walkGrid traverses the open cells of the grid using BFS. That guarantees that for every new cell it
 # reaches, it came there by using the shortest path.
 def walkGrid(grid, fn):
-    seen = {(0, 0): (0, OPEN)}
+    seen = {Point(0, 0): (0, OPEN)}
 
-    q = [(0, (0, 0))]
+    q = [(0, Point(0, 0))]
     while 0 < len(q):
-        (steps, (x, y)) = q.pop(0)
+        (steps, p) = q.pop(0)
 
-        if fn(steps, (x, y)):
-            return steps, (x, y), seen
+        if fn(steps, p):
+            return steps, p, seen
 
-        for (dx, dy) in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
-            if x + dx < 0 or y + dy < 0:
+        for n in p.neighbors():
+            if n.x < 0 or n.y < 0:
                 continue
 
-            if (x + dx, y + dy) in seen:
+            if n in seen:
                 continue
 
-            t = grid.get(x + dx, y + dy)
-            seen[(x + dx, y + dy)] = (steps + 1, t)
+            t = grid.get(n)
+            seen[n] = (steps + 1, t)
 
             if (t == WALL):
                 continue
 
-            q.append((steps + 1, (x + dx, y + dy)))
+            q.append((steps + 1, n))
     assert False
 
 def part1():
     grid = Grid(1364)
-    steps, _, _ = walkGrid(grid, lambda _, xy: xy == (31, 39))
+    steps, _, _ = walkGrid(grid, lambda _, p: p == Point(31, 39))
     return steps
 
 def part2():
     grid = Grid(1364)
     _, _, seen = walkGrid(grid, lambda steps, _: steps == 50)
-    # The seen dictionary maps (x, y) positions to fewest number of steps to reach and OPEN/WALL. We filter and
+    # The seen dictionary maps Point(x, y) positions to fewest number of steps to reach and OPEN/WALL. We filter and
     # count using a list comprehension.
     return len([v for v in seen.values() if v[0] < 50 and v[1] == OPEN])

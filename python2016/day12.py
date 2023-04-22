@@ -1,6 +1,8 @@
 # 2016, Day 12.
 # Input is a program in assembunny. Instead of writing an emulator, we manually decode
 # the instructions to python and execute that.
+#
+# The program encodes the fibonacci algorithm.
 
 NAME = "Day 12: Leonardo's Monorail"
 

@@ -8,7 +8,7 @@ NAME = "Day 6: Signals and Noise"
 
 def parseInput(stream):
     lines = [l.strip() for l in stream.readlines()]
-    counts = [dict() for col in range(0, len(lines[0]))]
+    counts = [dict() for _ in range(0, len(lines[0]))]
     for line in lines:
         for idx, c in enumerate(line):
             if c not in counts[idx]:
