@@ -39,17 +39,21 @@ def runDay(day, module, inputFile=None):
     if hasattr(module, 'SLOW'):
         print("  Part 1: **SKIPPED**")
         print("  Part 2: **SKIPPED**")
-    elif hasattr(module, 'parseInput'):
+        return
+
+    input = None
+    if hasattr(module, 'parseInput'):
         if inputFile == None:
             inputFile = f"input/day{day}.txt"
+        start = datetime.now()
         with open(inputFile) as file:
             input = module.parseInput(file)
+        print(f"  ParseInput:          ({timeSince(start)})")
 
+    if hasattr(module, 'part1'):
         runPart(1, module.part1, input)
+    if hasattr(module, 'part2'):
         runPart(2, module.part2, input)
-    else:
-        runPart(1, module.part1, None)
-        runPart(2, module.part2, None)
 
 if __name__ == "__main__":
     days = importModules()

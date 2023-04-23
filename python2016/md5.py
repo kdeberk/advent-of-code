@@ -15,7 +15,7 @@ class MD5Generator(object):
     def next(self):
         if self.idx < len(self.l):
             self.idx += 1
-            return self.l[self.idx-1], 0 # TODO: fix n
+            return self.l[self.idx-1], 0
 
         while True:
             h = md5(self.prefix + str(self.n))

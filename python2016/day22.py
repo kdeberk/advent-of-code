@@ -6,7 +6,8 @@
 #
 # Part 1: Count all nodes that can offload their data to any other node.
 # Part 2: Count the number of steps needed to move the data from one disk to another.
-#   I first solved it manually, then wrote the code.
+#   I first solved it manually, then wrote the code. Code uses some form of A* where we
+#   find the fewest number of steps needed to 'move' the empty node SW of the source node.
 
 NAME = "Day 22: Grid Computing"
 

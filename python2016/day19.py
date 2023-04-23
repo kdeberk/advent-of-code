@@ -18,6 +18,7 @@ def part1(n):
     return 1 + ((n - (2**(n.bit_length()-1))) << 1)
 
 def part2(n):
+    # TODO: rethink
     # No idea why this formula works.
     p3 = 3**int(log(n-1, 3))
     if 2 * p3 < n:
