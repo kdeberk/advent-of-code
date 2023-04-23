@@ -3,17 +3,23 @@
 #  Usage:
 #
 # Execute every day in sequence:
-#   ./main.py
+#   ./main.py --all
 # Execute a single day:
-#         ./main.py <n>
+#   ./main.py --day <n>
 # Execute a single day with the specified input file:
-#         ./main.py <n> <file>
+#   ./main.py --day <n> --input <file>
 
 from datetime import datetime
+import argparse
 import importlib
 import os
 import re
-import sys
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--day')
+parser.add_argument('--input')
+parser.add_argument('--all', action="store_true")
+args = vars(parser.parse_args())
 
 def importModules():
     days = {}
@@ -36,10 +42,6 @@ def runPart(part, fn, input):
 
 def runDay(day, module, inputFile=None):
     print(module.NAME)
-    if hasattr(module, 'SLOW'):
-        print("  Part 1: **SKIPPED**")
-        print("  Part 2: **SKIPPED**")
-        return
 
     input = None
     if hasattr(module, 'parseInput'):
@@ -48,21 +50,26 @@ def runDay(day, module, inputFile=None):
         start = datetime.now()
         with open(inputFile) as file:
             input = module.parseInput(file)
-        print(f"  ParseInput:          ({timeSince(start)})")
+        print(f"  parseInput:          ({timeSince(start)})")
 
     if hasattr(module, 'part1'):
         runPart(1, module.part1, input)
     if hasattr(module, 'part2'):
         runPart(2, module.part2, input)
 
+def skipSlowDay(module):
+    print(module.NAME)
+    print("  Part 1: **SKIPPED**")
+    print("  Part 2: **SKIPPED**")
+
 if __name__ == "__main__":
     days = importModules()
-    if len(sys.argv) == 1:
+    if k := args['day']:
+        runDay(k, days[k], args['input'])
+    else:
         for k in sorted(days.keys(), key=int):
-            runDay(k, days[k])
-    elif len(sys.argv) == 2:
-        k = sys.argv[1]
-        runDay(k, days[k])
-    elif len(sys.argv) == 3:
-        k, file = sys.argv[1], sys.argv[2]
-        runDay(k, days[k], file)
+            module = days[k]
+            if hasattr(module, 'SLOW') and not args['all']:
+                skipSlowDay(module)
+            else:
+                runDay(k, module)
