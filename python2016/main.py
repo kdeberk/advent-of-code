@@ -32,15 +32,15 @@ def importModules():
 def timeSince(t):
     d = datetime.now()-t
     if d.seconds < 60:
-        return f'{d.seconds}.{d.microseconds//1000:04}s'
-    return f'{d.seconds//60:0}m.{d.seconds%60:0}s.{d.microseconds//1000:04}'
+        return f'{d.seconds}.{d.microseconds//1000:03}s'
+    return f'{d.seconds//60:0}m.{d.seconds%60:0}s.{d.microseconds//1000:03}'
 
 def runPart(part, fn, input):
     start = datetime.now()
     output = fn(input) if input else fn()
     print(f"  Part {part}: {str(output):12s} ({timeSince(start)})")
 
-def runDay(day, module, inputFile=None):
+def runDay(day, module, inputFile):
     print(module.NAME)
 
     input = None
@@ -72,4 +72,4 @@ if __name__ == "__main__":
             if hasattr(module, 'SLOW') and not args['all']:
                 skipSlowDay(module)
             else:
-                runDay(k, module)
+                runDay(k, module, None)
