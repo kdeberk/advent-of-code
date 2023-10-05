@@ -1,0 +1,20 @@
+cabal-version:      3.0
+name:               haskell2015
+version:            0.1.0.0
+author:             Kevin de Berk
+maintainer:         kevin@dberk.nl
+build-type:         Simple
+
+common warnings
+    ghc-options: -Wall -Wno-name-shadowing -Wno-incomplete-patterns
+
+executable haskell2015
+    import:           warnings
+    main-is:          Main.hs
+    other-modules:    Day1 Day2 Day3 Shared
+    -- other-extensions:
+    build-depends:
+        base ^>=4.17.0.0,
+        containers ^>=0.6,
+    hs-source-dirs:   app
+    default-language: Haskell2010
