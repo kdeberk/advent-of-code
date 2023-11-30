@@ -22,3 +22,14 @@ pairs (x : xs) = (pairElement x xs) ++ pairs xs
     pairElement :: a -> [a] -> [] [a]
     pairElement _ [] = []
     pairElement elem (x : xs) = [[elem, x]] ++ pairElement elem xs
+
+fromJust :: Maybe a -> a
+fromJust Nothing = error "Maybe.fromJust: Nothing"
+fromJust (Just x) = x
+
+isJust :: Maybe a -> Bool
+isJust Nothing = False
+isJust (Just _) = True
+
+allMatch :: [(a -> Bool)] -> a -> Bool
+allMatch fns x = all ($ x) fns
