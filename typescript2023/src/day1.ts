@@ -1,7 +1,5 @@
 #!/usr/bin/env ts-node
 
-import { readFileSync } from "fs";
-
 function firstToAppear(str: string, items: string[]): string {
     let bestIdx = str.length
     let best: string | null = null
@@ -63,10 +61,9 @@ function part2(lines: string[]): number {
     return sum
 }
 
-function day1() {
-    const input = readFileSync(__dirname + "/../input/day1.txt", "utf-8");
-    const lines = input.split("\n").slice(0, -1)
-    console.log(part1(lines), part2(lines))
+export const Day1 = {
+    number: 1,
+    parseInput: (input: string) => input.split("\n").slice(0, -1),
+    part1,
+    part2,
 }
-
-day1();
