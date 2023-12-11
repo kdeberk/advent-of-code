@@ -1,7 +1,7 @@
 type Coord = { x: number, y: number }
 
 function neighbors(c: Coord): Coord[] {
-    const neighbors = []
+    const neighbors:Coord[] = []
     for(let x = c.x - 1; x <= c.x + 1; x++) {
         for(let y = c.y - 1; y <= c.y + 1; y++) {
             if(x === c.x && y === c.y) {
