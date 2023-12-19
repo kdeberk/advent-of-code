@@ -35,6 +35,7 @@ function part2(seqs: number[][]): number {
 
 export const Day9 = {
     number: 9,
+    title: "Mirage Maintenance",
     parseInput,
     part1,
     part2,

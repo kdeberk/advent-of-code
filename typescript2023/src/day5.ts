@@ -132,6 +132,7 @@ function part2(almanac: Almanac): number {
 
 export const Day5 = {
     number: 5,
+    title: "If You Give A Seed A Fertilizer",
     parseInput,
     part1,
     part2,

@@ -15,7 +15,7 @@ class MinHeap:
             self.swap(idx, pIdx)
             idx = pIdx
 
-    def pop(self):
+    def pop(self): # TODO: this heap impl is very wrong
         self.swap(0, len(self.items)-1)
 
         idx = 0

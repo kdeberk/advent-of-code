@@ -1,3 +1,9 @@
+
+// Day 4: Scratchcards
+// Part 1: Identify the winning scratchcards.
+// Part 2: Count the total number of scratchcards that are obtained.
+//   TODO: Work backwards, no cache needed.
+
 type Card = {
     n: number
     winning: number[]
@@ -5,7 +11,7 @@ type Card = {
 }
 
 function parseInput(input: string): Card[] {
-    return input.split("\n").slice(0, -1).map((line) => {
+    return input.split("\n").map((line) => {
         const [prefix, after] = line.split(": ")
         const [winning, got] = after.split(" | ")
         return {
@@ -59,6 +65,7 @@ function part2(cards: Card[]): number {
 
 export const Day4 = {
     number: 4,
+    title: "Scratchcards",
     parseInput,
     part1,
     part2,

@@ -145,6 +145,7 @@ function part2(maze: Maze): number {
 
 export const Day10 = {
     number: 10,
+    title: "Pipe Maze",
     parseInput,
     part1,
     part2,

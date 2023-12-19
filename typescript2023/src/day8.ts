@@ -59,6 +59,7 @@ function part2(map: Map): number {
 
 export const Day8 = {
     number: 8,
+    title: "Haunted Wasteland",
     parseInput,
     part1,
     part2,

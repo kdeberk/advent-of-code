@@ -1,5 +1,9 @@
 type Coord = { x: number, y: number }
 
+// Day 3: Gear Ratios
+// Part 1: Identify the digit sequences on the schematic that are adjacent to an engine component
+// Part 2: Identify the digit sequences that are adjacent to a gear.
+
 function neighbors(c: Coord): Coord[] {
     const neighbors:Coord[] = []
     for(let x = c.x - 1; x <= c.x + 1; x++) {
@@ -24,7 +28,7 @@ function parseInput(input: string): Part[] {
     const partNumbers: Record<string, PartNumber> = {}
 
     // Read 2d grid cell by cell
-    const lines = input.split("\n").slice(0, -1)
+    const lines = input.split("\n")
     for(let y = 0; y < lines.length; y++) {
         let n: PartNumber | null = null;
 
@@ -101,6 +105,7 @@ function part2(parts: Part[]): number {
 
 export const Day3 = {
     number: 3,
+    title: "Gear Ratios",
     parseInput,
     part1,
     part2,

@@ -1,5 +1,9 @@
 #!/usr/bin/env ts-node
 
+// Day 2: Cube Conundrum
+// Part 1: Find the 'cube reveals' that would have been possible if the bag contained only 12 red, 13 green and 14 blue cubes.
+// Part 2: For each game session, get the least number of cubes needed to make the reveals possible.
+
 type Color = "red" | "blue" | "green"
 const COLORS: Color[] = ["red", "blue", "green"]
 
@@ -11,7 +15,6 @@ type Game = {
 function parseInput(input: string): Game[] {
     return input
         .split("\n")
-        .slice(0, -1)
         .map((line) => {
             const [pre, after] = line.split(": ")
 
@@ -52,6 +55,7 @@ function part2(games: Game[]): number {
 
 export const Day2 = {
     number: 2,
+    title: "Cube Conundrum",
     parseInput,
     part1,
     part2,

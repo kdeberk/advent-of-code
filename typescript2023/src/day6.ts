@@ -43,6 +43,7 @@ function part2(races: Race[]): number {
 
 export const Day6 = {
     number: 6,
+    title: "Wait For It",
     parseInput,
     part1,
     part2,

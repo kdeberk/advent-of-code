@@ -67,6 +67,7 @@ function part2(space: Space): number {
 
 export const Day11 = {
     number: 11,
+    title: "Cosmic Expansion",
     parseInput,
     part1,
     part2,

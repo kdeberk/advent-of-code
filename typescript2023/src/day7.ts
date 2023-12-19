@@ -115,6 +115,7 @@ function part2(hands: Hand[]): number {
 
 export const Day7 = {
     number: 7,
+    title: "Camel Cards",
     parseInput,
     part1,
     part2,

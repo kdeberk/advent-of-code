@@ -1,5 +1,10 @@
 #!/usr/bin/env ts-node
 
+// Day 1: Trebuchet?!
+// Part 1: Multiply the first and last digit within a string,
+// Part 2: Multiple the first and last digit or word representing a number within a digit,
+//  Iterate over 1-9, and one-nine, and for each check their first or last positiosn within a string (if any).
+
 function firstToAppear(str: string, items: string[]): string {
     let bestIdx = str.length
     let best: string | null = null
@@ -63,7 +68,8 @@ function part2(lines: string[]): number {
 
 export const Day1 = {
     number: 1,
-    parseInput: (input: string) => input.split("\n").slice(0, -1),
+    title: "Trebuchet?!",
+    parseInput: (input: string) => input.split("\n"),
     part1,
     part2,
 }
