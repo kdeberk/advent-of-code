@@ -12,7 +12,6 @@
 !*.lisp
 !*.asd
 !*.md
-!*.png
 !*.js
 !*.hs
 !*.ts

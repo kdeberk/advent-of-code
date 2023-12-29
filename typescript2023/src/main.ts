@@ -20,6 +20,13 @@ import { Day15 } from "./day15";
 import { Day16 } from "./day16";
 import { Day17 } from "./day17";
 import { Day18 } from "./day18";
+import { Day19 } from "./day19";
+import { Day20 } from "./day20";
+import { Day21 } from "./day21";
+import { Day22 } from "./day22";
+import { Day23 } from "./day23";
+import { Day24 } from "./day24";
+import { Day25 } from "./day25";
 
 export type Day<I = any, R = any> = {
     number: number,
@@ -31,7 +38,7 @@ export type Day<I = any, R = any> = {
 
 const Days: Record<number, Day> = {}
 
-for(const day of [Day18]) {//Day1, Day2, Day3, Day4, Day5, Day6, Day7, Day8, Day9, Day10, Day11, Day12, Day13, Day14, Day15, Day16]) {
+for(const day of [Day25]) {//Day1, Day2, Day3, Day4, Day5, Day6, Day7, Day8, Day9, Day10, Day11, Day12, Day13, Day14, Day15, Day16, Day17, Day18]) {
     Days[day.number] = day
 }
 
