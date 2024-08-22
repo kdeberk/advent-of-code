@@ -14,9 +14,9 @@ type Dimensions = [Int]
 
 parseLine :: String -> Dimensions
 parseLine line = do
+  -- Splits line on the 'x' char.
   let dim = splitWords (=='x') line
   map read dim
-
 
 double :: Int -> Int
 double x = x + x
@@ -27,6 +27,7 @@ surfaces dims = sf ++ sf
   where
     sf = map product (pairs dims)
 
+-- perimeters returns the perimeters along the 3 dimensions of the prism
 perimeters :: [Int] -> [Int]
 perimeters dims = map (\x -> double (sum x)) (pairs dims)
 
@@ -42,7 +43,7 @@ part2 inputs = sum (map ribbonNeeded inputs)
     ribbonNeeded :: Dimensions -> Int
     ribbonNeeded dims = minimum (perimeters dims) + product dims
 
-day2 :: String -> (Int, Int)
+day2 :: String -> (String, Int, Int)
 day2 input = do
   let dims = map parseLine (lines input)
-  (part1 dims, part2 dims)
+  ("Day 2: I Was Told There Would Be No Math", part1 dims, part2 dims)

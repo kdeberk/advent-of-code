@@ -5,13 +5,21 @@ import Day2 (day2)
 import Day3 (day3)
 import Day4 (day4)
 import Day5 (day5)
-import Shared (runDay)
+import Day6 (day6)
+
+-- day applies a day function to an input file.
+day :: String -> (String -> (String, Int, Int)) -> IO ()
+day filename dayFn = do
+    contents <- readFile filename
+    let (title, part1, part2) = dayFn contents
+    putStr $ title ++ "\n  Part 1: " ++ (show part1) ++ "\n  Part 2: " ++ (show part2) ++ "\n"
 
 main :: IO()
 main = do
-  runDay 1 "input/day1.txt" day1
-  runDay 2 "input/day2.txt" day2
-  runDay 3 "input/day3.txt" day3
-  runDay 4 "input/day4.txt" day4
-  runDay 5 "input/day5.txt" day5
+  day "input/day1.txt" day1
+  day "input/day2.txt" day2
+  day "input/day3.txt" day3
+  day "input/day4.txt" day4
+  day "input/day5.txt" day5
+  day "input/day6.txt" day6
   return ()

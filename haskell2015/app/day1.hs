@@ -2,29 +2,31 @@
 module Day1 where
 
 -- 2015, Day 1
--- Input is a list of parentheses. Keep track of number of open vs close parentheses.
+-- Input is a list of parentheses. ( means go floor up, and ) go floor down.
+--   Keep track of number of open vs close parentheses.
 --
--- Part 1: Count number of opens and subtract number of closes.
--- Part 2: Find first index where there are more close parentheses than open.
+-- Part 1: The floor on which Santa ends: curFloor number of opens and subtract number of closes.
+-- Part 2: Find index that takes Santa to the basement: where there are more close parentheses than open.
 
 part1 :: String -> Int
-part1 x = inner x 0
+part1 x = santa x 0
       where
-        inner :: String -> Int -> Int
-        inner "" floor = floor
-        inner ('(' : x) floor = inner x (floor + 1)
-        inner (')' : x) floor = inner x (floor - 1)
+        -- Santa keeps track of open vs. close parens.
+        santa :: String -> Int -> Int
+        santa "" curFloor         = curFloor
+        santa ('(' : xs) curFloor = santa xs (curFloor + 1)
+        santa (')' : xs) curFloor = santa xs (curFloor - 1)
 
 part2 :: String -> Int
-part2 x = inner x 0 0
+part2 x = santa x 0 0
       where
-        inner :: String -> Int -> Int -> Int
+        santa :: String -> Int -> Int -> Int
         -- We've reached floor -1, return idx.
-        inner _ (-1) idx = idx
-        inner ('(' : x) floor idx = inner x (floor + 1) (idx + 1)
-        inner (')' : x) floor idx = inner x (floor - 1) (idx + 1)
+        santa _ (-1) idx = idx
+        santa ('(' : x) curFloor idx = santa x (curFloor + 1) (idx + 1)
+        santa (')' : x) curFloor idx = santa x (curFloor - 1) (idx + 1)
 
-day1 :: String -> (Int, Int)
+day1 :: String -> (String, Int, Int)
 day1 input = do
      let line = (lines input) !! 0
-     (part1 line, part2 line)
+     ("Day 1: Not Quite Lisp", part1 line, part2 line)

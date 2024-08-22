@@ -1,12 +1,5 @@
 module Shared where
 
--- runDay applies a day function to an input file.
-runDay :: Show a => Int -> String -> (String -> a) -> IO ()
-runDay n filename dayFn = do
-    contents <- readFile filename
-    let parsed = dayFn contents
-    print $ "Day " ++ (show n) ++ " " ++ (show parsed)
-
 -- splitWords breaks up a string based on a single char
 splitWords :: (Char -> Bool) -> String -> [String]
 splitWords pred str = case dropWhile pred str of
@@ -23,10 +16,12 @@ pairs (x : xs) = (pairElement x xs) ++ pairs xs
     pairElement _ [] = []
     pairElement elem (x : xs) = [[elem, x]] ++ pairElement elem xs
 
-fromJust :: Maybe a -> a
-fromJust Nothing = error "Maybe.fromJust: Nothing"
-fromJust (Just x) = x
+-- unwrapJust unwraps the Just. Throws an error if it's Nothing.
+unwrapJust :: Maybe a -> a
+unwrapJust Nothing = error "Maybe.unwrapJust: Nothing"
+unwrapJust (Just x) = x
 
+-- isJust returns true if the given value is a Just.
 isJust :: Maybe a -> Bool
 isJust Nothing = False
 isJust (Just _) = True
