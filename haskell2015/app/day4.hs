@@ -11,13 +11,13 @@ import Data.ByteString.Base16 (encode)
 import Data.ByteString.Char8 (pack, unpack)
 import Data.List (find, isPrefixOf)
 
-import Shared (unwrapJust)
+import Shared (unwrap)
 
 digest :: String -> String
 digest = unpack . encode . MD5.hash . pack
 
 findHashWithPrefix :: String -> String -> Int
-findHashWithPrefix secret prefix = unwrapJust (find (hasPrefix . mine) [0..])
+findHashWithPrefix secret prefix = unwrap (find (hasPrefix . mine) [0..])
   where
     hasPrefix :: String -> Bool
     hasPrefix = isPrefixOf prefix
