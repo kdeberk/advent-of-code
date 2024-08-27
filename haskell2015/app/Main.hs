@@ -1,13 +1,15 @@
 module Main where
 
--- import Day1 (day1)
--- import Day2 (day2)
--- import Day3 (day3)
--- import Day4 (day4)
--- import Day5 (day5)
+import Day1 (day1)
+import Day2 (day2)
+import Day3 (day3)
+import Day4 (day4)
+import Day5 (day5)
 import Day6 (day6)
 import Day7 (day7)
 import Day8 (day8)
+import Day9 (day9)
+import Day10 (day10)
 
 -- day applies a day function to an input file.
 day :: String -> (String -> (String, Int, Int)) -> IO ()
@@ -18,12 +20,14 @@ day filename dayFn = do
 
 main :: IO()
 main = do
-  -- day "input/day1.txt" day1
-  -- day "input/day2.txt" day2
-  -- day "input/day3.txt" day3
-  -- day "input/day4.txt" day4
-  -- day "input/day5.txt" day5
+  day "input/day1.txt" day1
+  day "input/day2.txt" day2
+  day "input/day3.txt" day3
+  day "input/day4.txt" day4
+  day "input/day5.txt" day5
   day "input/day6.txt" day6
   day "input/day7.txt" day7
   day "input/day8.txt" day8
+  day "input/day9.txt" day9
+  day "input/day10.txt" day10
   return ()
