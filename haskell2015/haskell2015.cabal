@@ -11,14 +11,16 @@ common warnings
 executable haskell2015
     import:           warnings
     main-is:          Main.hs
-    other-modules:    Day1 Day2 Day3 Day4 Day5 Day6 Day7 Day8 Day9 Day10 Shared
+    other-modules:    Day1 Day2 Day3 Day4 Day5 Day6 Day7 Day8 Day9 Day10 Day11 Day12 Shared
     -- other-extensions:
     build-depends:
-        array ^>=0.5.7,
-        base ^>=4.17.0.0,
+        array >=0.5,
+        base >=4,
         base16-bytestring ^>=1,
         bytestring ^>=0.11,
         containers ^>=0.6,
         cryptohash-md5 ^>=0.11,
+        parsec >=3
     hs-source-dirs:   app
     default-language: Haskell2010
+    default-extensions: FlexibleContexts

@@ -1,4 +1,4 @@
-{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE BangPatterns, RankNTypes #-}
 
 module Day6 where
 
@@ -16,6 +16,8 @@ import Control.Monad.ST (ST)
 import qualified Data.Array.Unboxed as U
 import qualified Data.Array.ST as ST
 import qualified Data.Array.MArray as M
+import qualified Data.Array.Base as A
+
 import Shared (splitWords)
 
 type Light = Int
@@ -59,7 +61,7 @@ constructGrid commands = foldl (+) 0 (U.elems finalGrid)
     writeRect g r fn = ST.runSTUArray $ do
       g' <- ST.thaw g :: forall s. ST s (ST.STUArray s Coord Light)
       forM_ (points r) $ \c -> do
-        M.modifyArray g' c fn
+        modifyArray' g' c fn
       return g'
     -- returns a sequence of all coords within the Rect
     points :: Rect -> [Coord]
@@ -85,3 +87,17 @@ day6 :: String -> (String, Int, Int)
 day6 input = do
   let strings = (lines input)
   ("Day 6: Probably a Fire Hazard", part1 strings, part2 strings)
+
+
+
+-- The latest version of array contains this function, but it caused a dependency
+--  conflict when installing parsec. We copied the function here and downgraded
+--  our array dependency.
+modifyArray' :: (M.MArray a e m, M.Ix i) => a i e -> i -> (e -> e) -> m ()
+modifyArray' marr i f = do
+  (l,u) <- A.getBounds marr
+  n <- A.getNumElements marr
+  let idx = A.safeIndex (l,u) n i
+  x <- A.unsafeRead marr idx
+  let !x' = f x
+  A.unsafeWrite marr idx x'

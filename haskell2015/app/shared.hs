@@ -18,7 +18,7 @@ pairs (x : xs) = (pairElement x xs) ++ pairs xs
     pairElement _ [] = []
     pairElement elem (x : xs) = [[elem, x]] ++ pairElement elem xs
 
--- unwrapo unwraps the Just. Throws an error if it's Nothing.
+-- unwrap unwraps the Just. Throws an error if it's Nothing.
 unwrap :: Maybe a -> a
 unwrap Nothing = error "Maybe.unwrap: Nothing"
 unwrap (Just x) = x
@@ -34,3 +34,6 @@ allMatch fns x = all ($ x) fns
 -- isNumeric returns true if the string only contains digits
 isNumeric :: String -> Bool
 isNumeric str = isJust ((readMaybe str)::Maybe Int)
+
+consecutiveTriples :: [a] -> [(a, a, a)]
+consecutiveTriples list = zip3 list (tail list) (tail (tail list))

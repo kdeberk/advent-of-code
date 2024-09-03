@@ -10,9 +10,11 @@ import Day7 (day7)
 import Day8 (day8)
 import Day9 (day9)
 import Day10 (day10)
+import Day11 (day11)
+import Day12 (day12)
 
 -- day applies a day function to an input file.
-day :: String -> (String -> (String, Int, Int)) -> IO ()
+day :: Show a => String -> (String -> (String, a, a)) -> IO ()
 day filename dayFn = do
     contents <- readFile filename
     let (title, part1, part2) = dayFn contents
@@ -30,4 +32,6 @@ main = do
   day "input/day8.txt" day8
   day "input/day9.txt" day9
   day "input/day10.txt" day10
+  day "input/day11.txt" day11
+  day "input/day12.txt" day12
   return ()
