@@ -2,12 +2,28 @@ module Shared where
 
 import Text.Read (readMaybe)
 
--- splitWords breaks up a string based on a single char
-splitWords :: (Char -> Bool) -> String -> [String]
-splitWords pred str = case dropWhile pred str of
+-- splitString breaks up a string based on a single char and discards the char.
+splitString :: (Char -> Bool) -> String -> [String]
+splitString pred str = case dropWhile pred str of
                         "" -> []
-                        s' -> word : splitWords pred s''    -- recurse on rest of words
+                        s' -> word : splitString pred s''   -- recurse on rest of words
                           where (word, s'') = break pred s' -- break str once using pred
+
+-- breakString breaks up a string based on a single char, and keeps the char.
+breakString :: (Char -> Bool) -> String -> [String]
+breakString pred str = case str of
+                        "" -> []
+                        s' -> word : breakString pred s''   -- recurse on rest of words
+                          where (word, s'') = break pred s' -- break str once using pred
+
+
+-- splitStringNTimes breaks up a string based on a single char
+splitStringNTimes :: (Char -> Bool) -> Int -> String -> [String]
+splitStringNTimes _    0 str = [str]
+splitStringNTimes pred n str = case dropWhile pred str of
+                        "" -> []
+                        s' -> word : splitStringNTimes pred (n - 1) s'' -- recurse on rest of words
+                          where (word, s'') = break pred s'             -- break str once using pred
 
 -- pairs returns all unique pairs [a,b,c] -> [[a,b],[a,c],[b,c]]
 pairs :: [a] -> [] [a]

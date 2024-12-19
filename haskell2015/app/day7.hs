@@ -16,7 +16,7 @@ module Day7 where
 import Data.Bits ((.&.), (.|.), shiftL, shiftR, complement)
 import qualified Data.Map as M
 import qualified Data.Word as W
-import Shared (isNumeric, splitWords, isJust)
+import Shared (isNumeric, splitString, isJust)
 import Data.Map ((!))
 
 data Instruction =
@@ -38,7 +38,7 @@ gatherInstructions lines =
   where
     parseLine :: String -> (String, Instruction)
     parseLine line =
-      case (splitWords (==' ') line) of
+      case (splitString (==' ') line) of
         [signal, "->", reg] -> (reg, Assign signal)
         [w1, "AND", w2, "->", reg] -> (reg, And w1 w2)
         [w1, "OR", w2, "->", reg] -> (reg, Or w1 w2)

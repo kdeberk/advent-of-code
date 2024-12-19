@@ -8,14 +8,14 @@ module Day2 where
 -- Part1: Calculate amount of wrapping paper needed for all boxes. It's all surfaces + smallest surface.
 -- Part2: Calculate amount of ribbon needed. It's smallest perimeter + volume.
 
-import Shared (splitWords, pairs)
+import Shared (splitString, pairs)
 
 type Dimensions = [Int]
 
 parseLine :: String -> Dimensions
 parseLine line = do
   -- Splits line on the 'x' char.
-  let dim = splitWords (=='x') line
+  let dim = splitString (=='x') line
   map read dim
 
 double :: Int -> Int

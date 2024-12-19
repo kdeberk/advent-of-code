@@ -1,8 +1,9 @@
-Code.require_file("utils.exs")
-
 defmodule Day2 do
-  def prepare_input() do
-    {:ok, contents} = File.read("input/day2.txt")
+  def day, do: 2
+  def name, do: "Red-Nosed Reports"
+
+  def prepare_input(path) do
+    {:ok, contents} = File.read(path)
 
     contents
     |> String.split("\n")
@@ -14,7 +15,7 @@ defmodule Day2 do
 
   # safe_report divides the report up into pairs of adjacent elements. Each pair need to be in a
   #  specific order with some distance between them.
-  def safe_report(report) do
+  def safe_report?(report) do
     check = fn lst ->
       Enum.zip(lst, tl(lst))
       |> Enum.reject(fn {a, b} -> a < b && b - a <= 3 end)
@@ -25,7 +26,7 @@ defmodule Day2 do
   end
 
   def part1(reports) do
-    Enum.count(reports, &safe_report/1)
+    Enum.count(reports, &safe_report?/1)
   end
 
   # remove_one removes all variations of the list where exactly one item is skipped.
@@ -41,12 +42,7 @@ defmodule Day2 do
   # removed in order to be safe.
   def part2(reports) do
     Enum.count(reports, fn report ->
-      safe_report(report) || Enum.any?(remove_one(report, 1), &safe_report/1)
+      safe_report?(report) || Enum.any?(remove_one(report, 1), &safe_report?/1)
     end)
   end
 end
-
-input = Day2.prepare_input()
-IO.puts("Day 2: Red-Nosed Reports")
-IO.puts("Part 1: #{Day2.part1(input)}")
-IO.puts("Part 2: #{Day2.part2(input)}")

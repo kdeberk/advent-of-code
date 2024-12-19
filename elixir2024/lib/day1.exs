@@ -1,17 +1,10 @@
-Code.require_file("utils.exs")
-
 defmodule Day1 do
-  # count_items returns map storing each unique item in lst along with the number of times it appeared in lst.
-  def count_items(lst) do
-    inc = fn n -> n + 1 end
+  def day, do: 1
+  def name, do: "Historian Hysteria"
 
-    Enum.reduce(lst, %{}, fn el, acc ->
-      Map.update(acc, el, 1, inc)
-    end)
-  end
-
-  def prepare_input() do
-    {:ok, contents} = File.read("input/day1.txt")
+  def prepare_input(path) do
+    IO.puts(path)
+    {:ok, contents} = File.read(path)
 
     contents
     |> String.split("\n")
@@ -22,6 +15,15 @@ defmodule Day1 do
     end)
     # The input is specified as rows of two columns, but the values are easier to work with if we the columns into two rows.
     |> Matrix.transpose()
+  end
+
+  # count_items returns map storing each unique item in lst along with the number of times it appeared in lst.
+  def count_items(lst) do
+    inc = fn n -> n + 1 end
+
+    Enum.reduce(lst, %{}, fn el, acc ->
+      Map.update(acc, el, 1, inc)
+    end)
   end
 
   # Sort both columns and sum the differences between the matching numbers
@@ -47,8 +49,3 @@ defmodule Day1 do
     |> Enum.sum()
   end
 end
-
-input = Day1.prepare_input()
-IO.puts("Day 1: Historian Hysteria")
-IO.puts("Part 1: #{Day1.part1(input)}")
-IO.puts("Part 2: #{Day1.part2(input)}")

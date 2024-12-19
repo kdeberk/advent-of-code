@@ -12,6 +12,12 @@ import Day9 (day9)
 import Day10 (day10)
 import Day11 (day11)
 import Day12 (day12)
+import Day13 (day13)
+import Day14 (day14)
+import Day15 (day15)
+import Day16 (day16)
+import Day17 (day17)
+import Day18 (day18)
 
 -- day applies a day function to an input file.
 day :: Show a => String -> (String -> (String, a, a)) -> IO ()
@@ -34,4 +40,10 @@ main = do
   day "input/day10.txt" day10
   day "input/day11.txt" day11
   day "input/day12.txt" day12
+  day "input/day13.txt" day13
+  day "input/day14.txt" day14
+  day "input/day15.txt" day15
+  day "input/day16.txt" day16
+  day "input/day17.txt" day17
+  day "input/day18.txt" day18
   return ()

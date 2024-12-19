@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -fno-warn-incomplete-patterns -fno-warn-incomplete-uni-patterns #-}
 {-# LANGUAGE BangPatterns, RankNTypes #-}
 
 module Day6 where
@@ -18,7 +19,7 @@ import qualified Data.Array.ST as ST
 import qualified Data.Array.MArray as M
 import qualified Data.Array.Base as A
 
-import Shared (splitWords)
+import Shared (splitString)
 
 type Light = Int
 type Coord = (Int, Int)
@@ -30,7 +31,7 @@ type Instruction = (Rect, UpdateFn)
 -- parseInstructions converts the sequence of lines to Instruction values.
 parseInstructions :: [String] -> UpdateFn -> UpdateFn -> UpdateFn -> [Instruction]
 parseInstructions lines turnOn turnOff toggle =
-  map (\line -> parseFrags (splitWords (==' ') line)) lines
+  map (\line -> parseFrags (splitString (==' ') line)) lines
   where
     parseFrags :: [String] -> Instruction
     parseFrags ["toggle", c1, "through", c2] = ((readRect c1 c2), toggle)
@@ -43,7 +44,7 @@ parseInstructions lines turnOn turnOff toggle =
     readCoord :: String -> Coord
     readCoord str = (x, y)
       where
-        [x, y] = map read (splitWords (==',') str)
+        [x, y] = map read (splitString (==',') str)
 
 -- constructGrid takes the instruction and returns the sum of all light values.
 constructGrid :: [Instruction] -> Int

@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -fno-warn-incomplete-patterns -fno-warn-incomplete-uni-patterns #-}
+
 module Day9 where
 
 -- 2015, Day 9
@@ -9,7 +11,7 @@ module Day9 where
 
 import qualified Data.Map as M
 import qualified Data.Set as S
-import Shared (splitWords)
+import Shared (splitString)
 import Data.Map ((!))
 
 type City = String
@@ -23,7 +25,7 @@ parseInput input = foldl storePair M.empty (lines input)
     storePair :: Distances -> String -> Distances
     storePair dists line = storeDistance (storeDistance dists city1 city2 dist) city2 city1 dist
       where
-        [city1, _, city2, _, d] = splitWords (==' ') line
+        [city1, _, city2, _, d] = splitString (==' ') line
         dist = read d
         storeDistance :: Distances -> City -> City -> Int -> Distances
         storeDistance dists city1 city2 dist =

@@ -1,15 +1,17 @@
-Code.require_file("utils.exs")
-
+# TODO: cleanup
 defmodule Day6 do
+  def day, do: 6
+  def name, do: "Guard Gallivant"
+
   def north, do: %{ dx:  0, dy: -1 }
   def south, do: %{ dx:  0, dy:  1 }
   def east, do:  %{ dx:  1, dy:  0 }
   def west, do:  %{ dx: -1, dy:  0 }
 
-  def prepare_input() do
-    {:ok, contents} = File.read("input/day6.txt")
+  def prepare_input(path) do
+    {:ok, contents} = File.read(path)
 
-    Utils.multiline_string_to_grid(contents)
+    Grid.from_multiline_string(contents)
   end
 
   def right_turn(dir) do
@@ -51,7 +53,7 @@ defmodule Day6 do
   end
 
   def find_guard(%{grid: grid}) do
-    {[x, y], _} = Enum.find(grid, fn ({_, v}) -> v == "^" end)
+    {{x, y}, _} = Enum.find(grid, fn ({_, v}) -> v == "^" end)
     %{x: x, y: y}
   end
 
@@ -86,13 +88,8 @@ defmodule Day6 do
     |> Enum.count(fn (pos) ->
       %{grid: grid} = map
       %{x: x, y: y} = pos
-      Map.get(grid, [x, y]) == "." &&
-        walk_avoid_loop(%{map | grid: Map.put(grid, [x, y], "#")}, guard, north()) == "stuck"
+      Map.get(grid, {x, y}) == "." &&
+        walk_avoid_loop(%{map | grid: Map.put(grid, {x, y}, "#")}, guard, north()) == "stuck"
     end)
   end
 end
-
-input = Day6.prepare_input()
-IO.puts("Day 6: Guard Gallivant")
-IO.puts("Part 1: #{Day6.part1(input)}")
-IO.puts("Part 2: #{Day6.part2(input)}")

@@ -1,8 +1,9 @@
-Code.require_file("utils.exs")
-
 defmodule Day5 do
-  def prepare_input() do
-    {:ok, contents} = File.read("input/day5.txt")
+  def day, do: 5
+  def name, do: "Print Queue"
+
+  def prepare_input(path) do
+    {:ok, contents} = File.read(path)
 
     [rules, updates] = contents
     |> String.split("\n\n")
@@ -55,9 +56,3 @@ defmodule Day5 do
     |> Enum.sum
   end
 end
-
-
-input = Day5.prepare_input()
-IO.puts("Day 5: Print Queue")
-IO.puts("Part 1: #{Day5.part1(input)}")
-IO.puts("Part 2: #{Day5.part2(input)}")

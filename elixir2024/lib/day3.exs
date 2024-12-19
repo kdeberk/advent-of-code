@@ -1,6 +1,9 @@
 defmodule Day3 do
-  def prepare_input() do
-    {:ok, contents} = File.read("input/day3.txt")
+  def day, do: 3
+  def name, do: "Mull It Over"
+
+  def prepare_input(path) do
+    {:ok, contents} = File.read(path)
     contents
   end
 
@@ -37,8 +40,3 @@ defmodule Day3 do
     |> Map.get(:sum)
   end
 end
-
-input = Day3.prepare_input()
-IO.puts("Day 3: Mull It Over")
-IO.puts("Part 1: #{Day3.part1(input)}")
-IO.puts("Part 2: #{Day3.part2(input)}")

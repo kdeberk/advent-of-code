@@ -33,4 +33,4 @@ part2 secret = findHashWithPrefix secret "000000"
 day4 :: String -> (String, Int, Int)
 day4 input = do
   let secret = (lines input) !! 0
-  ("Day 4: The Ideal Stocking Stuffer", part1 secret, 0) -- Part 2 is slow
+  ("Day 4: The Ideal Stocking Stuffer", part1 secret, part2 secret)
