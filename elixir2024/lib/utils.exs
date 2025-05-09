@@ -236,3 +236,29 @@ defmodule Direction do
     end
   end
 end
+
+defmodule Queue do
+  def new(items \\ []) do
+    q = (:queue.new())
+
+    items
+    |> Enum.reduce(q, fn (item, q) -> push(q, item) end)
+  end
+
+  def len(q) do
+    :queue.len(q)
+  end
+
+  def push(q, value) do
+    :queue.in({value}, q)
+  end
+
+  def pop(q) do
+    if len(q) == 0 do
+      {nil, q}
+    else
+      {{_, {value}}, q} = :queue.out(q)
+      {value, q}
+    end
+  end
+end

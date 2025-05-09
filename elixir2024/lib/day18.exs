@@ -8,6 +8,8 @@ defmodule Day18 do
     |> String.split("\n")
     |> Enum.map(fn xy -> xy |> String.split(",") |> Enum.map(&Utils.parse_int/1) end)
 
+    # TODO: detect if we're reading test file or puzzle.txt
+
     %{bytes: bytes, start: {0,0}, dst: {70,70}, width: 71, height: 71}
     # %{bytes: bytes, start: {0,0}, dst: {6,6}, width: 7, height: 7}
   end
@@ -69,6 +71,8 @@ defmodule Day18 do
   end
 
   def part2(computer) do
+    # TODO: don't need to calculate which path to take, just that a path is impossible
+
     # Can we do this in a single A* sweep?
     #
 
@@ -84,7 +88,3 @@ defmodule Day18 do
     n
   end
 end
-
-# Wrong answer: 2959, 38,68
-
-# correct: 22,50
